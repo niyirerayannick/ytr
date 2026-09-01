@@ -1,7 +1,10 @@
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
 from .models import Article
+
+User = get_user_model()
 
 
 class ArticleModelTests(TestCase):
@@ -81,3 +84,13 @@ class ArticleViewTests(TestCase):
         )
         response = self.client.get(reverse("articles:list"))
         self.assertNotContains(response, "Pending Article")
+
+    def test_anonymous_article_detail_is_marked_cacheable_for_offline_reading(self):
+        response = self.client.get(self.article.get_absolute_url())
+        self.assertEqual(response.headers.get("X-YTR-Public-Cache"), "1")
+
+    def test_authenticated_article_detail_is_never_marked_cacheable(self):
+        User.objects.create_user("reader", "reader@example.com", "password123", is_active=True)
+        self.client.force_login(User.objects.get(username="reader"))
+        response = self.client.get(self.article.get_absolute_url())
+        self.assertNotIn("X-YTR-Public-Cache", response.headers)

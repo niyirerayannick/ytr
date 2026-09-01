@@ -1,5 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 
+from apps.core.pwa import mark_public_cacheable
+
 from .models import Article
 
 
@@ -14,8 +16,9 @@ def article_detail(request, slug):
         request.user.is_authenticated
         and article.bookmarked_by.filter(member=request.user).exists()
     )
-    return render(request, "articles/article_detail.html", {
+    response = render(request, "articles/article_detail.html", {
         "article": article,
         "related_articles": article.related_articles(),
         "is_bookmarked": is_bookmarked,
     })
+    return mark_public_cacheable(response, request)

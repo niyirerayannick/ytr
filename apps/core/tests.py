@@ -1,9 +1,12 @@
 from datetime import timedelta
+import json
+import mimetypes
 import os
 from pathlib import Path
 import subprocess
 import sys
 
+from django.contrib.staticfiles import finders
 from django.core.exceptions import ValidationError
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
@@ -128,3 +131,96 @@ class ProductionSettingsTests(TestCase):
         result = self._run_production_check("change-me-this-is-not-a-real-production-secret-key-value-123")
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("strong SECRET_KEY", result.stderr)
+
+
+class PwaManifestTests(TestCase):
+    def test_manifest_file_exists_and_is_valid_json(self):
+        manifest_path = finders.find("manifest.webmanifest")
+        self.assertIsNotNone(manifest_path, "static/manifest.webmanifest must exist")
+        with open(manifest_path, encoding="utf-8") as handle:
+            manifest = json.load(handle)
+        self.assertEqual(manifest["name"], "Youth Time Revival")
+        self.assertEqual(manifest["short_name"], "YTR")
+        self.assertEqual(manifest["display"], "standalone")
+        self.assertEqual(manifest["start_url"], "/")
+
+    def test_manifest_declares_required_icon_sizes_and_a_maskable_variant(self):
+        manifest_path = finders.find("manifest.webmanifest")
+        with open(manifest_path, encoding="utf-8") as handle:
+            manifest = json.load(handle)
+        sizes = {icon["sizes"] for icon in manifest["icons"]}
+        purposes = {icon.get("purpose") for icon in manifest["icons"]}
+        self.assertIn("192x192", sizes)
+        self.assertIn("512x512", sizes)
+        self.assertIn("maskable", purposes)
+        for icon in manifest["icons"]:
+            self.assertIsNotNone(finders.find(icon["src"].lstrip("/").removeprefix("static/")))
+
+    def test_webmanifest_extension_resolves_to_the_correct_mime_type(self):
+        content_type, _ = mimetypes.guess_type("manifest.webmanifest")
+        self.assertEqual(content_type, "application/manifest+json")
+
+
+class ServiceWorkerViewTests(TestCase):
+    def test_service_worker_is_served_from_the_origin_root(self):
+        response = self.client.get("/service-worker.js")
+        self.assertEqual(response.status_code, 200)
+
+    def test_service_worker_has_a_javascript_content_type(self):
+        response = self.client.get("/service-worker.js")
+        self.assertIn("javascript", response.headers["Content-Type"])
+
+    def test_service_worker_allows_full_site_scope(self):
+        response = self.client.get("/service-worker.js")
+        self.assertEqual(response.headers.get("Service-Worker-Allowed"), "/")
+
+    def test_service_worker_source_treats_dashboard_accounts_and_admin_as_private(self):
+        response = self.client.get("/service-worker.js")
+        body = response.content.decode("utf-8")
+        self.assertIn("dashboard", body)
+        self.assertIn("accounts", body)
+        self.assertIn("admin", body)
+        self.assertIn("isPrivatePath", body)
+
+    def test_service_worker_shell_list_resolves_static_urls(self):
+        response = self.client.get("/service-worker.js")
+        body = response.content.decode("utf-8")
+        self.assertIn("/static/css/", body)
+        self.assertIn("/static/js/site", body)
+        self.assertIn("/static/offline.html", body)
+
+
+class OfflineFallbackTests(TestCase):
+    def test_offline_page_exists_and_is_branded(self):
+        offline_path = finders.find("offline.html")
+        self.assertIsNotNone(offline_path, "static/offline.html must exist")
+        with open(offline_path, encoding="utf-8") as handle:
+            content = handle.read()
+        self.assertIn("Youth Time Revival", content)
+        self.assertIn("You're offline", content)
+
+
+class BaseTemplatePwaMetadataTests(TestCase):
+    def test_home_page_includes_manifest_link_and_theme_color(self):
+        response = self.client.get(reverse("core:home"))
+        self.assertContains(response, 'rel="manifest"')
+        self.assertContains(response, 'name="theme-color" content="#1a1230"')
+        self.assertContains(response, 'rel="apple-touch-icon"')
+
+    def test_home_page_includes_install_and_bottom_nav_partials(self):
+        response = self.client.get(reverse("core:home"))
+        self.assertContains(response, 'id="pwaInstallCard"')
+        self.assertContains(response, 'id="pwaUpdate"')
+        self.assertContains(response, 'class="pwa-bottom-nav"')
+
+    def test_dashboard_shell_does_not_include_the_public_install_card(self):
+        # The dashboard renders its own shell template (templates/dashboard/_shell.html)
+        # rather than extending base.html, so Phase A's public install UI has no
+        # reason to appear there and was not added to it.
+        from django.contrib.auth import get_user_model
+
+        User = get_user_model()
+        User.objects.create_user("member", "member@example.com", "password123", is_active=True)
+        self.client.force_login(User.objects.get(username="member"))
+        response = self.client.get(reverse("dashboard:home"), follow=True)
+        self.assertNotContains(response, "pwa-install-section")

@@ -1,6 +1,8 @@
 from django.core.paginator import Paginator
 from django.shortcuts import render
 
+from apps.core.pwa import mark_public_cacheable
+
 from .models import Devotion
 
 
@@ -15,7 +17,10 @@ def devotion_list(request):
     paginator = Paginator(archive_qs, 10)
     page_obj = paginator.get_page(request.GET.get("page"))
 
-    return render(request, "devotions/devotion_list.html", {
+    response = render(request, "devotions/devotion_list.html", {
         "today": today,
         "page_obj": page_obj,
     })
+    if not request.GET.get("page"):
+        response = mark_public_cacheable(response, request)
+    return response

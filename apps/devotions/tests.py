@@ -1,7 +1,10 @@
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
 from .models import Devotion
+
+User = get_user_model()
 
 
 class DevotionModelTests(TestCase):
@@ -31,3 +34,17 @@ class DevotionListViewTests(TestCase):
     def test_devotion_list_loads_when_empty(self):
         response = self.client.get(reverse("devotions:list"))
         self.assertEqual(response.status_code, 200)
+
+    def test_anonymous_devotion_list_is_marked_cacheable_for_offline_reading(self):
+        response = self.client.get(reverse("devotions:list"))
+        self.assertEqual(response.headers.get("X-YTR-Public-Cache"), "1")
+
+    def test_authenticated_devotion_list_is_never_marked_cacheable(self):
+        User.objects.create_user("reader", "reader@example.com", "password123", is_active=True)
+        self.client.force_login(User.objects.get(username="reader"))
+        response = self.client.get(reverse("devotions:list"))
+        self.assertNotIn("X-YTR-Public-Cache", response.headers)
+
+    def test_paginated_devotion_list_is_never_marked_cacheable(self):
+        response = self.client.get(reverse("devotions:list"), {"page": "1"})
+        self.assertNotIn("X-YTR-Public-Cache", response.headers)

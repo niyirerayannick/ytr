@@ -28,6 +28,20 @@ def _next_gathering():
     return Gathering.objects.filter(end_datetime__gte=now).order_by("start_datetime").first()
 
 
+def service_worker(request):
+    """Serve the PWA service worker from the origin root.
+
+    Registering from "/" (rather than a /static/... path) gives the worker a
+    default scope covering the whole site, which it needs to intercept public
+    page navigations. Rendered as a template (not a plain static file) so the
+    shell asset list always points at the current, correctly hashed static URLs.
+    """
+    response = render(request, "service-worker.js", content_type="text/javascript")
+    response["Service-Worker-Allowed"] = "/"
+    response["Cache-Control"] = "no-cache"
+    return response
+
+
 def health(request):
     """A small, non-sensitive readiness response for a reverse proxy."""
     try:
