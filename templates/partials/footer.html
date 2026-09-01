@@ -1,0 +1,36 @@
+{% load ytr_icons %}
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="brand" style="color:#fff; margin-bottom:14px; cursor:default">
+          {% icon 'flame' 26 'false' %}
+          Youth Time Revival
+        </div>
+        <p style="max-width:34ch; font-size:0.92rem" class="i18n-en">A youth movement built on prayer, teaching, and mentorship.</p>
+        <p style="max-width:34ch; font-size:0.92rem" class="i18n-rw">Umuvuko w'urubyiruko ushingiye ku isengesho, inyigisho, no kuyoborwa hafi.</p>
+      </div>
+      <div>
+        <h5><span class="i18n-en">Explore</span><span class="i18n-rw">Reba</span></h5>
+        <ul>
+          <li><a href="{% url 'devotions:list' %}"><span class="i18n-en">Devotions</span><span class="i18n-rw">Ibitekerezo</span></a></li>
+          <li><a href="{% url 'articles:list' %}"><span class="i18n-en">Articles</span><span class="i18n-rw">Ibyanditswe</span></a></li>
+          <li><a href="{% url 'podcasts:list' %}"><span class="i18n-en">Podcasts</span><span class="i18n-rw">Podcast</span></a></li>
+          <li><a href="{% url 'library:list' %}"><span class="i18n-en">Library</span><span class="i18n-rw">Isomero</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h5><span class="i18n-en">Ministry</span><span class="i18n-rw">Umurimo</span></h5>
+        <ul>
+          <li><a href="{% url 'about:about' %}"><span class="i18n-en">About us</span><span class="i18n-rw">Abo turibo</span></a></li>
+          <li><a href="{% url 'faq:list' %}"><span class="i18n-en">FAQ</span><span class="i18n-rw">Ibibazo</span></a></li>
+          <li><a href="{% url 'engagement:contact' %}"><span class="i18n-en">Contact</span><span class="i18n-rw">Twandikire</span></a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="i18n-en">© <span id="yr"></span> Youth Time Revival.</span><span class="i18n-rw">© <span id="yr2"></span> Youth Time Revival.</span>
+      <span>{{ site_settings.contact_email }}</span>
+    </div>
+  </div>
+</footer>

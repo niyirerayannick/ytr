@@ -1,0 +1,54 @@
+{% extends "dashboard/author/_base.html" %}
+{% block title %}My content{% endblock %}
+
+{% block content %}
+<h1>My content</h1>
+<p class="dash-lede">Draft, submit, and track your articles, devotions, episodes, and videos.</p>
+
+{% if items %}
+<table class="dash-table hidden lg:table">
+  <tr><th>Type</th><th>Title</th><th>Status</th><th></th></tr>
+  {% for item in items %}
+  <tr>
+    <td>{{ item.label }}</td>
+    <td>{{ item.obj }}</td>
+    <td>
+      <span class="badge badge-{{ item.obj.status }}">{{ item.obj.get_status_display }}</span>
+      {% if item.obj.status == "rejected" and item.obj.review_note %}
+      <div class="review-note-box" style="margin-top:8px">{{ item.obj.review_note }}</div>
+      {% endif %}
+    </td>
+    <td class="dash-actions">
+      {% if item.obj.status == "draft" or item.obj.status == "rejected" %}
+      <a class="btn-sm btn-sm-outline" href="{% url 'dashboard:author_content_edit' content_type=item.type pk=item.obj.pk %}">Edit</a>
+      <form method="post" action="{% url 'dashboard:author_content_submit' content_type=item.type pk=item.obj.pk %}">
+        {% csrf_token %}<button class="btn-sm btn-sm-ember" type="submit">Submit for review</button>
+      </form>
+      {% else %}
+      <span class="dash-empty" style="padding:0">—</span>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+<div class="dash-mobile-list lg:hidden">
+  {% for item in items %}
+  <article class="dash-mobile-row"><dl>
+    <div><dt>Type</dt><dd>{{ item.label }}</dd></div>
+    <div><dt>Title</dt><dd>{{ item.obj }}</dd></div>
+    <div><dt>Status</dt><dd><span class="badge badge-{{ item.obj.status }}">{{ item.obj.get_status_display }}</span>
+      {% if item.obj.status == "rejected" and item.obj.review_note %}<div class="review-note-box">{{ item.obj.review_note }}</div>{% endif %}
+    </dd></div>
+  </dl>
+  {% if item.obj.status == "draft" or item.obj.status == "rejected" %}
+  <div class="dash-actions">
+    <a class="btn-sm btn-sm-outline" href="{% url 'dashboard:author_content_edit' content_type=item.type pk=item.obj.pk %}">Edit</a>
+    <form method="post" action="{% url 'dashboard:author_content_submit' content_type=item.type pk=item.obj.pk %}">{% csrf_token %}<button class="btn-sm btn-sm-ember" type="submit">Submit for review</button></form>
+  </div>
+  {% endif %}</article>
+  {% endfor %}
+</div>
+{% else %}
+<p class="dash-empty">Nothing yet — use the "New" links in the sidebar to create your first draft.</p>
+{% endif %}
+{% endblock %}

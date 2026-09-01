@@ -1,0 +1,50 @@
+{% extends "dashboard/admin/_base.html" %}
+{% block title %}User management{% endblock %}
+
+{% block content %}
+<h1>User management</h1>
+<p class="dash-lede">Promote a Member to Author, or move an Author back to Member. (Admin accounts aren't shown here — manage those in the Django admin.)</p>
+
+{% if users %}
+<table class="dash-table hidden lg:table">
+  <tr><th>Username</th><th>Email</th><th>Current role</th><th>Change role</th></tr>
+  {% for u in users %}
+  <tr>
+    <td>{{ u.username }}</td>
+    <td>{{ u.email }}</td>
+    <td><span class="badge badge-published">{{ u.profile.get_role_display }}</span></td>
+    <td>
+      <form method="post" action="{% url 'dashboard:update_user_role' user_id=u.id %}" class="dash-actions">
+        {% csrf_token %}
+        <select name="role">
+          <option value="member" {% if u.profile.role == "member" %}selected{% endif %}>Member</option>
+          <option value="author" {% if u.profile.role == "author" %}selected{% endif %}>Author</option>
+        </select>
+        <button class="btn-sm btn-sm-outline" type="submit">Save</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+<div class="dash-mobile-list lg:hidden">
+  {% for u in users %}
+  <article class="dash-mobile-row"><dl>
+    <div><dt>Username</dt><dd>{{ u.username }}</dd></div>
+    <div><dt>Email</dt><dd>{{ u.email }}</dd></div>
+    <div><dt>Current role</dt><dd><span class="badge badge-published">{{ u.profile.get_role_display }}</span></dd></div>
+  </dl>
+  <form method="post" action="{% url 'dashboard:update_user_role' user_id=u.id %}" class="dash-actions">
+    {% csrf_token %}
+    <label class="visually-hidden" for="mobile-role-{{ u.id }}">Change role</label>
+    <select id="mobile-role-{{ u.id }}" name="role">
+      <option value="member" {% if u.profile.role == "member" %}selected{% endif %}>Member</option>
+      <option value="author" {% if u.profile.role == "author" %}selected{% endif %}>Author</option>
+    </select>
+    <button class="btn-sm btn-sm-outline" type="submit">Save role</button>
+  </form></article>
+  {% endfor %}
+</div>
+{% else %}
+<p class="dash-empty">No members or authors yet.</p>
+{% endif %}
+{% endblock %}

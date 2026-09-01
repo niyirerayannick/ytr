@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Youth Time Revival</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --night:#1A1230;
+  --night-2:#241A3D;
+  --ember:#E4572E;
+  --ember-dim:#C24A24;
+  --dawn:#F6B93B;
+  --paper:#FBF7F0;
+  --paper-2:#F1E9D8;
+  --river:#1E6E71;
+  --ink:#241A3D;
+  --ink-soft:#544A6C;
+  --cream-ink:#F6EFE0;
+  --line:rgba(36,26,61,0.15);
+  --line-night:rgba(246,239,224,0.16);
+  --maxw:1180px;
+  --serif:'Fraunces',ui-serif,Georgia,serif;
+  --sans:'Work Sans',ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --paper:#FBF7F0; --ink:#241A3D; }
+}
+:root[data-theme="dark"]{ --paper:#FBF7F0; --ink:#241A3D; }
+:root[data-theme="light"]{ --paper:#FBF7F0; --ink:#241A3D; }
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--sans); font-size:17px; line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+img,svg{max-width:100%;display:block}
+a{color:inherit}
+button{font-family:inherit}
+.wrap{max-width:var(--maxw); margin:0 auto; padding:0 28px}
+h1,h2,h3,h4{font-family:var(--serif); font-weight:600; margin:0; line-height:1.12; letter-spacing:-0.01em}
+p{margin:0}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+:focus-visible{outline:2px solid var(--ember); outline-offset:3px}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important}
+}
+
+/* ============ I18N ============ */
+.i18n-rw{display:none}
+.i18nb-rw{display:none}
+.i18nb-en{display:block}
+body.lang-rw .i18n-en{display:none}
+body.lang-rw .i18nb-en{display:none}
+body.lang-rw .i18n-rw{display:inline}
+body.lang-rw .i18nb-rw{display:block}
+
+/* ============ SKIP LINK ============ */
+.skip-link{position:absolute;left:-999px;top:0;background:var(--night);color:var(--cream-ink);padding:12px 18px;z-index:999}
+.skip-link:focus{left:12px;top:12px}
+
+/* ============ NAV ============ */
+header.site-nav{
+  position:sticky; top:0; z-index:50; background:rgba(251,247,240,0.92);
+  backdrop-filter:blur(8px); border-bottom:1px solid var(--line);
+}
+.nav-row{display:flex; align-items:center; justify-content:space-between; gap:18px; padding:14px 28px; max-width:var(--maxw); margin:0 auto}
+.brand{display:flex; align-items:center; gap:9px; font-family:var(--serif); font-weight:600; font-size:1.18rem; letter-spacing:-0.01em; background:none;border:none;cursor:pointer; color:var(--ink)}
+.brand svg{width:26px;height:26px;flex:none}
+.nav-links{display:flex; gap:24px; list-style:none; margin:0; padding:0; flex-wrap:wrap}
+.nav-links button{
+  background:none;border:none;cursor:pointer;font-size:0.96rem;color:var(--ink-soft);
+  padding:6px 0; border-bottom:2px solid transparent; font-weight:500;
+}
+.nav-links button:hover, .nav-links button.active{color:var(--ink); border-bottom-color:var(--ember)}
+.nav-tools{display:flex; align-items:center; gap:14px}
+.icon-btn{background:none;border:none;cursor:pointer;color:var(--ink); padding:6px; display:flex; border-radius:50%}
+.icon-btn:hover{background:var(--paper-2)}
+.icon-btn svg{width:20px;height:20px}
+.lang-toggle{display:flex; border:1px solid var(--line); border-radius:20px; overflow:hidden; font-size:0.82rem; font-weight:600}
+.lang-toggle button{background:none;border:none;padding:6px 12px;cursor:pointer;color:var(--ink-soft)}
+.lang-toggle button.active{background:var(--night); color:var(--cream-ink)}
+.menu-toggle{display:none}
+@media (max-width:880px){
+  .nav-links{position:absolute; top:100%; left:0; right:0; background:var(--paper); flex-direction:column; gap:0; padding:6px 28px 16px; border-bottom:1px solid var(--line); display:none}
+  .nav-links.open{display:flex}
+  .nav-links button{padding:10px 0; width:100%; text-align:left; border-bottom:1px solid var(--line)}
+  .menu-toggle{display:flex}
+}
+
+/* ============ BUTTONS ============ */
+.btn{
+  display:inline-flex; align-items:center; gap:8px; padding:12px 22px; font-weight:600; font-size:0.95rem;
+  border-radius:3px; cursor:pointer; text-decoration:none; border:1px solid transparent; font-family:var(--sans);
+}
+.btn-ember{background:var(--ember); color:#fff}
+.btn-ember:hover{background:var(--ember-dim)}
+.btn-outline-night{border-color:var(--night); color:var(--night); background:transparent}
+.btn-outline-night:hover{background:var(--night); color:var(--cream-ink)}
+.btn-outline-cream{border-color:var(--line-night); color:var(--cream-ink); background:transparent}
+.btn-outline-cream:hover{background:var(--line-night)}
+.btn-text{background:none;border:none;padding:0;color:var(--ember);font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn-text svg{width:15px;height:15px}
+.btn[disabled]{opacity:0.5;cursor:not-allowed}
+
+/* ============ SECTIONS GENERIC ============ */
+.view{display:none}
+.view.active{display:block; animation:fadein 0.35s ease}
+@keyframes fadein{from{opacity:0} to{opacity:1}}
+.section{padding:76px 0}
+.section-night{background:var(--night); color:var(--cream-ink)}
+.section-alt{background:var(--paper-2)}
+.section-head{max-width:640px; margin-bottom:44px}
+.section-head .eyebrow-icon{width:34px;height:34px;margin-bottom:14px}
+.section-head h2{font-size:2.15rem}
+.section-head p{margin-top:12px; color:var(--ink-soft); font-size:1.05rem}
+.section-night .section-head p{color:rgba(246,239,224,0.75)}
+.horizon-rule{height:2px; width:100%; background:linear-gradient(90deg, var(--night), var(--ember), var(--dawn), var(--night)); opacity:0.5}
+
+/* ============ HERO ============ */
+.hero{position:relative; overflow:hidden; background:var(--night); color:var(--cream-ink)}
+.hero-sky{position:absolute; inset:0}
+.hero-inner{position:relative; z-index:2; max-width:var(--maxw); margin:0 auto; padding:110px 28px 60px; display:flex; flex-direction:column; gap:28px}
+.hero h1{font-size:clamp(2.3rem, 5.4vw, 4rem); max-width:14ch; color:#fff}
+.hero .lede{max-width:46ch; font-size:1.15rem; color:rgba(246,239,224,0.85)}
+.hero-ctas{display:flex; gap:14px; flex-wrap:wrap; margin-top:6px}
+.moments{display:flex; gap:10px; flex-wrap:wrap; margin-top:22px}
+.moment-pill{border:1px solid var(--line-night); border-radius:20px; padding:7px 15px; font-size:0.85rem; color:rgba(246,239,224,0.65); transition:color .3s,border-color .3s}
+.moment-pill.on{color:#fff; border-color:var(--dawn)}
+.ember-particle{position:absolute; bottom:-10px; border-radius:50%; background:var(--dawn); opacity:0; animation:rise 7s linear infinite}
+@keyframes rise{ 0%{transform:translateY(0) scale(1); opacity:0} 8%{opacity:0.9} 90%{opacity:0} 100%{transform:translateY(-320px) scale(0.3); opacity:0} }
+.sun{transform-origin:center; animation:sunrise 2.4s cubic-bezier(.2,.7,.3,1) both}
+@keyframes sunrise{ from{transform:translateY(60px); opacity:0} to{transform:translateY(0); opacity:1} }
+
+/* ============ TODAY STRIP ============ */
+.today-grid{display:grid; grid-template-columns:1.1fr 1fr; gap:22px}
+@media (max-width:820px){.today-grid{grid-template-columns:1fr}}
+.today-card{border:1px solid var(--line); padding:26px; background:var(--paper)}
+.today-card.dark{background:var(--night); color:var(--cream-ink); border-color:transparent}
+.today-card .kicker{display:flex; align-items:center; gap:8px; font-size:0.82rem; font-weight:600; color:var(--ember); margin-bottom:12px}
+.today-card.dark .kicker{color:var(--dawn)}
+.today-card h3{font-size:1.35rem; margin-bottom:10px}
+.today-card p{color:var(--ink-soft)}
+.today-card.dark p{color:rgba(246,239,224,0.8)}
+.today-card .row-actions{display:flex; gap:16px; margin-top:18px; align-items:center; flex-wrap:wrap}
+
+/* ============ ARTICLE GRID ============ */
+.article-grid{display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line)}
+.article-grid .art-card{background:var(--paper)}
+.article-grid .art-card.feature{grid-column:1 / -1}
+.article-grid .art-card.feature .art-thumb{aspect-ratio:21/9}
+@media (max-width:700px){.article-grid{grid-template-columns:1fr}}
+.art-card{cursor:pointer; border:none; text-align:left; padding:0; display:flex; flex-direction:column}
+.art-thumb{aspect-ratio:16/10; width:100%}
+.art-body{padding:22px}
+.art-body h3{font-size:1.3rem; margin-bottom:10px}
+.art-card.feature .art-body h3{font-size:1.65rem}
+.art-body .hook{color:var(--ink-soft); font-size:0.98rem}
+.art-meta{margin-top:14px; font-size:0.82rem; color:var(--ink-soft); display:flex; gap:10px; align-items:center}
+
+/* article detail */
+.article-detail{max-width:680px; margin:0 auto}
+.article-detail .art-hero{aspect-ratio:16/8; margin-bottom:28px}
+.article-detail h1{font-size:2.1rem; margin-bottom:14px}
+.article-detail .hook{font-size:1.2rem; font-family:var(--serif); font-style:italic; color:var(--ink-soft); margin-bottom:26px}
+.article-detail .body-text p{margin-bottom:18px; font-size:1.06rem}
+.verse-callout{border-left:3px solid var(--ember); background:var(--paper-2); padding:16px 20px; margin:26px 0; font-family:var(--serif); font-size:1.08rem}
+.verse-callout cite{display:block; font-family:var(--sans); font-style:normal; font-size:0.82rem; font-weight:600; color:var(--ember); margin-top:8px}
+.author-box{display:flex; gap:14px; align-items:flex-start; padding:22px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); margin:30px 0}
+.author-avatar{width:46px;height:46px;border-radius:50%;flex:none}
+.author-box .name{font-weight:600}
+.author-box .bio{color:var(--ink-soft); font-size:0.92rem; margin-top:3px}
+.recs{margin-top:34px}
+.recs h4{font-size:1.05rem; margin-bottom:14px}
+.recs ul{list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:10px}
+.recs a{display:block; padding:12px 0; border-top:1px solid var(--line); font-weight:600}
+.recs a:hover{color:var(--ember)}
+
+/* ============ FLYER ============ */
+.flyer{display:flex; gap:18px; align-items:center}
+.flyer .flyer-icon{width:52px;height:52px;flex:none}
+.flyer-date{font-family:var(--serif); font-size:1.1rem}
+
+/* ============ DEVOTION ============ */
+.devo-card{background:var(--night); color:var(--cream-ink); padding:44px; position:relative; overflow:hidden}
+.devo-card .verse-ref{font-family:var(--serif); font-size:1.7rem; color:var(--dawn); margin-bottom:16px}
+.devo-card .verse-text{font-size:1.15rem; max-width:56ch; font-family:var(--serif); font-style:italic}
+.devo-card .reflection{margin-top:22px; max-width:60ch; color:rgba(246,239,224,0.85)}
+.devo-card .prayer{margin-top:18px; padding-top:18px; border-top:1px solid var(--line-night); color:rgba(246,239,224,0.9); font-size:0.95rem}
+.devo-actions{display:flex; gap:14px; margin-top:26px; flex-wrap:wrap}
+.devo-archive{margin-top:40px; display:grid; gap:0}
+.devo-archive-item{padding:18px 0; border-top:1px solid var(--line); display:flex; justify-content:space-between; gap:16px; align-items:baseline; flex-wrap:wrap}
+.devo-archive-item .d-date{font-size:0.82rem; color:var(--ink-soft); white-space:nowrap}
+
+/* ============ PODCASTS ============ */
+.tab-row{display:flex; gap:0; border-bottom:1px solid var(--line); margin-bottom:32px; overflow-x:auto}
+.tab-btn{background:none; border:none; padding:14px 20px 14px 0; margin-right:22px; font-weight:600; color:var(--ink-soft); cursor:pointer; border-bottom:2px solid transparent; white-space:nowrap}
+.tab-btn.active{color:var(--ink); border-bottom-color:var(--ember)}
+.pod-layout{display:grid; grid-template-columns:220px 1fr; gap:36px}
+@media (max-width:760px){.pod-layout{grid-template-columns:1fr}}
+.pod-cover{aspect-ratio:1; width:100%}
+.pod-badges{display:flex; gap:8px; margin-top:14px; flex-wrap:wrap}
+.pod-badge{font-size:0.76rem; border:1px solid var(--line); padding:4px 10px; border-radius:20px; color:var(--ink-soft)}
+.ep-list{list-style:none; margin:0; padding:0}
+.ep-item{display:flex; gap:16px; padding:16px 0; border-top:1px solid var(--line); align-items:flex-start}
+.ep-item:first-child{border-top:none}
+.ep-num{font-family:var(--serif); color:var(--ember); font-size:1.2rem; min-width:26px}
+.ep-title{font-weight:600}
+.ep-desc{color:var(--ink-soft); font-size:0.92rem; margin-top:3px}
+.ep-dur{margin-left:auto; font-size:0.8rem; color:var(--ink-soft); white-space:nowrap}
+
+/* ============ VIDEOS ============ */
+.video-feature{position:relative; aspect-ratio:16/8; margin-bottom:48px; cursor:pointer; border:none; padding:0; width:100%}
+.play-btn{width:64px;height:64px; border-radius:50%; background:rgba(251,247,240,0.92); display:flex; align-items:center; justify-content:center; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%)}
+.play-btn svg{width:24px;height:24px; color:var(--night); margin-left:3px}
+.video-note{position:absolute; bottom:0; left:0; right:0; padding:22px; background:linear-gradient(0deg, rgba(26,18,48,0.85), transparent); color:#fff}
+.vid-toast{position:absolute; bottom:18px; left:18px; background:var(--night); color:var(--cream-ink); padding:10px 16px; font-size:0.85rem; opacity:0; transition:opacity .3s}
+.vid-toast.show{opacity:1}
+.series-block summary{cursor:pointer; list-style:none; display:flex; justify-content:space-between; align-items:center; padding:20px 0; border-top:1px solid var(--line); font-family:var(--serif); font-size:1.25rem}
+.series-block summary::-webkit-details-marker{display:none}
+.series-block[open] summary svg{transform:rotate(180deg)}
+.vid-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px; padding:6px 0 26px}
+@media (max-width:760px){.vid-grid{grid-template-columns:1fr 1fr}}
+.vid-thumb{aspect-ratio:16/10; position:relative}
+.vid-thumb .play-btn{width:38px;height:38px}
+.vid-thumb .play-btn svg{width:14px;height:14px}
+.vid-card-title{font-size:0.88rem; font-weight:600; margin-top:8px}
+
+/* ============ LIBRARY ============ */
+.book-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:30px}
+@media (max-width:820px){.book-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:520px){.book-grid{grid-template-columns:1fr}}
+.book{display:flex; gap:16px}
+.book-cover{width:92px; flex:none; aspect-ratio:3/4.4; position:relative}
+.book-title{font-weight:600; font-size:1.02rem}
+.book-desc{color:var(--ink-soft); font-size:0.9rem; margin-top:6px}
+.book-action{margin-top:10px; display:inline-block}
+
+/* ============ ABOUT ============ */
+.mv-grid{display:grid; grid-template-columns:1fr 1fr; gap:40px; margin-bottom:64px}
+@media (max-width:760px){.mv-grid{grid-template-columns:1fr}}
+.mv-block .tag{font-size:0.82rem; font-weight:600; color:var(--ember); margin-bottom:10px}
+.mv-block h3{font-size:1.5rem; margin-bottom:14px}
+.mv-block p{color:var(--ink-soft); font-size:1.04rem}
+
+.timeline{border-left:2px solid var(--line-night); padding-left:30px; display:flex; flex-direction:column; gap:44px; margin-top:20px}
+.timeline-item{position:relative}
+.timeline-item::before{content:'';position:absolute; left:-37px; top:4px; width:12px;height:12px;border-radius:50%; background:var(--dawn)}
+.timeline-item .year{font-family:var(--serif); font-size:1.6rem; color:var(--dawn); margin-bottom:10px}
+.timeline-item p{color:rgba(246,239,224,0.82); margin-bottom:12px}
+.timeline-item p.kn-text{font-style:italic}
+
+.believe-list{list-style:none; margin:0; padding:0; display:grid; grid-template-columns:1fr 1fr; gap:2px; background:var(--line)}
+@media (max-width:700px){.believe-list{grid-template-columns:1fr}}
+.believe-list li{background:var(--paper); padding:20px 22px}
+.believe-list .b-title{font-weight:600; margin-bottom:6px}
+.believe-list p{color:var(--ink-soft); font-size:0.94rem}
+
+.mountains-row{display:flex; gap:0; overflow-x:auto; margin:0 -28px; padding:6px 28px}
+.mountain{flex:0 0 190px; padding:22px 18px 0 0; border-right:1px solid var(--line-night)}
+.mountain:last-child{border-right:none}
+.mountain svg{width:32px;height:32px; margin-bottom:14px}
+.mountain h4{font-size:1.02rem; margin-bottom:8px; color:#fff}
+.mountain p{font-size:0.88rem; color:rgba(246,239,224,0.72)}
+
+/* ============ FAQ ============ */
+.faq-highlight{border:1px solid var(--line); background:var(--paper-2); padding:28px; margin-bottom:40px}
+.faq-highlight .tag{font-size:0.8rem; font-weight:600; color:var(--ember); margin-bottom:10px}
+.faq-highlight h3{font-size:1.3rem; margin-bottom:10px}
+.faq-highlight p{color:var(--ink-soft)}
+.faq-track-wrap{overflow:hidden; position:relative; -webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent); mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
+.faq-track{display:flex; gap:20px; width:max-content; animation:scrollfaq 42s linear infinite}
+.faq-track:hover, .faq-track:focus-within{animation-play-state:paused}
+@keyframes scrollfaq{from{transform:translateX(0)} to{transform:translateX(-50%)}}
+.faq-card{flex:0 0 300px; border:1px solid var(--line); padding:22px; background:var(--paper)}
+.faq-card h4{font-size:1.02rem; margin-bottom:10px}
+.faq-card p{color:var(--ink-soft); font-size:0.92rem}
+.faq-nav-btns{display:flex; gap:10px; margin-top:20px}
+.faq-nav-btns button{width:38px;height:38px; border:1px solid var(--line); background:var(--paper); cursor:pointer; display:flex; align-items:center; justify-content:center}
+.faq-nav-btns svg{width:16px;height:16px}
+
+/* ============ CONTACT ============ */
+.contact-grid{display:grid; grid-template-columns:1fr 1fr; gap:56px}
+@media (max-width:820px){.contact-grid{grid-template-columns:1fr; gap:40px}}
+.contact-info li{display:flex; gap:14px; padding:16px 0; border-top:1px solid var(--line)}
+.contact-info li:first-child{border-top:none}
+.contact-info svg{width:20px;height:20px; flex:none; margin-top:2px; color:var(--ember)}
+.contact-info .label{font-size:0.8rem; color:var(--ink-soft); margin-bottom:2px}
+.form-field{margin-bottom:18px}
+.form-field label{display:block; font-size:0.86rem; font-weight:600; margin-bottom:6px}
+.form-field input, .form-field textarea{
+  width:100%; border:1px solid var(--line); background:var(--paper); padding:12px 14px; font-family:inherit; font-size:0.98rem; border-radius:2px;
+}
+.form-field textarea{min-height:110px; resize:vertical}
+.subscribe-row{display:flex; gap:10px; margin-top:8px; flex-wrap:wrap}
+.subscribe-row input{flex:1; min-width:180px; border:1px solid var(--line); padding:12px 14px; font-family:inherit}
+.social-row{display:flex; gap:12px; margin-top:22px}
+.social-row a{width:38px;height:38px;border:1px solid var(--line); border-radius:50%; display:flex; align-items:center; justify-content:center}
+.social-row svg{width:16px;height:16px}
+
+/* ============ FOOTER ============ */
+footer{background:var(--night); color:rgba(246,239,224,0.75); padding:56px 0 26px}
+.footer-grid{display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:40px}
+@media (max-width:700px){.footer-grid{grid-template-columns:1fr; gap:30px}}
+.footer-grid h5{color:#fff; font-size:0.85rem; font-weight:600; margin-bottom:14px}
+.footer-grid ul{list-style:none;margin:0;padding:0; display:flex; flex-direction:column; gap:10px; font-size:0.92rem}
+.footer-grid ul button, .footer-grid ul a{background:none;border:none;color:inherit;cursor:pointer;padding:0;text-align:left; font-size:inherit}
+.footer-bottom{border-top:1px solid var(--line-night); margin-top:44px; padding-top:22px; display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; font-size:0.82rem}
+
+/* ============ SEARCH OVERLAY ============ */
+.search-overlay{position:fixed; inset:0; background:rgba(26,18,48,0.94); z-index:100; display:none; padding:90px 24px}
+.search-overlay.open{display:block}
+.search-box{max-width:640px; margin:0 auto}
+.search-box input{width:100%; background:none; border:none; border-bottom:2px solid var(--dawn); color:#fff; font-family:var(--serif); font-size:1.8rem; padding:10px 0; outline:none}
+.search-box input::placeholder{color:rgba(246,239,224,0.4)}
+.search-results{margin-top:26px; display:flex; flex-direction:column; gap:2px}
+.search-results button{background:none;border:none;text-align:left;color:#fff;padding:14px 0;border-top:1px solid var(--line-night); cursor:pointer; width:100%}
+.search-results button .kind{font-size:0.76rem; color:var(--dawn); display:block; margin-bottom:4px}
+.search-close{position:absolute; top:24px; right:28px; color:#fff}
+
+/* ============ TOAST ============ */
+#toast{position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--night); color:var(--cream-ink); padding:12px 22px; font-size:0.9rem; opacity:0; pointer-events:none; transition:opacity .3s, transform .3s; z-index:200}
+#toast.show{opacity:1; transform:translateX(-50%) translateY(-6px)}
+
+.lang-note{font-size:0.8rem; color:var(--ink-soft); border:1px dashed var(--line); padding:10px 14px; margin-top:20px}
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<header class="site-nav">
+  <div class="nav-row">
+    <button class="brand" data-goto="home" aria-label="Youth Time Revival, go to home">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 2c1 3-2 4-2 7a4 4 0 1 0 8 0c0-1.5-1-2-1.5-3 1.5 1 3 3 3 6a6.5 6.5 0 1 1-13 0c0-4.5 3.5-6 5.5-10z" fill="#E4572E"/></svg>
+      Youth Time Revival
+    </button>
+    <button class="menu-toggle icon-btn" id="menuToggle" aria-label="Open menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><button data-goto="home"><span class="i18n-en">Home</span><span class="i18n-rw">Ahabanza</span></button></li>
+      <li><button data-goto="articles"><span class="i18n-en">Articles</span><span class="i18n-rw">Ibyanditswe</span></button></li>
+      <li><button data-goto="devotions"><span class="i18n-en">Devotions</span><span class="i18n-rw">Ibitekerezo</span></button></li>
+      <li><button data-goto="podcasts"><span class="i18n-en">Podcasts</span><span class="i18n-rw">Podcast</span></button></li>
+      <li><button data-goto="videos"><span class="i18n-en">Videos</span><span class="i18n-rw">Videwo</span></button></li>
+      <li><button data-goto="library"><span class="i18n-en">Library</span><span class="i18n-rw">Isomero</span></button></li>
+      <li><button data-goto="about"><span class="i18n-en">About Us</span><span class="i18n-rw">Abo Turibo</span></button></li>
+      <li><button data-goto="faq"><span class="i18n-en">FAQ</span><span class="i18n-rw">Ibibazo</span></button></li>
+      <li><button data-goto="contact"><span class="i18n-en">Contact</span><span class="i18n-rw">Twandikire</span></button></li>
+    </ul>
+    <div class="nav-tools">
+      <div class="lang-toggle" role="group" aria-label="Language">
+        <button id="langEn" class="active" aria-pressed="true">EN</button>
+        <button id="langRw" aria-pressed="false">KN</button>
+      </div>
+      <button class="icon-btn" id="searchOpen" aria-label="Search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="search-overlay" id="searchOverlay">
+  <button class="icon-btn search-close" id="searchClose" aria-label="Close search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6 6 18"/></svg>
+  </button>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search articles, devotions, questions…" autocomplete="off">
+    <div class="search-results" id="searchResults"></div>
+  </div>
+</div>
+
+<main id="main">
+
+<!-- ============ HOME ============ -->
+<section class="view active" id="view-home">
+  <div class="hero">
+    <svg class="hero-sky" width="100%" height="100%" viewBox="0 0 1200 620" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#1A1230"/>
+          <stop offset="55%" stop-color="#2B1D46"/>
+          <stop offset="80%" stop-color="#7A3A3A"/>
+          <stop offset="100%" stop-color="#F6B93B"/>
+        </linearGradient>
+        <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#F6B93B"/>
+          <stop offset="100%" stop-color="#F6B93B" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <rect width="1200" height="620" fill="url(#skyGrad)"/>
+      <circle class="sun" cx="920" cy="470" r="160" fill="url(#sunGlow)" opacity="0.55"/>
+      <circle class="sun" cx="920" cy="470" r="70" fill="#F6B93B"/>
+      <path d="M0 560 Q300 500 600 545 T1200 520 V620 H0 Z" fill="#140D24" opacity="0.9"/>
+    </svg>
+    <div id="emberField"></div>
+    <div class="hero-inner">
+      <h1><span class="i18n-en">The altar comes before the platform.</span><span class="i18n-rw">Igicaniro kibanziriza urwuri.</span></h1>
+      <p class="lede i18n-en">Youth Time Revival is a youth movement built on prayer, teaching, and mentorship — sending a generation, formed in secret, into every corner of society.</p>
+      <p class="lede i18n-rw">Youth Time Revival ni umuvuko w'urubyiruko ushingiye ku isengesho, inyigisho, no kuyoborwa hafi — wohereza umuryango wabakiwe ahantu hihishwa, mu bice byose by'imibereho.</p>
+      <div class="hero-ctas">
+        <button class="btn btn-ember" data-goto="devotions"><span class="i18n-en">Read today's devotion</span><span class="i18n-rw">Soma iyubahiro ry'uyu munsi</span></button>
+        <button class="btn btn-outline-cream" data-goto="about"><span class="i18n-en">Our story</span><span class="i18n-rw">Inkuru yacu</span></button>
+      </div>
+      <div class="moments" id="momentPills">
+        <span class="moment-pill" data-i="0"><span class="i18n-en">Teaching &amp; Preaching</span><span class="i18n-rw">Kwigisha no Kubwiriza</span></span>
+        <span class="moment-pill" data-i="1"><span class="i18n-en">Prayer</span><span class="i18n-rw">Isengesho</span></span>
+        <span class="moment-pill" data-i="2"><span class="i18n-en">Wealth &amp; Stewardship</span><span class="i18n-rw">Ubutunzi n'Ubugenzuzi</span></span>
+        <span class="moment-pill" data-i="3"><span class="i18n-en">Mentorship &amp; Discipleship</span><span class="i18n-rw">Ubuyobozi n'Ubwigishwa</span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="wrap">
+      <div class="today-grid">
+        <div class="today-card dark">
+          <div class="kicker">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4"/></svg>
+            <span class="i18n-en">Today's Devotion</span><span class="i18n-rw">Iyubahiro ry'Uyu Munsi</span>
+          </div>
+          <h3 id="homeDevoRef">Psalm 46:10</h3>
+          <p id="homeDevoTeaser" class="i18n-en">Stop striving long enough to remember who is actually in control.</p>
+          <p class="i18n-rw">Reka kwihatira gato, wibuke uwo ari we ufite ubuyobozi nyabwo.</p>
+          <div class="row-actions">
+            <button class="btn-text" data-goto="devotions"><span class="i18n-en">Read in full</span><span class="i18n-rw">Soma byose</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="today-card">
+          <div class="kicker">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="1"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
+            <span class="i18n-en">Fellowship Gathering</span><span class="i18n-rw">Iteraniro ry'Ubusabane</span>
+          </div>
+          <div class="flyer">
+            <svg class="flyer-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#E4572E" opacity="0.12"/><path d="M12 4c.7 2-1.4 2.6-1.4 4.6a2.6 2.6 0 1 0 5.2 0c0-1-.6-1.3-1-2 1 .7 2 2 2 3.9a4.2 4.2 0 1 1-8.4 0c0-2.9 2.3-3.9 3.6-6.5z" fill="#E4572E"/></svg>
+            <div>
+              <div class="flyer-date" id="gatherDate">Friday · 6:00 PM</div>
+              <p id="gatherLocation" style="color:var(--ink-soft); font-size:0.92rem; margin-top:2px">Altar of Prayer — [Add venue name]</p>
+            </div>
+          </div>
+          <div class="row-actions">
+            <a class="btn-text" id="calLink" href="#" target="_blank" rel="noopener">
+              <span class="i18n-en">Add to calendar</span><span class="i18n-rw">Ongeraho kalendari</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section section-alt">
+    <div class="wrap">
+      <div class="section-head">
+        <h2><span class="i18n-en">From the articles</span><span class="i18n-rw">Ibyanditswe bishya</span></h2>
+        <p class="i18n-en">Teaching for the altar life, written in English and Kinyarwanda — choose the language you read best.</p>
+        <p class="i18n-rw">Inyigisho z'ubuzima bw'igicaniro, zanditswe mu Cyongereza no mu Kinyarwanda — hitamo ururimi wumva neza.</p>
+      </div>
+      <div id="homeArticleGrid" class="article-grid"></div>
+      <div style="margin-top:30px">
+        <button class="btn btn-outline-night" data-goto="articles"><span class="i18n-en">See all articles</span><span class="i18n-rw">Reba ibyanditswe byose</span></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="wrap" style="display:flex; justify-content:space-between; align-items:center; gap:24px; flex-wrap:wrap">
+      <div>
+        <h2 style="font-size:1.7rem"><span class="i18n-en">Get the new upload notices</span><span class="i18n-rw">Menyeshwa ibishya</span></h2>
+        <p style="color:var(--ink-soft); margin-top:8px" class="i18n-en">New devotions, articles, and episodes — straight to your inbox.</p>
+        <p style="color:var(--ink-soft); margin-top:8px" class="i18n-rw">Ibitekerezo bishya, ibyanditswe, n'ibiganiro — biza directement kuri email yawe.</p>
+      </div>
+      <button class="btn btn-ember" data-goto="contact"><span class="i18n-en">Subscribe</span><span class="i18n-rw">Iyandikishe</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DEVOTIONS ============ -->
+<section class="view" id="view-devotions">
+  <div class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2><span class="i18n-en">Devotions</span><span class="i18n-rw">Ibitekerezo</span></h2>
+        <p class="i18n-en">A short devotion, in the Solid Joys format — one thought a day, worth returning to.</p>
+        <p class="i18n-rw">Igitekerezo gito buri munsi — igitekerezo kimwe ku munsi, gikwiye gusubirwamo.</p>
+      </div>
+      <div class="devo-card">
+        <div class="kicker" style="display:flex;gap:8px;align-items:center;font-size:0.8rem;color:var(--dawn);font-weight:600;margin-bottom:16px">
+          <span class="i18n-en">TODAY</span><span class="i18n-rw">UYU MUNSI</span>
+        </div>
+        <div class="verse-ref">Psalm 46:10</div>
+        <p class="verse-text i18n-en">Be still — stop striving long enough to remember who is actually in control.</p>
+        <p class="verse-text i18n-rw">Ba amahoro — reka kwihatira gato, wibuke neza uwo ari we ufite ubuyobozi.</p>
+        <p class="reflection i18n-en">Most of what wears us out isn't the work itself — it's carrying what was never ours to carry. The altar is where we put it down. Not because the outcome no longer matters, but because Someone else is already holding it. Stillness is not passivity; it's a decision to stop managing what God has already promised to manage.</p>
+        <p class="reflection i18n-rw">Ibituruhisha akenshi si umurimo ubwawo — ni uko dukomeza kwikorera ibyo tutigeze duhabwa kwikorera. Igicaniro n'aho tubishyira hasi. Ntabwo ari uko ibizava muri byo bitakiri ngombwa, ahubwo ni uko hari undi umaze kubifata neza. Kuba amahoro ntabwo ari ukudakora ikintu — ni ugufata icyemezo cyo kureka kuyobora ibyo Imana isanzwe yasezeranyije kuyobora.</p>
+        <p class="prayer i18n-en">Prayer: Lord, what I am carrying that You never asked me to carry, I put it down now. Be God over it. Amen.</p>
+        <p class="prayer i18n-rw">Isengesho: Mwami, ibyo nikoreye kandi utambwiye kubikorera, ndabishyize hasi none. Ba Imana kuribyo. Amen.</p>
+        <div class="devo-actions">
+          <button class="btn btn-ember" id="shareDevoBtn">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5 15.4 6.5M8.6 13.5l6.8 4"/></svg>
+            <span class="i18n-en">Download to repost</span><span class="i18n-rw">Kuramo kugira ngo usubiremo</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="devo-archive">
+        <h3 style="font-size:1.1rem; margin-bottom:6px"><span class="i18n-en">Recent devotions</span><span class="i18n-rw">Ibitekerezo biheruka</span></h3>
+        <div class="devo-archive-item">
+          <div>
+            <strong class="i18n-en">John 15:4 — Remain</strong><strong class="i18n-rw">Yohana 15:4 — Guma</strong>
+            <p style="color:var(--ink-soft); font-size:0.92rem; margin-top:4px" class="i18n-en">Fruit is not something you produce. It's something that happens while you stay.</p>
+            <p style="color:var(--ink-soft); font-size:0.92rem; margin-top:4px" class="i18n-rw">Imbuto si ikintu wikorera. Ni ikintu kiba mu gihe ugumye.</p>
+          </div>
+          <span class="d-date">2 days ago</span>
+        </div>
+        <div class="devo-archive-item">
+          <div>
+            <strong class="i18n-en">1 Kings 19:12 — The Quiet Voice</strong><strong class="i18n-rw">1 Abami 19:12 — Ijwi Ryoroheje</strong>
+            <p style="color:var(--ink-soft); font-size:0.92rem; margin-top:4px" class="i18n-en">God was not in the wind or the fire. He was in the whisper. Don't chase the noise.</p>
+            <p style="color:var(--ink-soft); font-size:0.92rem; margin-top:4px" class="i18n-rw">Imana ntiyari mu muyaga cyangwa mu muriro. Yari mu ijwi ryoroheje. Ntukurikire urusaku.</p>
+          </div>
+          <span class="d-date">4 days ago</span>
+        </div>
+        <div class="devo-archive-item">
+          <div>
+            <strong class="i18n-en">Proverbs 4:23 — Guard Your Heart</strong><strong class="i18n-rw">Imigani 4:23 — Rinda Umutima Wawe</strong>
+            <p style="color:var(--ink-soft); font-size:0.92rem; margin-top:4px" class="i18n-en">Everything you build flows from one place. Guard it before you build anything else.</p>
+            <p style="color:var(--ink-soft); font-size:0.92rem; margin-top:4px" class="i18n-rw">Ibyo wubaka byose bikomoka ahantu hamwe. Harinde mbere yo kubaka ikindi cyose.</p>
+          </div>
+          <span class="d-date">1 week ago</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ARTICLES ============ -->
+<section class="view" id="view-articles">
+  <div class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2><span class="i18n-en">Articles</span><span class="i18n-rw">Ibyanditswe</span></h2>
+        <p class="i18n-en">Every piece is written twice — once in English, once in Kinyarwanda — by the same author, not translated. Choose your language above.</p>
+        <p class="i18n-rw">Buri gice cyanditswe kabiri — kimwe mu Cyongereza, ikindi mu Kinyarwanda — n'umwanditsi umwe, atari ukuvuguruza. Hitamo ururimi hejuru.</p>
+      </div>
+      <div id="articleListGrid" class="article-grid"></div>
+    </div>
+  </div>
+  <div class="section" id="articleDetailWrap" style="display:none">
+    <div class="wrap">
+      <button class="btn-text" id="backToArticles" style="margin-bottom:34px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transform:rotate(180deg)"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <span class="i18n-en">Back to articles</span><span class="i18n-rw">Subira ku byanditswe</span>
+      </button>
+      <div class="article-detail" id="articleDetail"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PODCASTS ============ -->
+<section class="view" id="view-podcasts">
+  <div class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2><span class="i18n-en">Podcasts</span><span class="i18n-rw">Podcast</span></h2>
+        <p class="i18n-en">Start with <em>Kanguka</em> — our wake-up call series — then explore the rest.</p>
+        <p class="i18n-rw">Tangira na <em>Kanguka</em> — urukurikirane rwo gukangura — hanyuma urebe ibindi.</p>
+      </div>
+      <div class="tab-row" id="podTabs"></div>
+      <div class="pod-layout" id="podBody"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VIDEOS ============ -->
+<section class="view" id="view-videos">
+  <div class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2><span class="i18n-en">Videos</span><span class="i18n-rw">Videwo</span></h2>
+        <p class="i18n-en">Messages from the altar, testimonies from the field, and full Sunday teaching.</p>
+        <p class="i18n-rw">Ubutumwa buva ku gicaniro, ubuhamya, n'inyigisho zuzuye zo ku Cyumweru.</p>
+      </div>
+      <button class="video-feature" id="featuredVideo">
+        <svg width="100%" height="100%" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice">
+          <defs><linearGradient id="vg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1A1230"/><stop offset="100%" stop-color="#1E6E71"/></linearGradient></defs>
+          <rect width="800" height="400" fill="url(#vg1)"/>
+        </svg>
+        <span class="play-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+        <span class="video-note">
+          <strong class="i18n-en">Featured: Sunday Gathering — The Altar Life</strong><strong class="i18n-rw">Ivugwaho: Iteraniro ry'Icyumweru — Ubuzima bw'Igicaniro</strong>
+        </span>
+        <span class="vid-toast" id="vidToast"><span class="i18n-en">Full video coming soon</span><span class="i18n-rw">Videwo yuzuye izaza vuba</span></span>
+      </button>
+      <div id="videoSeries"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LIBRARY ============ -->
+<section class="view" id="view-library">
+  <div class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2><span class="i18n-en">Library</span><span class="i18n-rw">Isomero</span></h2>
+        <p class="i18n-en">Scripture, hymns, and books that have shaped this movement.</p>
+        <p class="i18n-rw">Ibyanditswe Byera, indirimbo, n'ibitabo byagize uruhare mu iterambere ry'uyu muvuko.</p>
+      </div>
+      <div class="book-grid" id="bookGrid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ABOUT ============ -->
+<section class="view" id="view-about">
+  <div class="section">
+    <div class="wrap">
+      <div class="mv-grid">
+        <div class="mv-block">
+          <div class="tag i18n-en">MISSION</div><div class="tag i18n-rw">INTUMWA</div>
+          <h3><span class="i18n-en">Our mission</span><span class="i18n-rw">Intumwa yacu</span></h3>
+          <p class="i18n-en">To build hearts on fire for God — raising a generation rooted in prayer, taught in truth, and sent into every sphere of society.</p>
+          <p class="i18n-rw">Kubaka imitima yaka umuriro ku bw'Imana — kurera umuryango ushinze imizi mu isengesho, wigishijwe ukuri, kandi wohererejwe mu bice byose by'imibereho.</p>
+        </div>
+        <div class="mv-block">
+          <div class="tag i18n-en">VISION</div><div class="tag i18n-rw">IJAMBO</div>
+          <h3><span class="i18n-en">Our vision</span><span class="i18n-rw">Ijambo ryacu</span></h3>
+          <p class="i18n-en">A generation that carries the presence of God from the altar into politics, education, health, finance, media, security, and entertainment — until revival is normal, not rare.</p>
+          <p class="i18n-rw">Umuryango utwara ubuhorane bw'Imana uva ku gicaniro ujya muri politiki, uburezi, ubuzima, imari, itangazamakuru, umutekano, n'imyidagaduro — kugeza ubuzima bushya buba ibisanzwe, atari gake.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section section-night">
+    <div class="wrap">
+      <div class="section-head">
+        <h2><span class="i18n-en">The call</span><span class="i18n-rw">Ihamagarwa</span></h2>
+        <p class="i18n-en">Told in the founder's own words — written separately in each language, not translated.</p>
+        <p class="i18n-rw">Nkuko byavuzwe n'uwatangije uyu muvuko — mu magambo ye bwite.</p>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="year">2020</div>
+          <p class="i18n-en">A calling arrived that year, insisting on one thing: become a builder of hearts. It didn't come as a plan or a program — it came as a fire that made staying comfortable impossible. The journey out of that fire was a journey toward becoming a person shaped by God first, before being useful to anyone else.</p>
+          <p class="i18n-rw kn-text">Urugendo yakuyemo intego zo kugira imbaraga zumutima (1. Kuba umuntu w'Imana otherwise you can be lost).</p>
+        </div>
+        <div class="timeline-item">
+          <div class="year">2021</div>
+          <p class="i18n-en">Around eight in the evening, a promise came: a gift was coming. Two days a week were set apart to be spent with God alone in the secret place — not in the crowd — on Wednesdays and Sundays. The first of those days carried a single instruction: <em>Youth Time Revival</em>. A year of learning to listen, learning fellowship, and an altar of prayer was born every Friday, held up by three pillars — prayer, faith, and the Holy Spirit. The second time those words came, they came as a confrontation: too many young people had been shown a counterfeit version of faith, dressed as religion, and told that was the ceiling. The answer was revival — not an event, but a reformation of spirit, soul, and body. And with it came a sending: to seven mountains — politics, entertainment, education, health, finance, security, and communication &amp; media — carrying not a slogan, but a changed life.</p>
+          <p class="i18n-rw kn-text">Around 8pm, he heard God telling him, he will receive a gift. Imana imuha iminsi ibiri mu cyumweru yo kubana n'Imana muri temple alone not in masses (Wednesday and Sunday). Ubuzima bw'ikinyoma bwa system ya ma dini, narabubonye ndabumenya ndabuhishurirwa, byazanywe no kubana n'Imana no gutindana n'Imana mbona ibibirimo. Igisubizo ni revival; ububyutse. Revival ni reformation y'Umwuka, ubugingo n'umubiri. Nitutemera guterwa tuzahusha. Nzakomeza nkurikirane icy'Umwuka … kugarura ishusho y'Imana mu bantu.</p>
+        </div>
+      </div>
+      <div class="lang-note" style="border-color:var(--line-night); color:rgba(246,239,224,0.6)">
+        Note for the YTR team: the Kinyarwanda paragraphs above keep your original wording exactly as given. The English paragraphs are an independent retelling, not a translation — please have the founder review both before publishing.
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2><span class="i18n-en">What we believe</span><span class="i18n-rw">Ibyo Twemera</span></h2>
+      </div>
+      <ul class="believe-list">
+        <li>
+          <div class="b-title i18n-en">Scripture</div><div class="b-title i18n-rw">Ibyanditswe Byera</div>
+          <p class="i18n-en">The Bible is God's inspired word and our final authority for faith and life.</p>
+          <p class="i18n-rw">Bibiliya n'ijambo ry'Imana ryahumetswe kandi ni ryo shingiro ry'ukwizera n'ubuzima bwacu.</p>
+        </li>
+        <li>
+          <div class="b-title i18n-en">One God, three persons</div><div class="b-title i18n-rw">Imana Imwe, Abantu Batatu</div>
+          <p class="i18n-en">We worship one God who exists eternally as Father, Son, and Holy Spirit.</p>
+          <p class="i18n-rw">Dusenga Imana imwe ibaho iteka nka Data, Umwana, n'Umwuka Wera.</p>
+        </li>
+        <li>
+          <div class="b-title i18n-en">Salvation</div><div class="b-title i18n-rw">Agakiza</div>
+          <p class="i18n-en">We are saved by grace, through faith in Jesus Christ alone.</p>
+          <p class="i18n-rw">Dukizwa n'ubuntu, binyuze mu kwizera Yesu Kristo gusa.</p>
+        </li>
+        <li>
+          <div class="b-title i18n-en">The altar</div><div class="b-title i18n-rw">Igicaniro</div>
+          <p class="i18n-en">A daily, personal life of prayer — not only gathering in a crowd — is where this movement begins and stays alive.</p>
+          <p class="i18n-rw">Ubuzima bw'isengesho bwa buri munsi, bwite — atari gusa guteranira mu bwinshi — niho uyu muvuko utangirira kandi ugakomeza kubaho.</p>
+        </li>
+        <li>
+          <div class="b-title i18n-en">The Holy Spirit</div><div class="b-title i18n-rw">Umwuka Wera</div>
+          <p class="i18n-en">The Holy Spirit is present and active today, empowering holy living and mission.</p>
+          <p class="i18n-rw">Umwuka Wera arahari kandi arakora muri iki gihe, ugatanga imbaraga zo kubaho no gukora umurimo.</p>
+        </li>
+        <li>
+          <div class="b-title i18n-en">Sent, not hidden</div><div class="b-title i18n-rw">Twoherejwe, Ntitwihishe</div>
+          <p class="i18n-en">The Church is sent into every sphere of society — not withdrawn from it.</p>
+          <p class="i18n-rw">Itorero ryoherejwe mu bice byose by'imibereho — ntabwo ryikuye muri byo.</p>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section section-night">
+    <div class="wrap">
+      <div class="section-head">
+        <h2><span class="i18n-en">Seven mountains</span><span class="i18n-rw">Imisozi Irindwi</span></h2>
+        <p class="i18n-en">The gospel wasn't given to stay inside a building. It was sent to seven ordinary places.</p>
+        <p class="i18n-rw">Ubutumwa bwiza ntibwahawe kugira ngo bugume mu nzu. Bwoherejwe ahantu hirindwi hasanzwe.</p>
+      </div>
+      <div class="mountains-row" id="mountainsRow"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="view" id="view-faq">
+  <div class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2><span class="i18n-en">Frequently asked questions</span><span class="i18n-rw">Ibibazo Bikunze Kubazwa</span></h2>
+      </div>
+      <div class="faq-highlight">
+        <div class="tag"><span class="i18n-en">MOST ASKED</span><span class="i18n-rw">IKIBAZWA CYANE</span></div>
+        <h3><span class="i18n-en">What is Youth Time Revival?</span><span class="i18n-rw">Youth Time Revival ni iki?</span></h3>
+        <p class="i18n-en">A youth-led movement built around a personal, daily life of prayer — not a single event — that trains young people through teaching, mentorship, and community, and sends them into every part of society.</p>
+        <p class="i18n-rw">Ni umuvuko w'urubyiruko ushingiye ku isengesho rya buri munsi, ryihariye — atari igikorwa kimwe gusa — utoza urubyiruko binyuze mu nyigisho, ubuyobozi hafi, n'ubusabane, ukanabohereza mu bice byose by'imibereho.</p>
+      </div>
+      <div class="faq-track-wrap">
+        <div class="faq-track" id="faqTrack"></div>
+      </div>
+      <div class="faq-nav-btns">
+        <button id="faqPrev" aria-label="Scroll left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg></button>
+        <button id="faqNext" aria-label="Scroll right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="view" id="view-contact">
+  <div class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2><span class="i18n-en">Contact</span><span class="i18n-rw">Twandikire</span></h2>
+        <p class="i18n-en">Have a question, a testimony, or want to host a gathering? Reach out.</p>
+        <p class="i18n-rw">Ufite ikibazo, ubuhamya, cyangwa ushaka gutwara iteraniro? Twandikire.</p>
+      </div>
+      <div class="contact-grid">
+        <div>
+          <ul class="contact-info" style="list-style:none; padding:0; margin:0 0 30px">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+              <div><div class="label i18n-en">Email</div><div class="label i18n-rw">Email</div><div id="contactEmailText">[add-email@youthtimerevival.rw]</div></div>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L14 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 2 6a2 2 0 0 1 2-2Z"/></svg>
+              <div><div class="label i18n-en">Phone</div><div class="label i18n-rw">Telefoni</div><div>[Add phone number]</div></div>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s7-6.4 7-12a7 7 0 1 0-14 0c0 5.6 7 12 7 12Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+              <div><div class="label i18n-en">Address</div><div class="label i18n-rw">Aderesi</div><div>[Add city / venue, Rwanda]</div></div>
+            </li>
+          </ul>
+          <div class="social-row">
+            <a href="#" aria-label="Instagram" title="[Add Instagram link]"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+            <a href="#" aria-label="YouTube" title="[Add YouTube link]"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="5" width="20" height="14" rx="4"/><path d="M10 9l6 3-6 3z" fill="currentColor" stroke="none"/></svg></a>
+            <a href="#" aria-label="TikTok" title="[Add TikTok link]"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 3v9.5a3.5 3.5 0 1 1-3-3.46"/><path d="M15 3c.3 2 1.8 3.5 4 3.8"/></svg></a>
+          </div>
+
+          <div style="margin-top:36px; border-top:1px solid var(--line); padding-top:28px">
+            <h4 style="font-size:1.05rem; margin-bottom:8px"><span class="i18n-en">Subscribe for updates</span><span class="i18n-rw">Iyandikishe kugira ngo umenyeshwe</span></h4>
+            <p style="color:var(--ink-soft); font-size:0.92rem" class="i18n-en">We'll email you when a new devotion, article, or episode goes up.</p>
+            <p style="color:var(--ink-soft); font-size:0.92rem" class="i18n-rw">Tuzakwoherereza email igihe hazaba hari igitekerezo, igyanditswe, cyangwa igiganiro gishya.</p>
+            <form id="subscribeForm" class="subscribe-row">
+              <input type="email" id="subscribeEmail" placeholder="you@example.com" required>
+              <button class="btn btn-outline-night" type="submit"><span class="i18n-en">Subscribe</span><span class="i18n-rw">Iyandikishe</span></button>
+            </form>
+          </div>
+        </div>
+
+        <form id="contactForm">
+          <div class="form-field">
+            <label for="cf-name"><span class="i18n-en">Name</span><span class="i18n-rw">Izina</span></label>
+            <input type="text" id="cf-name" required>
+          </div>
+          <div class="form-field">
+            <label for="cf-email"><span class="i18n-en">Email</span><span class="i18n-rw">Email</span></label>
+            <input type="email" id="cf-email" required>
+          </div>
+          <div class="form-field">
+            <label for="cf-msg"><span class="i18n-en">Message</span><span class="i18n-rw">Ubutumwa</span></label>
+            <textarea id="cf-msg" required></textarea>
+          </div>
+          <button class="btn btn-ember" type="submit"><span class="i18n-en">Send message</span><span class="i18n-rw">Ohereza ubutumwa</span></button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="brand" style="color:#fff; margin-bottom:14px; cursor:default">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 2c1 3-2 4-2 7a4 4 0 1 0 8 0c0-1.5-1-2-1.5-3 1.5 1 3 3 3 6a6.5 6.5 0 1 1-13 0c0-4.5 3.5-6 5.5-10z" fill="#F6B93B"/></svg>
+          Youth Time Revival
+        </div>
+        <p style="max-width:34ch; font-size:0.92rem" class="i18n-en">A youth movement built on prayer, teaching, and mentorship.</p>
+        <p style="max-width:34ch; font-size:0.92rem" class="i18n-rw">Umuvuko w'urubyiruko ushingiye ku isengesho, inyigisho, no kuyoborwa hafi.</p>
+      </div>
+      <div>
+        <h5><span class="i18n-en">Explore</span><span class="i18n-rw">Reba</span></h5>
+        <ul>
+          <li><button data-goto="devotions"><span class="i18n-en">Devotions</span><span class="i18n-rw">Ibitekerezo</span></button></li>
+          <li><button data-goto="articles"><span class="i18n-en">Articles</span><span class="i18n-rw">Ibyanditswe</span></button></li>
+          <li><button data-goto="podcasts"><span class="i18n-en">Podcasts</span><span class="i18n-rw">Podcast</span></button></li>
+          <li><button data-goto="library"><span class="i18n-en">Library</span><span class="i18n-rw">Isomero</span></button></li>
+        </ul>
+      </div>
+      <div>
+        <h5><span class="i18n-en">Ministry</span><span class="i18n-rw">Umurimo</span></h5>
+        <ul>
+          <li><button data-goto="about"><span class="i18n-en">About us</span><span class="i18n-rw">Abo turibo</span></button></li>
+          <li><button data-goto="faq"><span class="i18n-en">FAQ</span><span class="i18n-rw">Ibibazo</span></button></li>
+          <li><button data-goto="contact"><span class="i18n-en">Contact</span><span class="i18n-rw">Twandikire</span></button></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="i18n-en">© <span id="yr"></span> Youth Time Revival.</span><span class="i18n-rw">© <span id="yr2"></span> Youth Time Revival.</span>
+      <span>[add-email@youthtimerevival.rw]</span>
+    </div>
+  </div>
+</footer>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- CONFIG (edit these) ---------- */
+const CONFIG = {
+  contactEmail: "add-email@youthtimerevival.rw",
+  gathering: { title:"YTR Fellowship Gathering", location:"[Add venue name], Rwanda",
+               start:"20260904T160000", end:"20260904T180000" } // UTC-ish placeholder, edit freely
+};
+document.getElementById('contactEmailText').textContent = CONFIG.contactEmail;
+document.getElementById('yr').textContent = new Date().getFullYear();
+document.getElementById('yr2').textContent = new Date().getFullYear();
+
+/* ---------- ICONS ---------- */
+const ICONS = {
+  flame:'<svg viewBox="0 0 24 24" fill="none"><path d="M12 2c1 3-2 4-2 7a4 4 0 1 0 8 0c0-1.5-1-2-1.5-3 1.5 1 3 3 3 6a6.5 6.5 0 1 1-13 0c0-4.5 3.5-6 5.5-10z" fill="currentColor"/></svg>',
+  river:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 9c2 0 2 2 4 2s2-2 4-2 2 2 4 2 2-2 4-2 2 2 4 2"/><path d="M2 15c2 0 2 2 4 2s2-2 4-2 2 2 4 2 2-2 4-2 2 2 4 2"/></svg>',
+  mountain:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 19 9 6l4 6 2-3 7 10z"/></svg>',
+  book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H12v16H5.5A1.5 1.5 0 0 1 4 18.5z"/><path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H12v16h6.5a1.5 1.5 0 0 0 1.5-1.5z"/></svg>',
+  mic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
+  gavel:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m14 4 6 6M6.5 11.5l6 6M3 21l7-7M12.5 5.5l6 6-3 3-6-6z"/></svg>',
+  mask:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 5c4 3 12 3 16 0-1 8-4 14-8 14S5 13 4 5Z"/><circle cx="9" cy="9" r=".8" fill="currentColor" stroke="none"/><circle cx="15" cy="9" r=".8" fill="currentColor" stroke="none"/></svg>',
+  cap:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 4 2 9l10 5 10-5z"/><path d="M6 11.5V17c0 1 3 2.5 6 2.5s6-1.5 6-2.5v-5.5"/></svg>',
+  heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 20s-7-4.4-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 5c-2.5 4.6-9.5 9-9.5 9Z"/><path d="M6 12h3l1.5-3L13 15l1.5-3H18"/></svg>',
+  coin:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="12" cy="7" rx="8" ry="3.5"/><path d="M4 7v10c0 1.9 3.6 3.5 8 3.5s8-1.6 8-3.5V7"/><path d="M4 12c0 1.9 3.6 3.5 8 3.5s8-1.6 8-3.5"/></svg>',
+  shield:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/></svg>',
+  wave:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 8h4l3-4 4 12 3-8h6"/></svg>',
+  pin:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 22s7-6.4 7-12a7 7 0 1 0-14 0c0 5.6 7 12 7 12Z"/><circle cx="12" cy="10" r="2.5"/></svg>',
+  play:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
+  chevdown:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>'
+};
+function iconWrap(name, bg){ return `<svg viewBox="0 0 100 100" width="100%" height="100%"><rect width="100" height="100" fill="${bg}"/><g transform="translate(32,32)" color="#fff" style="opacity:.9">${ICONS[name].replace('<svg viewBox="0 0 24 24"','<svg width="36" height="36" viewBox="0 0 24 24"')}</g></svg>`; }
+
+/* ---------- CONTENT DATA ---------- */
+const ARTICLES = [
+  { id:'not-in-the-masses', bg:'#241A3D', icon:'flame', featured:true,
+    en:{ title:"Not in the Masses", hook:"The altar that changed everything wasn't in a crowd. It was in a room, alone, twice a week.",
+      body:["There is a kind of faith that only survives in a crowd. Take away the music, the lights, and the people standing next to you, and it has nothing left to stand on. That is not the faith we are being built for.",
+            "Revival did not begin in a stadium. It began in a room set apart — an appointment kept twice a week, when no one was watching and nothing was being performed. Two ordinary evenings became an altar, and the altar became a habit, and the habit became a life.",
+            "This is the invitation underneath everything Youth Time Revival does: before the platform, the altar. Before the sermon, the secret place. Before you are sent to any mountain — politics, education, media, finance — you are first built in a room nobody applauds.",
+            "If your faith only works in public, it isn't finished being built yet. Start again this week. Find your two evenings. Show up even when it is only you and God."],
+      verse:"Jesus taught His followers to pray in a private room, with the door shut, where only the Father sees.", ref:"Matthew 6:6 (paraphrased)"},
+    rw:{ title:"Ntibiri mu Bwinshi bw'Abantu", hook:"Igicaniro cyahinduye byose ntabwo cyari mu bwinshi bw'abantu. Cyari mu cyumba, wenyine, kabiri mu cyumweru.",
+      body:["Hari ukwizera gushobora kubaho gusa iyo uri mu bantu benshi. Ukuvanyeho umuziki, itara, n'abantu bakuri iruhande, ntacyo gusigaramo. Ni ukwizera dukurikira, ntabwo ari ko.",
+            "Ubuzima bushya ntibwatangiye mu iteraniro rinini. Bwatangiriye mu cyumba cyihariye — igihe cyagenwe kabiri mu cyumweru, nta muntu ureba kandi nta kintu cyerekanwa. Amajoro abiri asanzwe yabaye igicaniro, igicaniro kiba akamenyero, akamenyero kaba ubuzima.",
+            "Iyi niyo ntumira iri munsi y'ibindi byose Youth Time Revival ikora: mbere y'urwuri, igicaniro. Mbere y'ubutumwa, ahantu hihishwa. Mbere yo koherezwa ku musozi uwo ari wo wose — politiki, uburezi, itangazamakuru, imari — ubanza kubakwa mu cyumba nta muntu uguhamagarira.",
+            "Niba ukwizera kwawe gukora gusa mu bantu benshi, ntabwo kurangiye kubakwa. Tangira ubu kuriyi cyumweru. Shaka amajoro yawe abiri. Ujye uhagera n'igihe uri wenyine na Imana gusa."],
+      verse:"Yesu yigishije abigishwa be gusenga mu cyumba cy'ibanga, umuryango ufunze, aho Se wo mu ijuru gusa arebera.", ref:"Matayo 6:6 (byasobanuwe)"},
+    author:{en:"Reflections from the YTR community, drawn from teaching shared at our gatherings.", rw:"Ibitekerezo biva mu muryango wa YTR, bivuye mu nyigisho zasangiwe mu materaniro yacu."} },
+
+  { id:'fire-that-doesnt-go-out', bg:'#7A2E17', icon:'flame', featured:false,
+    en:{ title:"The Fire That Doesn't Go Out", hook:"Every revival fades unless someone tends the coals. Revival is not an event we attend — it's a fire we feed.",
+      body:["It's easy to confuse a moment for a movement. A gathering can feel like revival for one night and be forgotten by the following week, because nobody went home and kept the coals warm.",
+            "The three pillars of the altar — prayer, faith, and the Holy Spirit — were never meant to be a memory of what happened once. They are daily maintenance. A fire needs feeding, not admiring.",
+            "So the question isn't 'did God move at the gathering?' It's 'what did you do on Tuesday, when nobody was watching, to keep the fire alive?' That's where revival either continues or quietly goes out."],
+      verse:"Do not put out the Spirit's fire.", ref:"1 Thessalonians 5:19 (paraphrased)"},
+    rw:{ title:"Umuriro Udazima", hook:"Ubuzima bushya bwose burazima keretse hari ubukomeza kubungabunga amakara. Ubuzima bushya si igikorwa tugiyeho — ni umuriro tugomba kongera inkwi.",
+      body:["Biroroshye guhindura akanya kamwe ngo bibe umuvuko wose. Iteraniro rishobora kumva ari ubuzima bushya ijoro rimwe, hanyuma ryibagirana mu cyumweru gikurikira, kubera ko nta wagarutse murugo akomeza gushyushya amakara.",
+            "Inkingi eshatu z'igicaniro — isengesho, ukwizera, n'Umwuka Wera — ntibyigeze bigenewe kuba urwibutso rw'ikintu cyabaye rimwe. Ni umurimo wa buri munsi. Umuriro ukeneye inkwi, ntabwo ari ukuwureba gusa.",
+            "Bityo, ikibazo si 'Imana yakoze iki mu materaniro?' Ni 'wakoze iki ku wa gatatu, igihe nta wari ureba, kugira ngo ukomeze umuriro?' Aho niho ubuzima bushya bukomereza cyangwa bugatuza buhoro buhoro."],
+      verse:"Ntimuzimye Umwuka.", ref:"1 Abatesalonike 5:19 (byasobanuwe)"},
+    author:{en:"Reflections from the YTR community, drawn from teaching shared at our gatherings.", rw:"Ibitekerezo biva mu muryango wa YTR, bivuye mu nyigisho zasangiwe mu materaniro yacu."} },
+
+  { id:'sent-not-hidden', bg:'#1E6E71', icon:'mountain', featured:false,
+    en:{ title:"Sent, Not Hidden", hook:"God did not call this generation to hide in a holy corner. He called it to seven ordinary mountains.",
+      body:["There is a version of faith that retreats — that treats the world outside the church building as too dangerous to enter. That was never the assignment.",
+            "Politics, entertainment, education, health, finance, security, communication and media — these are not enemy territory to avoid. They are the seven places this generation is being sent, carrying not a slogan, but a changed life.",
+            "A city on a hill cannot be hidden. If revival stays inside a room, it was never finished — it was only started."],
+      verse:"You are the light of the world; a city on a hill cannot be hidden.", ref:"Matthew 5:14 (paraphrased)"},
+    rw:{ title:"Twoherejwe, Ntitwihishe", hook:"Imana ntiyahamagariye uyu muryango kwihisha mu nguni yera. Yawohereje ku misozi irindwi isanzwe.",
+      body:["Hari ubwoko bw'ukwizera busubira inyuma — bufata isi hanze y'itorero nk'ahantu hakomeye cyane ho kwinjiramo. Ntabwo ari ko byari byagenwe.",
+            "Politiki, imyidagaduro, uburezi, ubuzima, imari, umutekano, itangazamakuru — ntabwo ari intara y'umwanzi wo kwirinda. Ni ahantu hirindwi uyu muryango woherejwemo, utwaye atari ijambo ryo ku munwa gusa, ahubwo ubuzima buhindutse.",
+            "Umujyi uri ku musozi ntushobora guhishwa. Niba ubuzima bushya bugumira mu cyumba, ntibwari burarangiye kubakwa — bwari butangiye gusa."],
+      verse:"Uri umucyo w'isi; umujyi uri ku musozi ntushobora guhishwa.", ref:"Matayo 5:14 (byasobanuwe)"},
+    author:{en:"Reflections from the YTR community, drawn from teaching shared at our gatherings.", rw:"Ibitekerezo biva mu muryango wa YTR, bivuye mu nyigisho zasangiwe mu materaniro yacu."} }
+];
+
+const FAQS = [
+  { en:{q:"Do I need to belong to a church to join YTR?", a:"No. YTR is a movement, not a denomination — young people from any church background are welcome."},
+    rw:{q:"Ese ngomba kuba mu itorero kugira ngo njye muri YTR?", a:"Oya. YTR ni umuvuko, ntabwo ari idini — urubyiruko ruva mu matorero atandukanye rwakirwa neza."} },
+  { en:{q:"What happens at a fellowship gathering?", a:"Worship, teaching, open prayer, and time to be known — not just attend."},
+    rw:{q:"Ni iki kiba mu iteraniro ry'ubusabane?", a:"Iramire, inyigisho, isengesho rifunguye, n'igihe cyo kumenyekana — ntabwo ari uguhagera gusa."} },
+  { en:{q:"Is YTR only in one city?", a:"YTR started locally, but the podcast, articles, and videos are built to reach anyone, anywhere."},
+    rw:{q:"Ese YTR iri mu mujyi umwe gusa?", a:"YTR yatangiriye ahantu hamwe, ariko podcast, ibyanditswe, na videwo byubatswe kugira ngo bigere ku muntu wese, ahantu hose."} },
+  { en:{q:"Can I read the articles only in Kinyarwanda?", a:"Yes — use the EN / KN switch at the top of the page; every article is written in both languages."},
+    rw:{q:"Ese nshobora gusoma ibyanditswe mu Kinyarwanda gusa?", a:"Yego — koresha ibuto EN / KN hejuru y'urupapuro; buri gyanditswe ryanditswe mu ndimi zombi."} },
+  { en:{q:"How do I get involved or serve?", a:"Come to a gathering and speak with the team — most serving starts with showing up consistently."},
+    rw:{q:"Nabigenza nte kugira ngo mfashe cyangwa nkore umurimo?", a:"Za mu iteraniro uganire n'itsinda — imirimo myinshi itangira n'ugaragara buri gihe."} },
+  { en:{q:"Can I submit a testimony?", a:"Yes — send it through the contact form and our team will follow up."},
+    rw:{q:"Ese nashobora kohereza ubuhamya bwanjye?", a:"Yego — bwohereze binyuze mu ifishi yo kutwandikira, itsinda ryacu rikurikirane."} },
+  { en:{q:"How can I support YTR financially?", a:"Reach out through the contact section for current giving details."},
+    rw:{q:"Nabasha nte gutera inkunga YTR mu by'imari?", a:"Twandikire binyuze mu gice cyo kuvugana natwe kugira ngo tugusobanurire uburyo."} },
+  { en:{q:"Where can I listen to Kanguka?", a:"The Podcasts section lists every episode; streaming links are being added as they go live."},
+    rw:{q:"Nabasha he kumva Kanguka?", a:"Igice cya Podcast kirimo ibiganiro byose; imiyoboro yo kumva izongerwaho uko igenda itangira gukora."} }
+];
+
+const PODCASTS = [
+  { id:'kanguka', title:{en:'Kanguka', rw:'Kanguka'}, subtitle:{en:'The wake-up call series', rw:'Urukurikirane rwo gukangura'}, bg:'#E4572E', icon:'mic',
+    desc:{en:"Short, direct episodes meant to interrupt spiritual sleep — start here if you're new to YTR.", rw:"Ibiganiro bigufi, bigaragara neza, bigenewe guhagarika ibitotsi byo mu buryo bw'umwuka — tangirira hano niba uri mushya muri YTR."},
+    episodes:[
+      {en:{t:"Wake Up First", d:"Why revival always starts with one honest person, not a crowd."}, rw:{t:"Banza Ukangurwe", d:"Impamvu ubuzima bushya butangirira ku muntu umwe wumva ukuri, atari ku bwinshi."}, dur:"11 min"},
+      {en:{t:"You Are Not Behind", d:"Comparing your calling to someone else's timeline will cost you the fire."}, rw:{t:"Ntabwo Urengejwe", d:"Kugereranya ihamagara ryawe n'iry'undi bizagutwara umuriro wawe."}, dur:"9 min"},
+      {en:{t:"Small Rooms, Big Moves", d:"Why God prefers to start things where no one is filming."}, rw:{t:"Ibyumba Bito, Ibikorwa Bikomeye", d:"Impamvu Imana ikunda gutangirira ahantu nta muntu ufata amashusho."}, dur:"13 min"}
+    ]},
+  { id:'altar-talks', title:{en:'Altar Talks', rw:'Ibiganiro by\'Igicaniro'}, subtitle:{en:'Conversations on prayer & the secret place', rw:'Ibiganiro ku isengesho n\'ahantu hihishwa'}, bg:'#1E6E71', icon:'flame',
+    desc:{en:"Longer conversations on building and keeping a personal life of prayer.", rw:"Ibiganiro birebire ku kubaka no kubungabunga ubuzima bwite bw'isengesho."},
+    episodes:[
+      {en:{t:"Building Your Two Evenings", d:"A practical conversation on setting apart real time with God."}, rw:{t:"Kubaka Amajoro Yawe Abiri", d:"Ikiganiro gifatika ku kugena igihe nyacyo cyo kubana n'Imana."}, dur:"24 min"},
+      {en:{t:"When Prayer Feels Dry", d:"What to do in seasons when the altar feels quiet."}, rw:{t:"Igihe Isengesho Ryumva Ryumye", d:"Icyo gukora mu bihe igicaniro cyumva gituje."}, dur:"19 min"},
+      {en:{t:"Faith As A Pillar", d:"Why faith is a pillar of the altar, not just a feeling."}, rw:{t:"Ukwizera Nk'Inkingi", d:"Impamvu ukwizera ari inkingi y'igicaniro, atari uruhame gusa."}, dur:"21 min"}
+    ]},
+  { id:'mountain-conversations', title:{en:'Mountain Conversations', rw:'Ibiganiro by\'Imisozi'}, subtitle:{en:'Interviews across the seven mountains', rw:'Ibiganiro mu misozi irindwi'}, bg:'#F6B93B', icon:'mountain',
+    desc:{en:"Young believers talk about following Christ inside politics, health, media, and more.", rw:"Urubyiruko rwizera ruvuga ku gukurikira Kristo muri politiki, ubuzima, itangazamakuru, n'ibindi."},
+    episodes:[
+      {en:{t:"Faith in the Classroom", d:"A young teacher on integrity in the education mountain."}, rw:{t:"Ukwizera mu Ishuri", d:"Umwarimu w'umusore avuga ku bunyangamugayo mu musozi w'uburezi."}, dur:"27 min"},
+      {en:{t:"Money Without an Idol", d:"A conversation on stewardship in the finance mountain."}, rw:{t:"Amafaranga Adafite Igishushanyo", d:"Ikiganiro ku bugenzuzi mu musozi w'imari."}, dur:"22 min"},
+      {en:{t:"Camera On, Heart Steady", d:"A media creator on staying grounded in the entertainment mountain."}, rw:{t:"Kamera Ikanze, Umutima Ugumye", d:"Umukozi wo mu itangazamakuru avuga ku kuguma ushinze imizi mu musozi w'imyidagaduro."}, dur:"18 min"}
+    ]}
+];
+
+const VIDEO_SERIES = [
+  { id:'sunday', title:{en:'Sunday Gatherings', rw:'Amateraniro y\'Icyumweru'}, videos:[
+      {en:"The Altar Life", rw:"Ubuzima bw'Igicaniro"}, {en:"Faith As A Pillar", rw:"Ukwizera Nk'Inkingi"}, {en:"Sent to Seven Mountains", rw:"Twoherejwe ku Misozi Irindwi"} ], bg:'#241A3D'},
+  { id:'testimonies', title:{en:'Testimonies', rw:'Ubuhamya'}, videos:[
+      {en:"From the Back Row", rw:"Uvuye Inyuma"}, {en:"A Year of Fridays", rw:"Umwaka w'Ukuwagatanu"}, {en:"Still Standing", rw:"Ndacyahagaze"} ], bg:'#7A2E17'},
+  { id:'altarnights', title:{en:'Altar Nights', rw:'Amajoro y\'Igicaniro'}, videos:[
+      {en:"Friday Prayer, Full Room", rw:"Isengesho ry'Ukuwatanu"}, {en:"Waiting Without Noise", rw:"Gutegereza Nta Rusaku"}, {en:"The Whisper", rw:"Ijwi Ryoroheje"} ], bg:'#1E6E71'}
+];
+
+const BOOKS = [
+  { title:{en:"Bibiliya Yera (The Bible)", rw:"Bibiliya Yera"}, icon:'book', bg:'#241A3D',
+    desc:{en:"Scripture, the foundation of everything YTR teaches.", rw:"Ibyanditswe Byera, urufatiro rw'ibyo YTR yigisha byose."}, link:"https://www.bible.com", linkLabel:{en:"Read online", rw:"Soma kuri interineti"}},
+  { title:{en:"Indirimbo z'Ukwizera (Hymn Book)", rw:"Indirimbo z'Ukwizera"}, icon:'flame', bg:'#E4572E',
+    desc:{en:"Hymns sung at the altar and in fellowship gatherings.", rw:"Indirimbo ziririmbwa ku gicaniro no mu materaniro y'ubusabane."}, link:null},
+  { title:{en:"Umugenzi", rw:"Umugenzi"}, icon:'mountain', bg:'#1E6E71',
+    desc:{en:"The Kinyarwanda translation of a classic on the Christian journey.", rw:"Igitabo cy'ubuzima bw'ukwizera cyahinduwe mu Kinyarwanda."}, link:null},
+  { title:{en:"Imbuto z'Umwuka (Fruit of the Spirit)", rw:"Imbuto z'Umwuka"}, icon:'river', bg:'#F6B93B',
+    desc:{en:"A short discipleship guide on character shaped by the Spirit.", rw:"Igitabo gito cyo kwigisha imico igenwa n'Umwuka."}, link:null},
+  { title:{en:"Amasengesho y'Igicaniro (Altar Prayers)", rw:"Amasengesho y'Igicaniro"}, icon:'flame', bg:'#7A2E17',
+    desc:{en:"YTR's own collection of prayers for the personal altar.", rw:"Amasengesho YTR yateguye ku bw'igicaniro bwite."}, link:null},
+  { title:{en:"Ubuzima bw'Umuyoboke (Life of a Disciple)", rw:"Ubuzima bw'Umuyoboke"}, icon:'book', bg:'#544A6C',
+    desc:{en:"A mentorship handbook for small-group leaders.", rw:"Igitabo cy'ubuyobozi ku bayobozi b'amatsinda mato."}, link:null}
+];
+
+const MOUNTAINS = [
+  { icon:'gavel', en:{t:"Politics", d:"Raising leaders shaped by integrity, not ambition."}, rw:{t:"Politiki", d:"Kurera abayobozi bashinze imizi mu bunyangamugayo."} },
+  { icon:'mask', en:{t:"Entertainment", d:"Reflecting beauty and creativity, not just noise."}, rw:{t:"Imyidagaduro", d:"Kwerekana ubwiza n'ubushobozi, atari urusaku gusa."} },
+  { icon:'cap', en:{t:"Education", d:"Teaching wisdom, not only information."}, rw:{t:"Uburezi", d:"Kwigisha ubwenge, atari amakuru gusa."} },
+  { icon:'heart', en:{t:"Health", d:"Whole-person wellbeing rooted in God."}, rw:{t:"Ubuzima", d:"Ubuzima bwuzuye bushingiye ku Mana."} },
+  { icon:'coin', en:{t:"Finance", d:"Stewardship, not an idol."}, rw:{t:"Imari", d:"Ubugenzuzi, atari igishushanyo."} },
+  { icon:'shield', en:{t:"Security", d:"Guarding peace, protecting the vulnerable."}, rw:{t:"Umutekano", d:"Kurinda amahoro, no kurengera abadafite ubushobozi."} },
+  { icon:'wave', en:{t:"Communication & Media", d:"Carrying good news to where people already are."}, rw:{t:"Itangazamakuru", d:"Gutwara ubutumwa bwiza aho abantu basanzwe bari."} }
+];
+
+/* ---------- I18N helpers ---------- */
+function bi(en, rw){ return `<span class="i18n-en">${en}</span><span class="i18n-rw">${rw}</span>`; }
+function bib(en, rw){ return `<span class="i18nb-en">${en}</span><span class="i18nb-rw">${rw}</span>`; }
+
+/* ---------- RENDER: article cards ---------- */
+function articleCardHTML(a){
+  const feat = a.featured ? 'feature' : '';
+  return `<button class="art-card ${feat}" data-article="${a.id}">
+    <div class="art-thumb">${iconWrap(a.icon, a.bg)}</div>
+    <div class="art-body">
+      <h3>${bi(a.en.title, a.rw.title)}</h3>
+      <p class="hook">${bi(a.en.hook, a.rw.hook)}</p>
+      <div class="art-meta">${ICONS.flame.replace('viewBox="0 0 24 24"','width="14" height="14" viewBox="0 0 24 24"')} ${bi('YTR Team','Itsinda rya YTR')}</div>
+    </div>
+  </button>`;
+}
+function renderArticleGrids(){
+  const full = ARTICLES.map(articleCardHTML).join('');
+  document.getElementById('homeArticleGrid').innerHTML = full;
+  document.getElementById('articleListGrid').innerHTML = full;
+}
+
+function openArticle(id){
+  const a = ARTICLES.find(x=>x.id===id);
+  if(!a) return;
+  document.getElementById('view-articles').querySelector('.section').style.display='none';
+  document.getElementById('articleDetailWrap').style.display='block';
+  const others = ARTICLES.filter(x=>x.id!==id);
+  document.getElementById('articleDetail').innerHTML = `
+    <div class="art-hero">${iconWrap(a.icon, a.bg)}</div>
+    <h1>${bi(a.en.title, a.rw.title)}</h1>
+    <p class="hook">${bi(a.en.hook, a.rw.hook)}</p>
+    <div class="body-text">
+      ${bib(a.en.body.map(p=>`<p>${p}</p>`).join(''), a.rw.body.map(p=>`<p>${p}</p>`).join(''))}
+    </div>
+    <div class="verse-callout">${bi(a.en.verse, a.rw.verse)}<cite>${bi(a.en.ref, a.rw.ref)}</cite></div>
+    <div class="author-box">
+      <div class="author-avatar">${iconWrap('flame','#241A3D')}</div>
+      <div>
+        <div class="name">${bi('Youth Time Revival Team','Itsinda rya Youth Time Revival')}</div>
+        <div class="bio">${bi(a.author.en, a.author.rw)}</div>
+      </div>
+    </div>
+    <div class="recs">
+      <h4>${bi('More to read','Ibindi wasoma')}</h4>
+      <ul>${others.map(o=>`<li><a href="#" data-article="${o.id}">${bi(o.en.title,o.rw.title)}</a></li>`).join('')}</ul>
+    </div>
+    <div class="flyer" style="margin-top:36px; padding-top:28px; border-top:1px solid var(--line)">
+      <svg class="flyer-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#E4572E" opacity="0.12"/><path d="M12 4c.7 2-1.4 2.6-1.4 4.6a2.6 2.6 0 1 0 5.2 0c0-1-.6-1.3-1-2 1 .7 2 2 2 3.9a4.2 4.2 0 1 1-8.4 0c0-2.9 2.3-3.9 3.6-6.5z" fill="#E4572E"/></svg>
+      <div>
+        <div class="flyer-date">${bi('Join us this Friday','Twifatanye kuriyi wa gatanu')}</div>
+        <button class="btn-text" data-goto="home">${bi('See gathering details','Reba amakuru y\'iteraniro')}</button>
+      </div>
+    </div>
+  `;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.addEventListener('click', e=>{
+  const t = e.target.closest('[data-article]');
+  if(t){ e.preventDefault(); openArticle(t.getAttribute('data-article')); }
+});
+document.getElementById('backToArticles').addEventListener('click', ()=>{
+  document.getElementById('articleDetailWrap').style.display='none';
+  document.getElementById('view-articles').querySelector('.section').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+
+/* ---------- RENDER: podcasts ---------- */
+let activePod = PODCASTS[0].id;
+function renderPodcastTabs(){
+  document.getElementById('podTabs').innerHTML = PODCASTS.map(p=>`<button class="tab-btn ${p.id===activePod?'active':''}" data-pod="${p.id}">${bi(p.title.en,p.title.rw)}</button>`).join('');
+}
+function renderPodcastBody(){
+  const p = PODCASTS.find(x=>x.id===activePod);
+  document.getElementById('podBody').innerHTML = `
+    <div>
+      <div class="pod-cover">${iconWrap(p.icon,p.bg)}</div>
+      <h3 style="margin-top:16px; font-size:1.2rem">${bi(p.title.en,p.title.rw)}</h3>
+      <p style="color:var(--ink-soft); font-size:0.9rem; margin-top:6px">${bi(p.subtitle.en,p.subtitle.rw)}</p>
+      <p style="margin-top:12px; font-size:0.92rem">${bi(p.desc.en,p.desc.rw)}</p>
+      <div class="pod-badges">
+        <span class="pod-badge">${bi('Coming to Spotify','Kizaza kuri Spotify')}</span>
+        <span class="pod-badge">${bi('Coming to Apple Podcasts','Kizaza kuri Apple Podcasts')}</span>
+      </div>
+    </div>
+    <ul class="ep-list">
+      ${p.episodes.map((ep,i)=>`<li class="ep-item"><span class="ep-num">${String(i+1).padStart(2,'0')}</span><div><div class="ep-title">${bi(ep.en.t,ep.rw.t)}</div><div class="ep-desc">${bi(ep.en.d,ep.rw.d)}</div></div><span class="ep-dur">${ep.dur}</span></li>`).join('')}
+    </ul>`;
+}
+document.getElementById('podTabs').addEventListener('click', e=>{
+  const b = e.target.closest('[data-pod]'); if(!b) return;
+  activePod = b.getAttribute('data-pod'); renderPodcastTabs(); renderPodcastBody();
+});
+
+/* ---------- RENDER: videos ---------- */
+function renderVideoSeries(){
+  document.getElementById('videoSeries').innerHTML = VIDEO_SERIES.map(s=>`
+    <details class="series-block">
+      <summary>${bi(s.title.en,s.title.rw)} ${ICONS.chevdown.replace('viewBox="0 0 24 24"','width="18" height="18" viewBox="0 0 24 24" style="transition:transform .25s"')}</summary>
+      <div class="vid-grid">
+        ${s.videos.map(v=>`<div><div class="vid-thumb">${iconWrap('flame', s.bg)}<span class="play-btn">${ICONS.play}</span></div><div class="vid-card-title">${bi(v.en,v.rw)}</div></div>`).join('')}
+      </div>
+    </details>`).join('');
+}
+document.getElementById('featuredVideo').addEventListener('click', ()=>{
+  const t = document.getElementById('vidToast'); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2200);
+});
+
+/* ---------- RENDER: library ---------- */
+function renderBooks(){
+  document.getElementById('bookGrid').innerHTML = BOOKS.map(b=>`
+    <div class="book">
+      <div class="book-cover">${iconWrap(b.icon,b.bg)}</div>
+      <div>
+        <div class="book-title">${bi(b.title.en,b.title.rw)}</div>
+        <div class="book-desc">${bi(b.desc.en,b.desc.rw)}</div>
+        ${b.link ? `<a class="book-action btn-text" href="${b.link}" target="_blank" rel="noopener">${bi(b.linkLabel.en,b.linkLabel.rw)}</a>` : `<span class="book-action" style="color:var(--ink-soft); font-size:0.85rem">${bi('Coming soon','Bizaza vuba')}</span>`}
+      </div>
+    </div>`).join('');
+}
+
+/* ---------- RENDER: mountains ---------- */
+function renderMountains(){
+  document.getElementById('mountainsRow').innerHTML = MOUNTAINS.map(m=>`
+    <div class="mountain">
+      <span style="color:var(--dawn)">${ICONS[m.icon]}</span>
+      <h4>${bi(m.en.t,m.rw.t)}</h4>
+      <p>${bi(m.en.d,m.rw.d)}</p>
+    </div>`).join('');
+}
+
+/* ---------- RENDER: FAQ ---------- */
+function renderFAQ(){
+  const cards = FAQS.map(f=>`<div class="faq-card"><h4>${bi(f.en.q,f.rw.q)}</h4><p>${bi(f.en.a,f.rw.a)}</p></div>`).join('');
+  document.getElementById('faqTrack').innerHTML = cards + cards; // duplicate for seamless loop
+}
+document.getElementById('faqPrev').addEventListener('click', ()=>{
+  document.getElementById('faqTrack').scrollBy({left:-320, behavior:'smooth'});
+});
+document.getElementById('faqNext').addEventListener('click', ()=>{
+  document.getElementById('faqTrack').scrollBy({left:320, behavior:'smooth'});
+});
+
+/* ---------- NAV / ROUTING ---------- */
+const views = document.querySelectorAll('.view');
+function goto(id){
+  views.forEach(v=>v.classList.toggle('active', v.id === 'view-'+id));
+  document.querySelectorAll('.nav-links button[data-goto]').forEach(b=>b.classList.toggle('active', b.getAttribute('data-goto')===id));
+  document.getElementById('navLinks').classList.remove('open');
+  window.scrollTo({top:0, behavior:'auto'});
+  if(location.hash !== '#'+id) history.replaceState(null,'','#'+id);
+}
+document.addEventListener('click', e=>{
+  const b = e.target.closest('[data-goto]');
+  if(b){ e.preventDefault(); goto(b.getAttribute('data-goto')); }
+});
+window.addEventListener('hashchange', ()=>{
+  const id = location.hash.replace('#','') || 'home';
+  if(document.getElementById('view-'+id)) goto(id);
+});
+(function initialRoute(){
+  const id = (location.hash||'').replace('#','');
+  goto(document.getElementById('view-'+id) ? id : 'home');
+})();
+
+document.getElementById('menuToggle').addEventListener('click', ()=>{
+  const nav = document.getElementById('navLinks');
+  const open = nav.classList.toggle('open');
+  document.getElementById('menuToggle').setAttribute('aria-expanded', open);
+});
+
+/* ---------- LANGUAGE TOGGLE ---------- */
+function setLang(lang){
+  document.body.classList.toggle('lang-rw', lang==='rw');
+  document.getElementById('langEn').classList.toggle('active', lang==='en');
+  document.getElementById('langRw').classList.toggle('active', lang==='rw');
+  document.getElementById('langEn').setAttribute('aria-pressed', lang==='en');
+  document.getElementById('langRw').setAttribute('aria-pressed', lang==='rw');
+  try{ localStorage.setItem('ytr_lang', lang); }catch(e){}
+}
+document.getElementById('langEn').addEventListener('click', ()=>setLang('en'));
+document.getElementById('langRw').addEventListener('click', ()=>setLang('rw'));
+try{ const saved = localStorage.getItem('ytr_lang'); if(saved) setLang(saved); }catch(e){}
+
+/* ---------- HERO EMBERS + MOMENT PILLS ---------- */
+(function emberField(){
+  const host = document.getElementById('emberField');
+  host.style.position='absolute'; host.style.inset='0'; host.style.overflow='hidden'; host.style.pointerEvents='none';
+  for(let i=0;i<10;i++){
+    const p = document.createElement('span');
+    p.className='ember-particle';
+    const size = 3+Math.random()*4;
+    p.style.width=size+'px'; p.style.height=size+'px';
+    p.style.left=(10+Math.random()*80)+'%';
+    p.style.animationDelay=(Math.random()*7)+'s';
+    p.style.animationDuration=(6+Math.random()*4)+'s';
+    host.appendChild(p);
+  }
+})();
+(function momentCycle(){
+  const pills = document.querySelectorAll('.moment-pill');
+  let i=0;
+  function tick(){ pills.forEach(p=>p.classList.remove('on')); pills[i].classList.add('on'); i=(i+1)%pills.length; }
+  tick();
+  if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){ setInterval(tick, 2600); }
+})();
+
+/* ---------- CALENDAR LINK ---------- */
+(function calLink(){
+  const g = CONFIG.gathering;
+  const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(g.title)}&dates=${g.start}/${g.end}&location=${encodeURIComponent(g.location)}`;
+  document.getElementById('calLink').href = url;
+})();
+
+/* ---------- TOAST ---------- */
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(window.__toastT);
+  window.__toastT = setTimeout(()=>el.classList.remove('show'), 3200);
+}
+
+/* ---------- FORMS (mailto, no backend) ---------- */
+document.getElementById('contactForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  const name = document.getElementById('cf-name').value;
+  const email = document.getElementById('cf-email').value;
+  const msg = document.getElementById('cf-msg').value;
+  const body = `Name: ${name}\nEmail: ${email}\n\n${msg}`;
+  window.location.href = `mailto:${CONFIG.contactEmail}?subject=${encodeURIComponent('Message from '+name+' — YTR website')}&body=${encodeURIComponent(body)}`;
+  toast(document.body.classList.contains('lang-rw') ? 'Porogaramu ya email irafunguka…' : 'Opening your email app…');
+});
+document.getElementById('subscribeForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  const email = document.getElementById('subscribeEmail').value;
+  window.location.href = `mailto:${CONFIG.contactEmail}?subject=${encodeURIComponent('Subscribe me for updates')}&body=${encodeURIComponent('Please add this email to the YTR updates list: '+email)}`;
+  toast(document.body.classList.contains('lang-rw') ? 'Porogaramu ya email irafunguka…' : 'Opening your email app…');
+});
+
+/* ---------- SHARE / REPOST DEVOTION IMAGE ---------- */
+document.getElementById('shareDevoBtn').addEventListener('click', async ()=>{
+  const canvas = document.createElement('canvas');
+  canvas.width = 1080; canvas.height = 1080;
+  const ctx = canvas.getContext('2d');
+  const grad = ctx.createLinearGradient(0,0,0,1080);
+  grad.addColorStop(0,'#1A1230'); grad.addColorStop(0.6,'#2B1D46'); grad.addColorStop(1,'#7A3A3A');
+  ctx.fillStyle = grad; ctx.fillRect(0,0,1080,1080);
+
+  ctx.fillStyle = '#F6B93B';
+  ctx.font = '600 46px Georgia, serif';
+  ctx.fillText('Psalm 46:10', 90, 200);
+
+  ctx.fillStyle = '#FBF7F0';
+  ctx.font = 'italic 40px Georgia, serif';
+  wrapText(ctx, 'Be still — stop striving long enough', 90, 300, 900, 52);
+  wrapText(ctx, 'to remember who is actually in control.', 90, 352, 900, 52);
+
+  ctx.fillStyle = 'rgba(251,247,240,0.8)';
+  ctx.font = '28px Arial, sans-serif';
+  wrapText(ctx, 'Most of what wears us out is carrying what was never ours to carry. The altar is where we put it down.', 90, 520, 900, 42);
+
+  ctx.fillStyle = '#F6B93B';
+  ctx.font = '600 30px Arial, sans-serif';
+  ctx.fillText('YOUTH TIME REVIVAL', 90, 980);
+  ctx.fillStyle = 'rgba(251,247,240,0.7)';
+  ctx.font = '24px Arial, sans-serif';
+  ctx.fillText("Today's Devotion", 90, 1020);
+
+  function wrapText(ctx, text, x, y, maxWidth, lineHeight){
+    const words = text.split(' '); let line=''; let yy=y;
+    for(let n=0;n<words.length;n++){
+      const test = line + words[n] + ' ';
+      if(ctx.measureText(test).width > maxWidth && n>0){ ctx.fillText(line, x, yy); line = words[n]+' '; yy += lineHeight; }
+      else{ line = test; }
+    }
+    ctx.fillText(line, x, yy);
+  }
+
+  canvas.toBlob(async (blob)=>{
+    try{
+      const downloads = await claude.use('downloads');
+      if(downloads){
+        try{
+          await downloads.save({ filename:'ytr-devotion.png', data: blob });
+          toast(document.body.classList.contains('lang-rw') ? 'Byabitswe neza!' : 'Saved — share away!');
+        }catch(err){
+          toast(document.body.classList.contains('lang-rw') ? 'Ntibyakunze kubika.' : 'Could not save the image.');
+        }
+      } else {
+        toast(document.body.classList.contains('lang-rw') ? 'Iki gikorwa nticyashobotse muri iyi window.' : 'Downloads are not available in this view.');
+      }
+    }catch(err){
+      toast('Downloads are not available in this view.');
+    }
+  }, 'image/png');
+});
+
+/* ---------- SEARCH ---------- */
+const SEARCH_INDEX = [
+  ...ARTICLES.map(a=>({kind:'Article', title:a.en.title, goto:'articles', id:a.id})),
+  ...FAQS.map(f=>({kind:'FAQ', title:f.en.q, goto:'faq'})),
+  {kind:'Devotion', title:"Today's Devotion — Psalm 46:10", goto:'devotions'},
+  {kind:'Page', title:'Podcasts', goto:'podcasts'},
+  {kind:'Page', title:'Videos', goto:'videos'},
+  {kind:'Page', title:'Library', goto:'library'},
+  {kind:'Page', title:'About Us', goto:'about'},
+  {kind:'Page', title:'Contact', goto:'contact'}
+];
+const searchOverlay = document.getElementById('searchOverlay');
+document.getElementById('searchOpen').addEventListener('click', ()=>{
+  searchOverlay.classList.add('open');
+  document.getElementById('searchInput').value='';
+  document.getElementById('searchResults').innerHTML='';
+  setTimeout(()=>document.getElementById('searchInput').focus(), 50);
+});
+document.getElementById('searchClose').addEventListener('click', ()=> searchOverlay.classList.remove('open'));
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') searchOverlay.classList.remove('open'); });
+document.getElementById('searchInput').addEventListener('input', e=>{
+  const q = e.target.value.trim().toLowerCase();
+  const res = document.getElementById('searchResults');
+  if(!q){ res.innerHTML=''; return; }
+  const matches = SEARCH_INDEX.filter(x=>x.title.toLowerCase().includes(q));
+  res.innerHTML = matches.length ? matches.map(m=>`<button data-goto="${m.goto}" ${m.id?`data-article="${m.id}"`:''}><span class="kind">${m.kind}</span>${m.title}</button>`).join('') : `<p style="color:rgba(246,239,224,0.6); padding-top:20px">No results.</p>`;
+});
+document.getElementById('searchResults').addEventListener('click', e=>{
+  const b = e.target.closest('button'); if(!b) return;
+  searchOverlay.classList.remove('open');
+  const id = b.getAttribute('data-article');
+  goto(b.getAttribute('data-goto'));
+  if(id) setTimeout(()=>openArticle(id), 60);
+});
+
+/* ---------- INIT ---------- */
+renderArticleGrids();
+renderPodcastTabs();
+renderPodcastBody();
+renderVideoSeries();
+renderBooks();
+renderMountains();
+renderFAQ();
+
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{% extends "dashboard/admin/_base.html" %}
+{% block title %}Prayer requests{% endblock %}
+
+{% block content %}
+<h1>Prayer requests</h1>
+<p class="dash-lede">Private — visible only to Admins and the member who submitted it.</p>
+
+{% if prayers %}
+{% for p in prayers %}
+<div class="dash-card">
+  <div class="dash-card-head">
+    <h3>{{ p.member }}</h3>
+    <span class="badge badge-pending">Pending</span>
+  </div>
+  <p style="color:var(--ink-soft); font-size:0.82rem; margin-bottom:10px">{{ p.created_at|date:"M j, Y" }}</p>
+  <p style="margin-bottom:16px">{{ p.body }}</p>
+  <form method="post" action="{% url 'dashboard:mark_prayer_reviewed' pk=p.pk %}">
+    {% csrf_token %}<button class="btn-sm btn-sm-outline" type="submit">Mark as reviewed</button>
+  </form>
+</div>
+{% endfor %}
+{% else %}
+<p class="dash-empty">Nothing unreviewed right now.</p>
+{% endif %}
+{% endblock %}

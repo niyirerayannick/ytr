@@ -1,0 +1,69 @@
+{% extends "dashboard/admin/_base.html" %}
+{% block title %}Admin overview{% endblock %}
+
+{% block content %}
+<h1>Admin overview</h1>
+<p class="dash-lede">Everything waiting on you, at a glance.</p>
+
+<div class="stat-grid">
+  <div class="stat-tile"><div class="num">{{ counts.members }}</div><div class="label">Members</div></div>
+  <div class="stat-tile"><div class="num">{{ counts.authors }}</div><div class="label">Authors</div></div>
+  <div class="stat-tile"><div class="num">{{ counts.published_articles }}</div><div class="label">Published articles</div></div>
+  <div class="stat-tile"><div class="num">{{ counts.subscribers }}</div><div class="label">Newsletter subscribers</div></div>
+</div>
+
+<div class="dash-card">
+  <div class="dash-card-head">
+    <h3>Pending sign-ups</h3>
+    <a class="btn-sm btn-sm-outline" href="{% url 'dashboard:signup_queue' %}">View all ({{ pending_signups_count }})</a>
+  </div>
+  {% if pending_signups %}
+  <table class="dash-table hidden lg:table">
+    <tr><th>Username</th><th>Email</th><th>Joined</th></tr>
+    {% for u in pending_signups %}
+    <tr><td>{{ u.username }}</td><td>{{ u.email }}</td><td>{{ u.date_joined|date:"M j, Y" }}</td></tr>
+    {% endfor %}
+  </table>
+  <div class="dash-mobile-list lg:hidden">
+    {% for u in pending_signups %}
+    <article class="dash-mobile-row"><dl>
+      <div><dt>Username</dt><dd>{{ u.username }}</dd></div>
+      <div><dt>Email</dt><dd>{{ u.email }}</dd></div>
+      <div><dt>Joined</dt><dd>{{ u.date_joined|date:"M j, Y" }}</dd></div>
+    </dl></article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="dash-empty">No accounts waiting on approval.</p>
+  {% endif %}
+</div>
+
+<div class="dash-card">
+  <div class="dash-card-head">
+    <h3>Pending content</h3>
+    <a class="btn-sm btn-sm-outline" href="{% url 'dashboard:content_queue' %}">Review queue ({{ pending_content_count }})</a>
+  </div>
+  <p class="dash-empty" style="padding:0">Articles, devotions, episodes, and videos authors have submitted for review.</p>
+</div>
+
+<div class="dash-card">
+  <div class="dash-card-head">
+    <h3>Pending testimonies</h3>
+    <a class="btn-sm btn-sm-outline" href="{% url 'dashboard:pending_testimonies' %}">Review ({{ pending_testimonies_count }})</a>
+  </div>
+</div>
+
+<div class="dash-card">
+  <div class="dash-card-head">
+    <h3>Prayer requests</h3>
+    <a class="btn-sm btn-sm-outline" href="{% url 'dashboard:prayer_requests' %}">Unreviewed ({{ unreviewed_prayers_count }})</a>
+  </div>
+</div>
+
+<div class="dash-card">
+  <div class="dash-card-head">
+    <h3>Contact messages</h3>
+    <a class="btn-sm btn-sm-outline" href="{% url 'dashboard:messages' %}">View all ({{ unread_messages_count }} unread)</a>
+  </div>
+</div>
+{% endblock %}

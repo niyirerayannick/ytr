@@ -1,0 +1,13 @@
+from .base import *  # noqa: F401,F403
+
+DEBUG = False
+
+if not ALLOWED_HOSTS:
+    raise ValueError("ALLOWED_HOSTS must be set via env in production")
+
+SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=True)  # noqa: F405
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_HSTS_SECONDS = 60 * 60 * 24 * 30
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True

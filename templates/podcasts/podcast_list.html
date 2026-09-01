@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load ytr_icons %}
+{% block title %}Podcasts — Youth Time Revival{% endblock %}
+
+{% block content %}
+<section id="view-podcasts">
+  <div class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2><span class="i18n-en">Podcasts</span><span class="i18n-rw">Podcast</span></h2>
+        <p class="i18n-en">Start with <em>Kanguka</em> — our wake-up call series — then explore the rest.</p>
+        <p class="i18n-rw">Tangira na <em>Kanguka</em> — urukurikirane rwo gukangura — hanyuma urebe ibindi.</p>
+      </div>
+
+      <div class="tab-row" id="podTabs">
+        {% for series in series_list %}
+        <button type="button" class="tab-btn {% if forloop.first %}active{% endif %}" data-pod-tab="pod-{{ series.slug }}">
+          <span class="i18n-en">{{ series.title_en }}</span><span class="i18n-rw">{{ series.title_rw }}</span>
+        </button>
+        {% endfor %}
+      </div>
+
+      <div id="podBody">
+        {% for series in series_list %}
+        <div class="pod-layout" id="pod-{{ series.slug }}" {% if not forloop.first %}style="display:none"{% endif %}>
+          <div>
+            <div class="pod-cover">
+              {% if series.cover_image %}
+                <img src="{{ series.cover_image.url }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+              {% else %}
+                {% icon_tile series.icon series.color %}
+              {% endif %}
+            </div>
+            <h3 style="margin-top:16px; font-size:1.2rem"><span class="i18n-en">{{ series.title_en }}</span><span class="i18n-rw">{{ series.title_rw }}</span></h3>
+            <p style="color:var(--ink-soft); font-size:0.9rem; margin-top:6px"><span class="i18n-en">{{ series.subtitle_en }}</span><span class="i18n-rw">{{ series.subtitle_rw }}</span></p>
+            <p style="margin-top:12px; font-size:0.92rem"><span class="i18n-en">{{ series.description_en }}</span><span class="i18n-rw">{{ series.description_rw }}</span></p>
+            <div class="pod-badges">
+              {% if series.spotify_url %}
+                <a class="pod-badge" href="{{ series.spotify_url }}" target="_blank" rel="noopener"><span class="i18n-en">Listen on Spotify</span><span class="i18n-rw">Umva kuri Spotify</span></a>
+              {% else %}
+                <span class="pod-badge"><span class="i18n-en">Coming to Spotify</span><span class="i18n-rw">Kizaza kuri Spotify</span></span>
+              {% endif %}
+              {% if series.apple_url %}
+                <a class="pod-badge" href="{{ series.apple_url }}" target="_blank" rel="noopener"><span class="i18n-en">Listen on Apple Podcasts</span><span class="i18n-rw">Umva kuri Apple Podcasts</span></a>
+              {% else %}
+                <span class="pod-badge"><span class="i18n-en">Coming to Apple Podcasts</span><span class="i18n-rw">Kizaza kuri Apple Podcasts</span></span>
+              {% endif %}
+            </div>
+          </div>
+          <ul class="ep-list">
+            {% for ep in series.published_episodes %}
+            <li class="ep-item">
+              <span class="ep-num">{{ forloop.counter|stringformat:"02d" }}</span>
+              <div>
+                <div class="ep-title"><span class="i18n-en">{{ ep.title_en }}</span><span class="i18n-rw">{{ ep.title_rw }}</span></div>
+                <div class="ep-desc"><span class="i18n-en">{{ ep.description_en }}</span><span class="i18n-rw">{{ ep.description_rw }}</span></div>
+              </div>
+              <span class="ep-dur">{{ ep.duration }}</span>
+            </li>
+            {% empty %}
+            <li class="ep-item"><span class="i18n-en">No episodes yet.</span><span class="i18n-rw">Nta biganiro biraboneka.</span></li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% empty %}
+        <p class="i18n-en">No podcast series yet — check back soon.</p>
+        <p class="i18n-rw">Nta podcast iraboneka — garuka vuba.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load ytr_icons %}
+{% block title %}About Us — Youth Time Revival{% endblock %}
+
+{% block content %}
+<section id="view-about">
+  <div class="section">
+    <div class="wrap">
+      <div class="mv-grid">
+        <div class="mv-block">
+          <div class="tag i18n-en">MISSION</div><div class="tag i18n-rw">INTUMWA</div>
+          <h3><span class="i18n-en">Our mission</span><span class="i18n-rw">Intumwa yacu</span></h3>
+          <p class="i18n-en">{{ site_settings.mission_en }}</p>
+          <p class="i18n-rw">{{ site_settings.mission_rw }}</p>
+        </div>
+        <div class="mv-block">
+          <div class="tag i18n-en">VISION</div><div class="tag i18n-rw">IJAMBO</div>
+          <h3><span class="i18n-en">Our vision</span><span class="i18n-rw">Ijambo ryacu</span></h3>
+          <p class="i18n-en">{{ site_settings.vision_en }}</p>
+          <p class="i18n-rw">{{ site_settings.vision_rw }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section section-night">
+    <div class="wrap">
+      <div class="section-head">
+        <h2><span class="i18n-en">The call</span><span class="i18n-rw">Ihamagarwa</span></h2>
+        <p class="i18n-en">Told in the founder's own words — written separately in each language, not translated.</p>
+        <p class="i18n-rw">Nkuko byavuzwe n'uwatangije uyu muvuko — mu magambo ye bwite.</p>
+      </div>
+      <div class="timeline">
+        {% for entry in timeline %}
+        <div class="timeline-item">
+          <div class="year">{{ entry.year }}</div>
+          <p class="i18n-en">{{ entry.body_en }}</p>
+          <p class="i18n-rw kn-text">{{ entry.body_rw }}</p>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="lang-note" style="border-color:var(--line-night); color:rgba(246,239,224,0.6)">
+        Note for the YTR team: the Kinyarwanda paragraphs above keep your original wording exactly as given. The English paragraphs are an independent retelling, not a translation — please have the founder review both before publishing.
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2><span class="i18n-en">What we believe</span><span class="i18n-rw">Ibyo Twemera</span></h2>
+      </div>
+      <ul class="believe-list">
+        {% for belief in beliefs %}
+        <li>
+          <div class="b-title i18n-en">{{ belief.title_en }}</div><div class="b-title i18n-rw">{{ belief.title_rw }}</div>
+          <p class="i18n-en">{{ belief.description_en }}</p>
+          <p class="i18n-rw">{{ belief.description_rw }}</p>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <div class="section section-night">
+    <div class="wrap">
+      <div class="section-head">
+        <h2><span class="i18n-en">Seven mountains</span><span class="i18n-rw">Imisozi Irindwi</span></h2>
+        <p class="i18n-en">The gospel wasn't given to stay inside a building. It was sent to seven ordinary places.</p>
+        <p class="i18n-rw">Ubutumwa bwiza ntibwahawe kugira ngo bugume mu nzu. Bwoherejwe ahantu hirindwi hasanzwe.</p>
+      </div>
+      <div class="mountains-row">
+        {% for m in mountains %}
+        <div class="mountain">
+          <span style="color:var(--dawn)">{% icon m.icon 32 'false' %}</span>
+          <h4><span class="i18n-en">{{ m.name_en }}</span><span class="i18n-rw">{{ m.name_rw }}</span></h4>
+          <p><span class="i18n-en">{{ m.description_en }}</span><span class="i18n-rw">{{ m.description_rw }}</span></p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

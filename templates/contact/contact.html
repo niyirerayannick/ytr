@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Contact — Youth Time Revival{% endblock %}
+
+{% block content %}
+<section id="view-contact">
+  <div class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2><span class="i18n-en">Contact</span><span class="i18n-rw">Twandikire</span></h2>
+        <p class="i18n-en">Have a question, a testimony, or want to host a gathering? Reach out.</p>
+        <p class="i18n-rw">Ufite ikibazo, ubuhamya, cyangwa ushaka gutwara iteraniro? Twandikire.</p>
+      </div>
+
+      {% if messages %}
+      <div style="margin-bottom:26px; display:flex; flex-direction:column; gap:10px">
+        {% for message in messages %}
+        <div style="border:1px solid var(--line); background:var(--paper-2); padding:14px 18px; font-size:0.92rem">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="contact-grid">
+        <div>
+          <ul class="contact-info" style="list-style:none; padding:0; margin:0 0 30px">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+              <div><div class="label i18n-en">Email</div><div class="label i18n-rw">Email</div><div>{{ site_settings.contact_email }}</div></div>
+            </li>
+            {% if site_settings.phone %}
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L14 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 2 6a2 2 0 0 1 2-2Z"/></svg>
+              <div><div class="label i18n-en">Phone</div><div class="label i18n-rw">Telefoni</div><div>{{ site_settings.phone }}</div></div>
+            </li>
+            {% endif %}
+            {% if site_settings.address %}
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s7-6.4 7-12a7 7 0 1 0-14 0c0 5.6 7 12 7 12Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+              <div><div class="label i18n-en">Address</div><div class="label i18n-rw">Aderesi</div><div>{{ site_settings.address }}</div></div>
+            </li>
+            {% endif %}
+          </ul>
+          <div class="social-row">
+            {% if site_settings.instagram_url %}<a href="{{ site_settings.instagram_url }}" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>{% endif %}
+            {% if site_settings.youtube_url %}<a href="{{ site_settings.youtube_url }}" target="_blank" rel="noopener" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="5" width="20" height="14" rx="4"/><path d="M10 9l6 3-6 3z" fill="currentColor" stroke="none"/></svg></a>{% endif %}
+            {% if site_settings.tiktok_url %}<a href="{{ site_settings.tiktok_url }}" target="_blank" rel="noopener" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 3v9.5a3.5 3.5 0 1 1-3-3.46"/><path d="M15 3c.3 2 1.8 3.5 4 3.8"/></svg></a>{% endif %}
+          </div>
+
+          <div style="margin-top:36px; border-top:1px solid var(--line); padding-top:28px">
+            <h4 style="font-size:1.05rem; margin-bottom:8px"><span class="i18n-en">Subscribe for updates</span><span class="i18n-rw">Iyandikishe kugira ngo umenyeshwe</span></h4>
+            <p style="color:var(--ink-soft); font-size:0.92rem" class="i18n-en">We'll email you when a new devotion, article, or episode goes up.</p>
+            <p style="color:var(--ink-soft); font-size:0.92rem" class="i18n-rw">Tuzakwoherereza email igihe hazaba hari igitekerezo, igyanditswe, cyangwa igiganiro gishya.</p>
+            <form method="post" class="subscribe-row" id="subscribeForm">
+              {% csrf_token %}
+              <input type="hidden" name="form_type" value="subscribe">
+              <input type="email" name="email" placeholder="you@example.com" required value="{{ subscribe_form.email.value|default:'' }}">
+              <button class="btn btn-outline-night" type="submit"><span class="i18n-en">Subscribe</span><span class="i18n-rw">Iyandikishe</span></button>
+            </form>
+            {% if subscribe_form.errors %}
+              <p style="color:var(--ember); font-size:0.85rem; margin-top:8px">{{ subscribe_form.errors }}</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <form method="post" id="contactForm">
+          {% csrf_token %}
+          <input type="hidden" name="form_type" value="contact">
+          <div class="form-field">
+            <label for="cf-name"><span class="i18n-en">Name</span><span class="i18n-rw">Izina</span></label>
+            <input type="text" id="cf-name" name="name" required value="{{ contact_form.name.value|default:'' }}">
+          </div>
+          <div class="form-field">
+            <label for="cf-email"><span class="i18n-en">Email</span><span class="i18n-rw">Email</span></label>
+            <input type="email" id="cf-email" name="email" required value="{{ contact_form.email.value|default:'' }}">
+          </div>
+          <div class="form-field">
+            <label for="cf-msg"><span class="i18n-en">Message</span><span class="i18n-rw">Ubutumwa</span></label>
+            <textarea id="cf-msg" name="message" required>{{ contact_form.message.value|default:'' }}</textarea>
+          </div>
+          {% if contact_form.errors %}
+            <p style="color:var(--ember); font-size:0.85rem; margin-bottom:14px">{{ contact_form.errors }}</p>
+          {% endif %}
+          <button class="btn btn-ember" type="submit"><span class="i18n-en">Send message</span><span class="i18n-rw">Ohereza ubutumwa</span></button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

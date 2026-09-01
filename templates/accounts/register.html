@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Sign up — Youth Time Revival{% endblock %}
+
+{% block content %}
+<section>
+  <div class="section">
+    <div class="wrap" style="max-width:520px">
+      <div class="section-head">
+        <h2>Sign up</h2>
+        <p>Create an account to bookmark articles, RSVP to gatherings, and submit testimonies or prayer requests. New accounts are reviewed by an admin before you can log in.</p>
+      </div>
+
+      {% if messages %}
+      <div style="margin-bottom:26px; display:flex; flex-direction:column; gap:10px">
+        {% for message in messages %}
+        <div style="border:1px solid var(--line); background:var(--paper-2); padding:14px 18px; font-size:0.92rem">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-field">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}<p style="color:var(--ink-soft); font-size:0.8rem; margin-top:4px">{{ field.help_text }}</p>{% endif %}
+          {% for error in field.errors %}<p style="color:var(--ember); font-size:0.85rem; margin-top:4px">{{ error }}</p>{% endfor %}
+        </div>
+        {% endfor %}
+        {% if form.non_field_errors %}
+        <p style="color:var(--ember); font-size:0.85rem; margin-bottom:14px">{{ form.non_field_errors }}</p>
+        {% endif %}
+        <button class="btn btn-ember" type="submit">Create account</button>
+      </form>
+
+      <p style="margin-top:22px; font-size:0.92rem; color:var(--ink-soft)">
+        Already have an account? <a href="{% url 'accounts:login' %}" style="color:var(--ember); font-weight:600">Log in</a>
+      </p>
+    </div>
+  </div>
+</section>
+{% endblock %}

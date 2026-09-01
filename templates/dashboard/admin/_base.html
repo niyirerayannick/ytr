@@ -1,0 +1,14 @@
+{% extends "dashboard/_shell.html" %}
+
+{% block sidebar %}
+<div class="dash-section-label">Admin</div>
+<a href="{% url 'dashboard:admin' %}">Overview</a>
+<a href="{% url 'dashboard:signup_queue' %}">Pending sign-ups</a>
+<a href="{% url 'dashboard:content_queue' %}">Pending content</a>
+<a href="{% url 'dashboard:pending_testimonies' %}">Pending testimonies</a>
+<a href="{% url 'dashboard:prayer_requests' %}">Prayer requests</a>
+<a href="{% url 'dashboard:messages' %}">Contact messages</a>
+<a href="{% url 'dashboard:user_management' %}">User management</a>
+<div class="dash-section-label">More</div>
+<a href="/admin/">Django admin</a>
+{% endblock %}

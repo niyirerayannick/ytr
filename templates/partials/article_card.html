@@ -1,0 +1,18 @@
+{% load ytr_icons %}
+<a class="art-card {% if article.is_featured %}feature{% endif %}" href="{{ article.get_absolute_url }}">
+  <div class="art-thumb">
+    {% if article.cover_image %}
+      <img src="{{ article.cover_image.url }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+    {% else %}
+      {% icon_tile article.icon article.color %}
+    {% endif %}
+  </div>
+  <div class="art-body">
+    <h3><span class="i18n-en">{{ article.title_en }}</span><span class="i18n-rw">{{ article.title_rw }}</span></h3>
+    <p class="hook"><span class="i18n-en">{{ article.hook_en }}</span><span class="i18n-rw">{{ article.hook_rw }}</span></p>
+    <div class="art-meta">
+      {% icon 'flame' 14 'false' %}
+      <span class="i18n-en">{{ article.author.name|default:"YTR Team" }}</span><span class="i18n-rw">{{ article.author.name|default:"Itsinda rya YTR" }}</span>
+    </div>
+  </div>
+</a>

@@ -1,0 +1,127 @@
+{% extends "dashboard/member/_base.html" %}
+{% block title %}My dashboard{% endblock %}
+
+{% block content %}
+<h1>Welcome, {{ request.user.username }}</h1>
+<p class="dash-lede">{{ request.user.email }} · Member since {{ request.user.date_joined|date:"M j, Y" }}</p>
+
+<div class="dash-card">
+  <h3>Saved articles</h3>
+  {% if bookmarks %}
+  <table class="dash-table hidden lg:table">
+    {% for b in bookmarks %}
+    <tr><td><a href="{{ b.article.get_absolute_url }}">{{ b.article.title_en }}</a></td><td style="text-align:right; color:var(--ink-soft); font-size:0.82rem">{{ b.created_at|date:"M j, Y" }}</td></tr>
+    {% endfor %}
+  </table>
+  <div class="dash-mobile-list lg:hidden">
+    {% for b in bookmarks %}
+    <article class="dash-mobile-row"><dl>
+      <div><dt>Article</dt><dd><a href="{{ b.article.get_absolute_url }}">{{ b.article.title_en }}</a></dd></div>
+      <div><dt>Saved</dt><dd>{{ b.created_at|date:"M j, Y" }}</dd></div>
+    </dl></article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="dash-empty">Bookmark an article from its page and it'll show up here.</p>
+  {% endif %}
+</div>
+
+<div class="dash-card">
+  <h3>My RSVPs</h3>
+  {% if rsvps %}
+  <table class="dash-table hidden lg:table">
+    {% for r in rsvps %}
+    <tr><td>{{ r.gathering.title }}</td><td>{{ r.gathering.start_datetime|date:"D, M j · g:i A" }}</td></tr>
+    {% endfor %}
+  </table>
+  <div class="dash-mobile-list lg:hidden">
+    {% for r in rsvps %}
+    <article class="dash-mobile-row"><dl>
+      <div><dt>Gathering</dt><dd>{{ r.gathering.title }}</dd></div>
+      <div><dt>When</dt><dd>{{ r.gathering.start_datetime|date:"D, M j Â· g:i A" }}</dd></div>
+    </dl></article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="dash-empty">Say "I'll be there" on the homepage's gathering card to RSVP.</p>
+  {% endif %}
+</div>
+
+<div class="dash-card">
+  <h3>My testimonies</h3>
+  {% if testimonies %}
+  <table class="dash-table hidden lg:table">
+    {% for t in testimonies %}
+    <tr>
+      <td>
+        {{ t.title }}
+        {% if t.status == "rejected" and t.review_note %}<div class="review-note-box" style="margin-top:8px">{{ t.review_note }}</div>{% endif %}
+      </td>
+      <td><span class="badge badge-{% if t.status == 'pending' %}pending{% elif t.status == 'approved' %}published{% else %}rejected{% endif %}">{{ t.get_status_display }}</span></td>
+    </tr>
+    {% endfor %}
+  </table>
+  <div class="dash-mobile-list lg:hidden">
+    {% for t in testimonies %}
+    <article class="dash-mobile-row"><dl>
+      <div><dt>Title</dt><dd>{{ t.title }}{% if t.status == "rejected" and t.review_note %}<div class="review-note-box">{{ t.review_note }}</div>{% endif %}</dd></div>
+      <div><dt>Status</dt><dd><span class="badge badge-{% if t.status == 'pending' %}pending{% elif t.status == 'approved' %}published{% else %}rejected{% endif %}">{{ t.get_status_display }}</span></dd></div>
+    </dl></article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="dash-empty">Nothing submitted yet.</p>
+  {% endif %}
+  <details style="margin-top:16px">
+    <summary style="cursor:pointer; font-weight:600; font-size:0.92rem">Submit a testimony</summary>
+    <form method="post" action="{% url 'dashboard:new_testimony' %}" style="margin-top:14px">
+      {% csrf_token %}
+      {% for field in testimony_form %}
+      <div class="form-field">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+      </div>
+      {% endfor %}
+      <button class="btn-sm btn-sm-ember" type="submit">Submit</button>
+    </form>
+  </details>
+</div>
+
+<div class="dash-card">
+  <h3>My prayer requests</h3>
+  <p style="color:var(--ink-soft); font-size:0.85rem; margin-bottom:14px">Private — only you and the admin team can see these.</p>
+  {% if prayer_requests %}
+  <table class="dash-table hidden lg:table">
+    {% for p in prayer_requests %}
+    <tr>
+      <td>{{ p.body|truncatewords:20 }}</td>
+      <td><span class="badge {% if p.status == 'pending' %}badge-pending{% else %}badge-published{% endif %}">{{ p.get_status_display }}</span></td>
+    </tr>
+    {% endfor %}
+  </table>
+  <div class="dash-mobile-list lg:hidden">
+    {% for p in prayer_requests %}
+    <article class="dash-mobile-row"><dl>
+      <div><dt>Request</dt><dd>{{ p.body|truncatewords:20 }}</dd></div>
+      <div><dt>Status</dt><dd><span class="badge {% if p.status == 'pending' %}badge-pending{% else %}badge-published{% endif %}">{{ p.get_status_display }}</span></dd></div>
+    </dl></article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="dash-empty">Nothing submitted yet.</p>
+  {% endif %}
+  <details style="margin-top:16px">
+    <summary style="cursor:pointer; font-weight:600; font-size:0.92rem">Submit a prayer request</summary>
+    <form method="post" action="{% url 'dashboard:new_prayer_request' %}" style="margin-top:14px">
+      {% csrf_token %}
+      {% for field in prayer_form %}
+      <div class="form-field">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+      </div>
+      {% endfor %}
+      <button class="btn-sm btn-sm-ember" type="submit">Send</button>
+    </form>
+  </details>
+</div>
+{% endblock %}

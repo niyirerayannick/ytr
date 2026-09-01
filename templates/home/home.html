@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% load ytr_icons %}
+{% block title %}Youth Time Revival{% endblock %}
+
+{% block content %}
+<section id="view-home">
+  <div class="hero">
+    <svg class="hero-sky" width="100%" height="100%" viewBox="0 0 1200 620" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#1A1230"/>
+          <stop offset="55%" stop-color="#2B1D46"/>
+          <stop offset="80%" stop-color="#7A3A3A"/>
+          <stop offset="100%" stop-color="#F6B93B"/>
+        </linearGradient>
+        <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#F6B93B"/>
+          <stop offset="100%" stop-color="#F6B93B" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <rect width="1200" height="620" fill="url(#skyGrad)"/>
+      <circle class="sun" cx="920" cy="470" r="160" fill="url(#sunGlow)" opacity="0.55"/>
+      <circle class="sun" cx="920" cy="470" r="70" fill="#F6B93B"/>
+      <path d="M0 560 Q300 500 600 545 T1200 520 V620 H0 Z" fill="#140D24" opacity="0.9"/>
+    </svg>
+    <div id="emberField"></div>
+    <div class="hero-inner">
+      <h1><span class="i18n-en">The altar comes before the platform.</span><span class="i18n-rw">Igicaniro kibanziriza urwuri.</span></h1>
+      <p class="lede i18n-en">Youth Time Revival is a youth movement built on prayer, teaching, and mentorship — sending a generation, formed in secret, into every corner of society.</p>
+      <p class="lede i18n-rw">Youth Time Revival ni umuvuko w'urubyiruko ushingiye ku isengesho, inyigisho, no kuyoborwa hafi — wohereza umuryango wabakiwe ahantu hihishwa, mu bice byose by'imibereho.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-ember" href="{% url 'devotions:list' %}"><span class="i18n-en">Read today's devotion</span><span class="i18n-rw">Soma iyubahiro ry'uyu munsi</span></a>
+        <a class="btn btn-outline-cream" href="{% url 'about:about' %}"><span class="i18n-en">Our story</span><span class="i18n-rw">Inkuru yacu</span></a>
+      </div>
+      <div class="moments" id="momentPills">
+        <span class="moment-pill" data-i="0"><span class="i18n-en">Teaching &amp; Preaching</span><span class="i18n-rw">Kwigisha no Kubwiriza</span></span>
+        <span class="moment-pill" data-i="1"><span class="i18n-en">Prayer</span><span class="i18n-rw">Isengesho</span></span>
+        <span class="moment-pill" data-i="2"><span class="i18n-en">Wealth &amp; Stewardship</span><span class="i18n-rw">Ubutunzi n'Ubugenzuzi</span></span>
+        <span class="moment-pill" data-i="3"><span class="i18n-en">Mentorship &amp; Discipleship</span><span class="i18n-rw">Ubuyobozi n'Ubwigishwa</span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="wrap">
+      <div class="today-grid">
+        <div class="today-card dark">
+          <div class="kicker">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4"/></svg>
+            <span class="i18n-en">Today's Devotion</span><span class="i18n-rw">Iyubahiro ry'Uyu Munsi</span>
+          </div>
+          {% if devotion %}
+            <h3>{{ devotion.verse_ref }}</h3>
+            <p class="i18n-en">{{ devotion.verse_text_en }}</p>
+            <p class="i18n-rw">{{ devotion.verse_text_rw }}</p>
+          {% else %}
+            <h3><span class="i18n-en">Coming soon</span><span class="i18n-rw">Bizaza vuba</span></h3>
+          {% endif %}
+          <div class="row-actions">
+            <a class="btn-text" href="{% url 'devotions:list' %}"><span class="i18n-en">Read in full</span><span class="i18n-rw">Soma byose</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="today-card">
+          <div class="kicker">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="1"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
+            <span class="i18n-en">Fellowship Gathering</span><span class="i18n-rw">Iteraniro ry'Ubusabane</span>
+          </div>
+          {% if gathering %}
+          <div class="flyer">
+            <svg class="flyer-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#E4572E" opacity="0.12"/><path d="M12 4c.7 2-1.4 2.6-1.4 4.6a2.6 2.6 0 1 0 5.2 0c0-1-.6-1.3-1-2 1 .7 2 2 2 3.9a4.2 4.2 0 1 1-8.4 0c0-2.9 2.3-3.9 3.6-6.5z" fill="#E4572E"/></svg>
+            <div>
+              <div class="flyer-date">{{ gathering.start_datetime|date:"l · g:i A" }}</div>
+              <p style="color:var(--ink-soft); font-size:0.92rem; margin-top:2px">{{ gathering.location }}</p>
+            </div>
+          </div>
+          <div class="row-actions">
+            <a class="btn-text"
+               id="calLink"
+               href="#"
+               target="_blank" rel="noopener"
+               data-title="{{ gathering.title }}"
+               data-location="{{ gathering.location }}"
+               data-start="{{ gathering.start_datetime|date:'Ymd\THis' }}"
+               data-end="{{ gathering.end_datetime|date:'Ymd\THis' }}">
+              <span class="i18n-en">Add to calendar</span><span class="i18n-rw">Ongeraho kalendari</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+            {% if request.user.is_authenticated %}
+            <form method="post" action="{% url 'dashboard:toggle_rsvp' gathering_id=gathering.pk %}">
+              {% csrf_token %}
+              <button class="btn {% if is_rsvped %}btn-outline-night{% else %}btn-ember{% endif %}" type="submit">
+                {% if is_rsvped %}<span class="i18n-en">I'll be there ✓</span><span class="i18n-rw">Ndaza ✓</span>{% else %}<span class="i18n-en">I'll be there</span><span class="i18n-rw">Ndaza</span>{% endif %}
+              </button>
+            </form>
+            {% else %}
+            <a class="btn btn-ember" href="{% url 'accounts:login' %}?next=/"><span class="i18n-en">Log in to RSVP</span><span class="i18n-rw">Injira kugira ngo wemeze</span></a>
+            {% endif %}
+          </div>
+          {% else %}
+            <p class="i18n-en">No gathering scheduled yet — check back soon.</p>
+            <p class="i18n-rw">Nta materaniro ateganijwe kugeza ubu — garuka vuba.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section section-alt">
+    <div class="wrap">
+      <div class="section-head">
+        <h2><span class="i18n-en">From the articles</span><span class="i18n-rw">Ibyanditswe bishya</span></h2>
+        <p class="i18n-en">Teaching for the altar life, written in English and Kinyarwanda — choose the language you read best.</p>
+        <p class="i18n-rw">Inyigisho z'ubuzima bw'igicaniro, zanditswe mu Cyongereza no mu Kinyarwanda — hitamo ururimi wumva neza.</p>
+      </div>
+      <div class="article-grid article-grid--wide">
+        {% for article in articles %}
+          {% include "partials/article_card.html" %}
+        {% empty %}
+          <p class="i18n-en" style="padding:22px">No articles yet.</p>
+          <p class="i18n-rw" style="padding:22px">Nta byanditswe biraboneka.</p>
+        {% endfor %}
+      </div>
+      <div style="margin-top:30px">
+        <a class="btn btn-outline-night" href="{% url 'articles:list' %}"><span class="i18n-en">See all articles</span><span class="i18n-rw">Reba ibyanditswe byose</span></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="wrap" style="display:flex; justify-content:space-between; align-items:center; gap:24px; flex-wrap:wrap">
+      <div>
+        <h2 style="font-size:1.7rem"><span class="i18n-en">Get the new upload notices</span><span class="i18n-rw">Menyeshwa ibishya</span></h2>
+        <p style="color:var(--ink-soft); margin-top:8px" class="i18n-en">New devotions, articles, and episodes — straight to your inbox.</p>
+        <p style="color:var(--ink-soft); margin-top:8px" class="i18n-rw">Ibitekerezo bishya, ibyanditswe, n'ibiganiro — biza directement kuri email yawe.</p>
+      </div>
+      <a class="btn btn-ember" href="{% url 'engagement:contact' %}"><span class="i18n-en">Subscribe</span><span class="i18n-rw">Iyandikishe</span></a>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "dashboard/admin/_base.html" %}
+{% block title %}Pending content{% endblock %}
+
+{% block content %}
+<h1>Pending content</h1>
+<p class="dash-lede">Articles, devotions, podcast episodes, and videos authors have submitted for review.</p>
+
+{% if items %}
+<table class="dash-table hidden lg:table">
+  <tr><th>Type</th><th>Title</th><th>Submitted by</th><th>Submitted</th><th></th></tr>
+  {% for item in items %}
+  <tr>
+    <td>{{ item.label }}</td>
+    <td>{{ item.obj }}</td>
+    <td>{{ item.obj.submitted_by|default:"—" }}</td>
+    <td>{{ item.obj.submitted_at|date:"M j, Y" }}</td>
+    <td><a class="btn-sm btn-sm-outline" href="{% url 'dashboard:review_content' content_type=item.type pk=item.obj.pk %}">Review</a></td>
+  </tr>
+  {% endfor %}
+</table>
+<div class="dash-mobile-list lg:hidden">
+  {% for item in items %}
+  <article class="dash-mobile-row"><dl>
+    <div><dt>Type</dt><dd>{{ item.label }}</dd></div>
+    <div><dt>Title</dt><dd>{{ item.obj }}</dd></div>
+    <div><dt>Submitted by</dt><dd>{{ item.obj.submitted_by|default:"â€”" }}</dd></div>
+    <div><dt>Submitted</dt><dd>{{ item.obj.submitted_at|date:"M j, Y" }}</dd></div>
+  </dl>
+  <div class="dash-actions"><a class="btn-sm btn-sm-outline" href="{% url 'dashboard:review_content' content_type=item.type pk=item.obj.pk %}">Review</a></div>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<p class="dash-empty">Nothing waiting on review right now.</p>
+{% endif %}
+{% endblock %}

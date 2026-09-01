@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}FAQ — Youth Time Revival{% endblock %}
+
+{% block content %}
+<section id="view-faq">
+  <div class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2><span class="i18n-en">Frequently asked questions</span><span class="i18n-rw">Ibibazo Bikunze Kubazwa</span></h2>
+      </div>
+
+      {% if highlighted %}
+      <div class="faq-highlight">
+        <div class="tag"><span class="i18n-en">MOST ASKED</span><span class="i18n-rw">IKIBAZWA CYANE</span></div>
+        <h3><span class="i18n-en">{{ highlighted.question_en }}</span><span class="i18n-rw">{{ highlighted.question_rw }}</span></h3>
+        <p><span class="i18n-en">{{ highlighted.answer_en }}</span><span class="i18n-rw">{{ highlighted.answer_rw }}</span></p>
+      </div>
+      {% endif %}
+
+      <div class="faq-track-wrap">
+        <div class="faq-track" id="faqTrack">
+          {% for faq in faqs %}
+          <div class="faq-card">
+            <h4><span class="i18n-en">{{ faq.question_en }}</span><span class="i18n-rw">{{ faq.question_rw }}</span></h4>
+            <p><span class="i18n-en">{{ faq.answer_en }}</span><span class="i18n-rw">{{ faq.answer_rw }}</span></p>
+          </div>
+          {% endfor %}
+          {% for faq in faqs %}
+          <div class="faq-card" aria-hidden="true">
+            <h4><span class="i18n-en">{{ faq.question_en }}</span><span class="i18n-rw">{{ faq.question_rw }}</span></h4>
+            <p><span class="i18n-en">{{ faq.answer_en }}</span><span class="i18n-rw">{{ faq.answer_rw }}</span></p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="faq-nav-btns">
+        <button id="faqPrev" aria-label="Scroll left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg></button>
+        <button id="faqNext" aria-label="Scroll right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></button>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

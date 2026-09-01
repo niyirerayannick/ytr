@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load ytr_icons %}
+{% block title %}Library — Youth Time Revival{% endblock %}
+
+{% block content %}
+<section id="view-library">
+  <div class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2><span class="i18n-en">Library</span><span class="i18n-rw">Isomero</span></h2>
+        <p class="i18n-en">Scripture, hymns, and books that have shaped this movement.</p>
+        <p class="i18n-rw">Ibyanditswe Byera, indirimbo, n'ibitabo byagize uruhare mu iterambere ry'uyu muvuko.</p>
+      </div>
+      <div class="book-grid">
+        {% for book in books %}
+        <div class="book">
+          <div class="book-cover">
+            {% if book.cover_image %}
+              <img src="{{ book.cover_image.url }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+            {% else %}
+              {% icon_tile book.icon book.color %}
+            {% endif %}
+          </div>
+          <div>
+            <div class="book-title"><span class="i18n-en">{{ book.title_en }}</span><span class="i18n-rw">{{ book.title_rw }}</span></div>
+            <div class="book-desc"><span class="i18n-en">{{ book.description_en }}</span><span class="i18n-rw">{{ book.description_rw }}</span></div>
+            {% if book.external_link %}
+              <a class="book-action btn-text" href="{{ book.external_link }}" target="_blank" rel="noopener"><span class="i18n-en">{{ book.link_label_en|default:"Read online" }}</span><span class="i18n-rw">{{ book.link_label_rw|default:"Soma kuri interineti" }}</span></a>
+            {% else %}
+              <span class="book-action" style="color:var(--ink-soft); font-size:0.85rem"><span class="i18n-en">Coming soon</span><span class="i18n-rw">Bizaza vuba</span></span>
+            {% endif %}
+          </div>
+        </div>
+        {% empty %}
+        <p class="i18n-en">No books yet — check back soon.</p>
+        <p class="i18n-rw">Nta bitabo biraboneka — garuka vuba.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

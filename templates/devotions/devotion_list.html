@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Devotions — Youth Time Revival{% endblock %}
+
+{% block content %}
+<section id="view-devotions">
+  <div class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2><span class="i18n-en">Devotions</span><span class="i18n-rw">Ibitekerezo</span></h2>
+        <p class="i18n-en">A short devotion, in the Solid Joys format — one thought a day, worth returning to.</p>
+        <p class="i18n-rw">Igitekerezo gito buri munsi — igitekerezo kimwe ku munsi, gikwiye gusubirwamo.</p>
+      </div>
+
+      {% if today %}
+      <div class="devo-card" id="devoCard"
+           data-ref="{{ today.verse_ref }}"
+           data-verse-en="{{ today.verse_text_en }}"
+           data-reflection-en="{{ today.reflection_en }}">
+        <div class="kicker" style="display:flex;gap:8px;align-items:center;font-size:0.8rem;color:var(--dawn);font-weight:600;margin-bottom:16px">
+          <span class="i18n-en">TODAY</span><span class="i18n-rw">UYU MUNSI</span>
+        </div>
+        <div class="verse-ref">{{ today.verse_ref }}</div>
+        <p class="verse-text i18n-en">{{ today.verse_text_en }}</p>
+        <p class="verse-text i18n-rw">{{ today.verse_text_rw }}</p>
+        <p class="reflection i18n-en">{{ today.reflection_en }}</p>
+        <p class="reflection i18n-rw">{{ today.reflection_rw }}</p>
+        <p class="prayer i18n-en">{{ today.prayer_en }}</p>
+        <p class="prayer i18n-rw">{{ today.prayer_rw }}</p>
+        <div class="devo-actions">
+          <button class="btn btn-ember" id="shareDevoBtn">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5 15.4 6.5M8.6 13.5l6.8 4"/></svg>
+            <span class="i18n-en">Download to repost</span><span class="i18n-rw">Kuramo kugira ngo usubiremo</span>
+          </button>
+        </div>
+      </div>
+      {% else %}
+      <div class="devo-card">
+        <p class="i18n-en">No devotion has been published yet — check back soon.</p>
+        <p class="i18n-rw">Nta gitekerezo cyatangajwe kugeza ubu — garuka vuba.</p>
+      </div>
+      {% endif %}
+
+      <div class="devo-archive">
+        <h3 style="font-size:1.1rem; margin-bottom:6px"><span class="i18n-en">Recent devotions</span><span class="i18n-rw">Ibitekerezo biheruka</span></h3>
+        {% for d in page_obj %}
+        <div class="devo-archive-item">
+          <div>
+            <strong class="i18n-en">{{ d.verse_ref }}</strong><strong class="i18n-rw">{{ d.verse_ref }}</strong>
+            <p style="color:var(--ink-soft); font-size:0.92rem; margin-top:4px" class="i18n-en">{{ d.verse_text_en }}</p>
+            <p style="color:var(--ink-soft); font-size:0.92rem; margin-top:4px" class="i18n-rw">{{ d.verse_text_rw }}</p>
+          </div>
+          <span class="d-date">{{ d.date }}</span>
+        </div>
+        {% empty %}
+        <p class="i18n-en" style="color:var(--ink-soft); padding-top:18px">No past devotions yet.</p>
+        <p class="i18n-rw" style="color:var(--ink-soft); padding-top:18px">Nta bitekerezo bishaje biraboneka.</p>
+        {% endfor %}
+      </div>
+
+      {% if page_obj.paginator.num_pages > 1 %}
+      <div style="display:flex; gap:14px; margin-top:26px">
+        {% if page_obj.has_previous %}
+          <a class="btn-text" href="?page={{ page_obj.previous_page_number }}">&larr; Newer</a>
+        {% endif %}
+        {% if page_obj.has_next %}
+          <a class="btn-text" href="?page={{ page_obj.next_page_number }}">Older &rarr;</a>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

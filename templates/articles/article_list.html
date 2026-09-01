@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Articles — Youth Time Revival{% endblock %}
+
+{% block content %}
+<section id="view-articles">
+  <div class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2><span class="i18n-en">Articles</span><span class="i18n-rw">Ibyanditswe</span></h2>
+        <p class="i18n-en">Every piece is written twice — once in English, once in Kinyarwanda — by the same author, not translated. Choose your language above.</p>
+        <p class="i18n-rw">Buri gice cyanditswe kabiri — kimwe mu Cyongereza, ikindi mu Kinyarwanda — n'umwanditsi umwe, atari ukuvuguruza. Hitamo ururimi hejuru.</p>
+      </div>
+      <div class="article-grid article-grid--wide">
+        {% for article in articles %}
+          {% include "partials/article_card.html" %}
+        {% empty %}
+          <p class="i18n-en" style="padding:22px">No articles yet — check back soon.</p>
+          <p class="i18n-rw" style="padding:22px">Nta byanditswe biraboneka — garuka vuba.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

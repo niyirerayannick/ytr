@@ -1,0 +1,43 @@
+{% extends "dashboard/admin/_base.html" %}
+{% block title %}Review {{ label }}{% endblock %}
+
+{% block content %}
+<h1>Review: {{ label }}</h1>
+<p class="dash-lede">
+  Status: <span class="badge badge-{{ object.status }}">{{ object.get_status_display }}</span>
+  · Submitted by {{ object.submitted_by|default:"—" }}
+  {% if object.submitted_at %}on {{ object.submitted_at|date:"M j, Y" }}{% endif %}
+</p>
+
+{% if object.review_note %}
+<div class="review-note-box"><strong>Previous review note:</strong> {{ object.review_note }}</div>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data" class="dash-card">
+  {% csrf_token %}
+  {% for field in form %}
+  <div class="form-field">
+    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+    {{ field }}
+    {% for error in field.errors %}<p style="color:var(--ember); font-size:0.85rem; margin-top:4px">{{ error }}</p>{% endfor %}
+  </div>
+  {% endfor %}
+  <div class="dash-actions">
+    <button class="btn-sm btn-sm-outline" type="submit" name="action" value="save">Save changes</button>
+    <button class="btn-sm btn-sm-ember" type="submit" name="action" value="approve">Approve &amp; publish</button>
+  </div>
+</form>
+
+<form method="post" class="dash-card">
+  {% csrf_token %}
+  <h3>Reject</h3>
+  <div class="form-field">
+    <label for="{{ reject_form.review_note.id_for_label }}">{{ reject_form.review_note.label }}</label>
+    {{ reject_form.review_note }}
+    <p style="color:var(--ink-soft); font-size:0.8rem; margin-top:4px">{{ reject_form.review_note.help_text }}</p>
+  </div>
+  <button class="btn-sm btn-sm-danger" type="submit" name="action" value="reject">Reject</button>
+</form>
+
+<a class="btn-text" href="{% url 'dashboard:content_queue' %}">&larr; Back to queue</a>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Youth Time Revival{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/dist.css' %}">
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+{% include "partials/nav.html" %}
+{% include "partials/search_overlay.html" %}
+
+<main id="main">
+{% block content %}{% endblock %}
+</main>
+
+{% include "partials/footer.html" %}
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+  window.YTR_CONFIG = {
+    contactEmail: "{{ site_settings.contact_email }}",
+    searchUrl: "{% url 'core:search' %}"
+  };
+</script>
+<script src="{% static 'js/site.js' %}" defer></script>
+{% block extra_body %}{% endblock %}
+</body>
+</html>

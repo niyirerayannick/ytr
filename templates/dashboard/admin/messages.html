@@ -1,0 +1,33 @@
+{% extends "dashboard/admin/_base.html" %}
+{% block title %}Contact messages{% endblock %}
+
+{% block content %}
+<h1>Contact messages</h1>
+<p class="dash-lede">Submitted through the public contact form.</p>
+
+{% if contact_messages %}
+<table class="dash-table hidden lg:table">
+  <tr><th>Name</th><th>Email</th><th>Message</th><th>Received</th></tr>
+  {% for m in contact_messages %}
+  <tr>
+    <td>{{ m.name }}</td>
+    <td>{{ m.email }}</td>
+    <td style="max-width:320px">{{ m.message|truncatewords:20 }}</td>
+    <td>{{ m.created_at|date:"M j, Y" }}</td>
+  </tr>
+  {% endfor %}
+</table>
+<div class="dash-mobile-list lg:hidden">
+  {% for m in contact_messages %}
+  <article class="dash-mobile-row"><dl>
+    <div><dt>Name</dt><dd>{{ m.name }}</dd></div>
+    <div><dt>Email</dt><dd>{{ m.email }}</dd></div>
+    <div><dt>Message</dt><dd>{{ m.message|truncatewords:20 }}</dd></div>
+    <div><dt>Received</dt><dd>{{ m.created_at|date:"M j, Y" }}</dd></div>
+  </dl></article>
+  {% endfor %}
+</div>
+{% else %}
+<p class="dash-empty">No messages yet.</p>
+{% endif %}
+{% endblock %}
