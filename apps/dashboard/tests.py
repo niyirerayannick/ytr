@@ -2,8 +2,9 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from apps.accounts.models import Bookmark, Profile
+from apps.accounts.models import Bookmark, Profile, RSVP
 from apps.articles.models import Article
+from apps.core.models import Gathering
 
 User = get_user_model()
 
@@ -146,3 +147,27 @@ class BookmarkToggleTests(TestCase):
         response = self.client.post(url)
         self.assertEqual(response.status_code, 302)
         self.assertIn(reverse("accounts:login"), response.url)
+
+    def test_bookmark_next_only_allows_internal_url(self):
+        self.client.force_login(self.member)
+        url = reverse("dashboard:toggle_bookmark", args=[self.article.id])
+        for target in ("https://evil.example.com", "//evil.example.com", "http://evil.example.com"):
+            response = self.client.post(url, {"next": target})
+            self.assertEqual(response.url, self.article.get_absolute_url())
+
+    def test_bookmark_internal_next_and_missing_next_use_safe_destinations(self):
+        self.client.force_login(self.member)
+        url = reverse("dashboard:toggle_bookmark", args=[self.article.id])
+        self.assertEqual(self.client.post(url, {"next": "/articles/"}).url, "/articles/")
+        self.assertEqual(self.client.post(url).url, self.article.get_absolute_url())
+
+    def test_rsvp_next_only_allows_internal_url(self):
+        self.client.force_login(self.member)
+        gathering = Gathering.objects.create(
+            title="Friday", location="Kigali",
+            start_datetime="2030-01-01T18:00:00Z", end_datetime="2030-01-01T20:00:00Z",
+        )
+        url = reverse("dashboard:toggle_rsvp", args=[gathering.id])
+        response = self.client.post(url, {"next": "//evil.example.com"})
+        self.assertEqual(response.url, reverse("core:home"))
+        self.assertTrue(RSVP.objects.filter(member=self.member, gathering=gathering).exists())

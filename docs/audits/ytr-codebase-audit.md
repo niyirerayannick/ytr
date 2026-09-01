@@ -258,7 +258,7 @@ Important missing tests: CSRF/method enforcement for all state actions; safe red
 - Many templates have inline styles and page-specific markup that should become small reusable presentational partials after core functionality stabilizes.
 - Hard-coded content in the homepage/hero and template text conflicts with an administrator-managed ministry content plan.
 - No deployment automation, logs, health endpoint, backup policy or dependency-update process is documented.
-- Text encoding appears as mojibake in several source/display outputs (`â€”`, `Â©`) and should be checked in actual browser renders and normalized to UTF-8 source before launch.
+- Two literal mojibake strings found in dashboard templates were normalized during Phase 0; the remaining source files are UTF-8.
 
 ## 17. Production Readiness
 

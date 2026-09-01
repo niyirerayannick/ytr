@@ -61,7 +61,7 @@ pip install -r requirements.txt
 # 3. Configure environment
 copy .env.example .env           # Windows
 # cp .env.example .env           # macOS/Linux
-# edit .env and set a real SECRET_KEY
+# edit .env and set a real SECRET_KEY (use a generated value of 50+ characters)
 
 # 4. Install Tailwind CLI and build CSS
 npm install
@@ -83,7 +83,9 @@ for the role-based dashboard (redirects to your role's screen after login), and
 
 `manage.py` defaults to `config.settings.dev`. Deployment (`wsgi.py`/`asgi.py`)
 defaults to `config.settings.prod`, which requires `ALLOWED_HOSTS` to be set via
-the environment and turns on the standard HTTPS/HSTS hardening.
+the environment, requires a strong non-placeholder `SECRET_KEY`, and turns on
+the standard HTTPS/HSTS hardening. See [docs/security.md](docs/security.md) for
+the required production environment and reverse-proxy/media policies.
 
 ## Accounts, roles, and the review workflow
 

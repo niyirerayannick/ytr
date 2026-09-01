@@ -12,7 +12,7 @@ env = environ.Env(
 )
 environ.Env.read_env(BASE_DIR / ".env")
 
-SECRET_KEY = env("SECRET_KEY", default="django-insecure-change-me-in-.env")
+SECRET_KEY = env("SECRET_KEY", default="")
 DEBUG = env.bool("DEBUG", default=False)
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
 
@@ -113,3 +113,10 @@ EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
 EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default=CONTACT_FALLBACK_EMAIL)
+
+# Local-memory throttling protects a single application instance. Production should
+# use a shared cache/proxy limit as documented in docs/security.md.
+RATELIMIT_WINDOW_SECONDS = env.int("RATELIMIT_WINDOW_SECONDS", default=60 * 60)
+RATELIMIT_REGISTRATION_LIMIT = env.int("RATELIMIT_REGISTRATION_LIMIT", default=5)
+RATELIMIT_CONTACT_LIMIT = env.int("RATELIMIT_CONTACT_LIMIT", default=5)
+RATELIMIT_NEWSLETTER_LIMIT = env.int("RATELIMIT_NEWSLETTER_LIMIT", default=10)

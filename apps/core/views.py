@@ -1,3 +1,6 @@
+import logging
+
+from django.db import connections
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
@@ -8,6 +11,8 @@ from apps.devotions.models import Devotion
 from apps.faq.models import FAQ
 
 from .models import Gathering
+
+logger = logging.getLogger(__name__)
 
 
 def _todays_devotion():
@@ -20,10 +25,37 @@ def _todays_devotion():
 
 def _next_gathering():
     now = timezone.now()
-    upcoming = Gathering.objects.filter(end_datetime__gte=now).order_by("start_datetime").first()
-    if upcoming:
-        return upcoming
-    return Gathering.objects.order_by("-start_datetime").first()
+    return Gathering.objects.filter(end_datetime__gte=now).order_by("start_datetime").first()
+
+
+def health(request):
+    """A small, non-sensitive readiness response for a reverse proxy."""
+    try:
+        connections["default"].cursor().execute("SELECT 1")
+    except Exception:
+        logger.exception("Health check database query failed")
+        return JsonResponse({"status": "unavailable"}, status=503)
+    return JsonResponse({"status": "ok"})
+
+
+def _error_response(request, template_name, status):
+    return render(request, template_name, status=status)
+
+
+def error_400(request, exception=None):
+    return _error_response(request, "errors/400.html", 400)
+
+
+def error_403(request, exception=None):
+    return _error_response(request, "errors/403.html", 403)
+
+
+def error_404(request, exception=None):
+    return _error_response(request, "errors/404.html", 404)
+
+
+def error_500(request):
+    return _error_response(request, "errors/500.html", 500)
 
 
 def home(request):

@@ -21,12 +21,16 @@
       <form method="post" novalidate>
         {% csrf_token %}
         {% for field in form %}
+        {% if field.name == "website" %}
+          <div class="honeypot" aria-hidden="true">{{ field }}</div>
+        {% else %}
         <div class="form-field">
           <label for="{{ field.id_for_label }}">{{ field.label }}</label>
           {{ field }}
           {% if field.help_text %}<p style="color:var(--ink-soft); font-size:0.8rem; margin-top:4px">{{ field.help_text }}</p>{% endif %}
           {% for error in field.errors %}<p style="color:var(--ember); font-size:0.85rem; margin-top:4px">{{ error }}</p>{% endfor %}
         </div>
+        {% endif %}
         {% endfor %}
         {% if form.non_field_errors %}
         <p style="color:var(--ember); font-size:0.85rem; margin-bottom:14px">{{ form.non_field_errors }}</p>

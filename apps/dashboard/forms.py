@@ -44,7 +44,7 @@ class EpisodeContentForm(forms.ModelForm):
 class VideoContentForm(forms.ModelForm):
     class Meta:
         model = Video
-        fields = ["series", "title_en", "title_rw", "youtube_url", "video_file", "order"]
+        fields = ["series", "title_en", "title_rw", "youtube_url", "order"]
 
 
 # Shared registry so admin review views and author create/edit views can both

@@ -3,6 +3,7 @@ from django.utils.text import slugify
 
 from apps.core.icons import ICON_CHOICES
 from apps.core.models import ReviewableContent
+from apps.core.uploads import validate_audio_upload
 
 
 class PodcastSeries(models.Model):
@@ -55,7 +56,7 @@ class Episode(ReviewableContent):
     description_rw = models.TextField(blank=True)
 
     duration = models.CharField(max_length=20, blank=True, help_text="e.g. '11 min'")
-    audio_file = models.FileField(upload_to="episodes/", blank=True, null=True)
+    audio_file = models.FileField(upload_to="episodes/", blank=True, null=True, validators=[validate_audio_upload])
     audio_url = models.URLField(blank=True, null=True)
 
     order = models.PositiveIntegerField(default=0)

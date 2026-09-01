@@ -99,6 +99,7 @@
     letter-spacing: -0.01em;
   }
   .brand svg { width: 26px; height: 26px; flex: none; }
+  .brand-short { display: none; }
   .nav-links { @apply flex items-center list-none m-0 p-0 flex-nowrap; gap: 18px; }
   .nav-links li { @apply flex-none; }
   .nav-links button, .nav-links a {
@@ -111,6 +112,8 @@
     border-bottom-color: theme("colors.ember");
   }
   .nav-tools { @apply flex items-center gap-[14px]; }
+  .nav-desktop-utilities { @apply flex items-center gap-[14px]; }
+  .nav-mobile-utilities { display: none; }
   .icon-btn { @apply bg-transparent border-0 cursor-pointer text-ink p-[6px] flex rounded-full; }
   .icon-btn:hover { @apply bg-paper-2; }
   .icon-btn svg { width: 20px; height: 20px; }
@@ -122,11 +125,18 @@
   .menu-toggle { display: none; }
 
   @media (max-width: 1080px) {
+    .nav-row { gap: 8px; padding: 10px 14px; }
+    .brand { min-width: 0; font-size: 1rem; }
+    .brand-full { display: none; }
+    .brand-short { display: inline; }
+    .menu-toggle, .nav-tools .icon-btn { width: 44px; height: 44px; justify-content: center; }
+    .nav-tools { gap: 0; }
+    .nav-desktop-utilities { display: none; }
     .nav-links {
       @apply absolute left-0 right-0 bg-paper flex-col items-stretch border-b border-line;
       top: 100%;
       gap: 0;
-      padding: 6px 28px 16px;
+      padding: 6px 20px 16px;
       display: none;
     }
     .nav-links.open { display: flex; }
@@ -136,6 +146,9 @@
       padding: 10px 0;
     }
     .menu-toggle { display: flex; }
+    .nav-mobile-utilities { display: flex; align-items: center; gap: 12px; padding: 14px 0 4px; }
+    .nav-mobile-utilities .lang-toggle { flex: none; }
+    .nav-links .nav-mobile-utilities a { width: auto; border: 0; padding: 10px 0; }
   }
 
   /* ---- buttons ---- */
@@ -471,6 +484,14 @@
     @apply sticky top-0 z-[60] grid items-center bg-night text-cream-ink;
     grid-template-columns: 44px minmax(0, 1fr) 44px;
     min-height: 60px; padding: 8px 16px; gap: 10px;
+  }
+  .honeypot {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
   }
   .dash-menu-toggle {
     @apply flex items-center justify-center bg-transparent border-0 text-cream-ink cursor-pointer;

@@ -1,10 +1,10 @@
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.utils.http import url_has_allowed_host_and_scheme
 
 from apps.accounts.models import Bookmark, PrayerRequest, Profile, RSVP, Testimony
 from apps.articles.models import Article
@@ -24,6 +24,18 @@ from .forms import (
 )
 
 User = get_user_model()
+
+
+def _safe_next_url(request, fallback):
+    """Return only a same-host, safe redirect target supplied by a POST form."""
+    next_url = request.POST.get("next", "")
+    if next_url and url_has_allowed_host_and_scheme(
+        url=next_url,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
+        return next_url
+    return fallback
 
 
 # --------------------------------------------------------------------------- home
@@ -324,7 +336,7 @@ def toggle_bookmark(request, article_id):
             messages.success(request, "Removed from your saved articles.")
         else:
             messages.success(request, "Saved to your dashboard.")
-    return redirect(request.POST.get("next") or article.get_absolute_url())
+    return redirect(_safe_next_url(request, article.get_absolute_url()))
 
 
 @login_required
@@ -337,4 +349,4 @@ def toggle_rsvp(request, gathering_id):
             messages.success(request, "RSVP cancelled.")
         else:
             messages.success(request, "You're on the list — see you there!")
-    return redirect(request.POST.get("next") or "core:home")
+    return redirect(_safe_next_url(request, "core:home"))

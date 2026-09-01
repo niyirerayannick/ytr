@@ -67,6 +67,11 @@ class Gathering(models.Model):
     def is_upcoming(self):
         return self.end_datetime >= timezone.now()
 
+    def clean(self):
+        super().clean()
+        if self.start_datetime and self.end_datetime and self.end_datetime < self.start_datetime:
+            raise ValidationError({"end_datetime": "The end time must be on or after the start time."})
+
 
 class ReviewableContent(models.Model):
     """Abstract base for content that goes through the Author -> Admin review workflow.

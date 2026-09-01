@@ -23,7 +23,7 @@
   <article class="dash-mobile-row"><dl>
     <div><dt>Type</dt><dd>{{ item.label }}</dd></div>
     <div><dt>Title</dt><dd>{{ item.obj }}</dd></div>
-    <div><dt>Submitted by</dt><dd>{{ item.obj.submitted_by|default:"â€”" }}</dd></div>
+    <div><dt>Submitted by</dt><dd>{{ item.obj.submitted_by|default:"—" }}</dd></div>
     <div><dt>Submitted</dt><dd>{{ item.obj.submitted_at|date:"M j, Y" }}</dd></div>
   </dl>
   <div class="dash-actions"><a class="btn-sm btn-sm-outline" href="{% url 'dashboard:review_content' content_type=item.type pk=item.obj.pk %}">Review</a></div>

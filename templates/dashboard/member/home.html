@@ -38,7 +38,7 @@
     {% for r in rsvps %}
     <article class="dash-mobile-row"><dl>
       <div><dt>Gathering</dt><dd>{{ r.gathering.title }}</dd></div>
-      <div><dt>When</dt><dd>{{ r.gathering.start_datetime|date:"D, M j Â· g:i A" }}</dd></div>
+      <div><dt>When</dt><dd>{{ r.gathering.start_datetime|date:"D, M j · g:i A" }}</dd></div>
     </dl></article>
     {% endfor %}
   </div>

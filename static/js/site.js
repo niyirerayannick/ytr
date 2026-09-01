@@ -17,27 +17,29 @@
       var open = nav.classList.toggle("open");
       menuToggle.setAttribute("aria-expanded", open);
     });
+    document.querySelectorAll("#navLinks a").forEach(function (link) {
+      link.addEventListener("click", function () {
+        document.getElementById("navLinks").classList.remove("open");
+        menuToggle.setAttribute("aria-expanded", "false");
+      });
+    });
   }
 
   /* ---------- LANGUAGE TOGGLE (instant, client-side, persisted) ---------- */
   function setLang(lang) {
     document.body.classList.toggle("lang-rw", lang === "rw");
-    var en = document.getElementById("langEn");
-    var rw = document.getElementById("langRw");
-    if (en && rw) {
-      en.classList.toggle("active", lang === "en");
-      rw.classList.toggle("active", lang === "rw");
-      en.setAttribute("aria-pressed", lang === "en");
-      rw.setAttribute("aria-pressed", lang === "rw");
-    }
+    document.querySelectorAll("[data-language]").forEach(function (button) {
+      var active = button.getAttribute("data-language") === lang;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-pressed", active);
+    });
     try {
       localStorage.setItem("ytr_lang", lang);
     } catch (e) {}
   }
-  var langEnBtn = document.getElementById("langEn");
-  var langRwBtn = document.getElementById("langRw");
-  if (langEnBtn) langEnBtn.addEventListener("click", function () { setLang("en"); });
-  if (langRwBtn) langRwBtn.addEventListener("click", function () { setLang("rw"); });
+  document.querySelectorAll("[data-language]").forEach(function (button) {
+    button.addEventListener("click", function () { setLang(button.getAttribute("data-language")); });
+  });
   try {
     var saved = localStorage.getItem("ytr_lang");
     if (saved) setLang(saved);

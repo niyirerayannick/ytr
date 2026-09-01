@@ -3,6 +3,8 @@ from django.utils.text import slugify
 
 from apps.core.icons import ICON_CHOICES
 from apps.core.models import ReviewableContent
+from apps.core.uploads import validate_video_upload
+from .validators import validate_youtube_url
 
 
 class VideoSeries(models.Model):
@@ -43,8 +45,8 @@ class Video(ReviewableContent):
     title_en = models.CharField(max_length=200)
     title_rw = models.CharField(max_length=200)
 
-    youtube_url = models.URLField(blank=True, null=True)
-    video_file = models.FileField(upload_to="videos/", blank=True, null=True)
+    youtube_url = models.URLField(blank=True, null=True, validators=[validate_youtube_url])
+    video_file = models.FileField(upload_to="videos/", blank=True, null=True, validators=[validate_video_upload])
 
     is_featured = models.BooleanField(default=False)
     order = models.PositiveIntegerField(default=0)

@@ -52,6 +52,7 @@
             <form method="post" class="subscribe-row" id="subscribeForm">
               {% csrf_token %}
               <input type="hidden" name="form_type" value="subscribe">
+              <div class="honeypot" aria-hidden="true"><label for="subscribe-website">Leave this field empty</label><input id="subscribe-website" type="text" name="website" tabindex="-1" autocomplete="off"></div>
               <input type="email" name="email" placeholder="you@example.com" required value="{{ subscribe_form.email.value|default:'' }}">
               <button class="btn btn-outline-night" type="submit"><span class="i18n-en">Subscribe</span><span class="i18n-rw">Iyandikishe</span></button>
             </form>
@@ -64,6 +65,7 @@
         <form method="post" id="contactForm">
           {% csrf_token %}
           <input type="hidden" name="form_type" value="contact">
+          <div class="honeypot" aria-hidden="true"><label for="contact-website">Leave this field empty</label><input id="contact-website" type="text" name="website" tabindex="-1" autocomplete="off"></div>
           <div class="form-field">
             <label for="cf-name"><span class="i18n-en">Name</span><span class="i18n-rw">Izina</span></label>
             <input type="text" id="cf-name" name="name" required value="{{ contact_form.name.value|default:'' }}">
