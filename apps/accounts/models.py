@@ -13,14 +13,30 @@ class Profile(models.Model):
         (ROLE_MEMBER, "Member"),
     ]
 
+    LANGUAGE_EN = "en"
+    LANGUAGE_RW = "rw"
+    LANGUAGE_CHOICES = [
+        (LANGUAGE_EN, "English"),
+        (LANGUAGE_RW, "Kinyarwanda"),
+    ]
+
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default=ROLE_MEMBER)
+    full_name = models.CharField(max_length=150, blank=True, default="")
+    phone_number = models.CharField(max_length=40, blank=True, default="")
+    preferred_language = models.CharField(max_length=2, choices=LANGUAGE_CHOICES, default=LANGUAGE_EN)
+    privacy_accepted_at = models.DateTimeField(null=True, blank=True)
+    privacy_policy_version = models.CharField(max_length=40, blank=True, default="")
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.user.username} ({self.get_role_display()})"
+
+    @property
+    def display_name(self):
+        return self.full_name.strip() or self.user.get_full_name() or self.user.username
 
     @property
     def is_admin(self):

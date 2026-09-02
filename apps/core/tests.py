@@ -6,6 +6,7 @@ from pathlib import Path
 import subprocess
 import sys
 
+from django.contrib.auth import get_user_model
 from django.contrib.staticfiles import finders
 from django.core.exceptions import ValidationError
 from django.test import RequestFactory, TestCase
@@ -16,12 +17,15 @@ from apps.articles.models import Article
 from apps.core.models import Gathering, SiteSettings
 from . import views
 
+User = get_user_model()
+
 
 class HomeViewTests(TestCase):
     def test_home_loads(self):
         response = self.client.get(reverse("core:home"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Youth Time Revival")
+        self.assertContains(response, "Morning Devotion")
 
     def test_home_shows_featured_articles(self):
         Article.objects.create(
@@ -32,6 +36,21 @@ class HomeViewTests(TestCase):
         )
         response = self.client.get(reverse("core:home"))
         self.assertContains(response, "Test Article")
+
+    def test_home_shows_morning_devotion_meet_link(self):
+        settings = SiteSettings.load()
+        settings.morning_devotion_url = "https://meet.google.com/abc-defg-hij"
+        settings.save()
+        now = timezone.now() + timedelta(hours=1)
+        Gathering.objects.create(
+            title="YTR Morning Devotion", location="Google Meet",
+            start_datetime=now, end_datetime=now + timedelta(minutes=50),
+        )
+
+        response = self.client.get(reverse("core:home"))
+
+        self.assertContains(response, "Join on Google Meet")
+        self.assertContains(response, "https://meet.google.com/abc-defg-hij")
 
 
 class SiteSettingsSingletonTests(TestCase):
@@ -133,6 +152,40 @@ class ProductionSettingsTests(TestCase):
         self.assertIn("strong SECRET_KEY", result.stderr)
 
 
+class MarkPublicCacheableTests(TestCase):
+    """Direct unit coverage of the header contract, independent of any one view.
+
+    apps.articles.views and apps.devotions.views are the only current callers,
+    but this locks the helper's own behaviour down so a future caller can't
+    accidentally mark an authenticated response cacheable by the worker.
+    """
+
+    def setUp(self):
+        from apps.core.pwa import PUBLIC_CACHE_HEADER, mark_public_cacheable
+
+        self.header = PUBLIC_CACHE_HEADER
+        self.mark = mark_public_cacheable
+        self.factory = RequestFactory()
+
+    def test_anonymous_request_is_marked_cacheable(self):
+        from django.contrib.auth.models import AnonymousUser
+        from django.http import HttpResponse
+
+        request = self.factory.get("/articles/some-article/")
+        request.user = AnonymousUser()
+        response = self.mark(HttpResponse("ok"), request)
+        self.assertEqual(response[self.header], "1")
+
+    def test_authenticated_request_is_never_marked_cacheable(self):
+        from django.http import HttpResponse
+
+        user = User.objects.create_user("cache-guard", "cache-guard@example.com", "password123", is_active=True)
+        request = self.factory.get("/articles/some-article/")
+        request.user = user
+        response = self.mark(HttpResponse("ok"), request)
+        self.assertNotIn(self.header, response)
+
+
 class PwaManifestTests(TestCase):
     def test_manifest_file_exists_and_is_valid_json(self):
         manifest_path = finders.find("manifest.webmanifest")
@@ -207,20 +260,53 @@ class BaseTemplatePwaMetadataTests(TestCase):
         self.assertContains(response, 'name="theme-color" content="#1a1230"')
         self.assertContains(response, 'rel="apple-touch-icon"')
 
-    def test_home_page_includes_install_and_bottom_nav_partials(self):
+    def test_home_page_includes_install_and_update_partials(self):
+        # The install promotion and update banner are for every visitor, installed
+        # or not, authenticated or not — installing the app is orthogonal to login.
         response = self.client.get(reverse("core:home"))
         self.assertContains(response, 'id="pwaInstallCard"')
         self.assertContains(response, 'id="pwaUpdate"')
-        self.assertContains(response, 'class="pwa-bottom-nav"')
 
     def test_dashboard_shell_does_not_include_the_public_install_card(self):
         # The dashboard renders its own shell template (templates/dashboard/_shell.html)
         # rather than extending base.html, so Phase A's public install UI has no
         # reason to appear there and was not added to it.
-        from django.contrib.auth import get_user_model
-
-        User = get_user_model()
         User.objects.create_user("member", "member@example.com", "password123", is_active=True)
         self.client.force_login(User.objects.get(username="member"))
         response = self.client.get(reverse("dashboard:home"), follow=True)
         self.assertNotContains(response, "pwa-install-section")
+
+
+class MemberBottomNavAuthBoundaryTests(TestCase):
+    """The app-style bottom nav is for the authenticated My YTR experience only.
+
+    An installed-but-logged-out visitor must see the ordinary public site, not
+    a half-authenticated app shell — "installed" and "authenticated" are
+    independent states. The check is on the rendered HTML (the template's
+    `{% if request.user.is_authenticated %}` removes the markup entirely), not
+    a CSS class, so there's nothing for a logged-out visitor to unhide via
+    devtools or a slow stylesheet load.
+    """
+
+    def test_anonymous_visitor_does_not_receive_the_member_bottom_nav(self):
+        response = self.client.get(reverse("core:home"))
+        self.assertNotContains(response, "pwa-bottom-nav")
+        self.assertNotContains(response, "pwaMoreSheet")
+
+    def test_anonymous_visitor_sees_login_and_register_entry_points(self):
+        response = self.client.get(reverse("core:home"))
+        self.assertContains(response, reverse("accounts:login"))
+        self.assertContains(response, reverse("accounts:register"))
+
+    def test_authenticated_member_receives_the_bottom_nav_with_expected_destinations(self):
+        User.objects.create_user("member2", "member2@example.com", "password123", is_active=True)
+        self.client.force_login(User.objects.get(username="member2"))
+        response = self.client.get(reverse("core:home"))
+        self.assertContains(response, 'class="pwa-bottom-nav"')
+        self.assertContains(response, reverse("dashboard:member_home"))
+        self.assertContains(response, reverse("devotions:list"))
+        self.assertContains(response, reverse("podcasts:list"))
+        self.assertContains(response, reverse("videos:list"))
+        self.assertContains(response, 'id="pwaMoreSheet"')
+        self.assertContains(response, reverse("library:list"))
+        self.assertContains(response, reverse("accounts:logout"))

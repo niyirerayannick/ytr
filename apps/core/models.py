@@ -14,6 +14,7 @@ class SiteSettings(models.Model):
     instagram_url = models.URLField(blank=True)
     youtube_url = models.URLField(blank=True)
     tiktok_url = models.URLField(blank=True)
+    morning_devotion_url = models.URLField(blank=True)
 
     mission_en = models.TextField(blank=True)
     mission_rw = models.TextField(blank=True)

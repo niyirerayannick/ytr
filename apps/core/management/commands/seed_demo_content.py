@@ -1,4 +1,5 @@
 import datetime
+import os
 
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
@@ -112,6 +113,7 @@ class Command(BaseCommand):
     def seed_site_settings(self):
         settings = SiteSettings.load()
         settings.contact_email = "hello@youthtimerevival.rw"
+        settings.morning_devotion_url = os.environ.get("MORNING_DEVOTION_URL", "")
         settings.mission_en = (
             "To build hearts on fire for God — raising a generation rooted in prayer, "
             "taught in truth, and sent into every sphere of society."
@@ -134,26 +136,25 @@ class Command(BaseCommand):
         self.stdout.write("Site settings ready.")
 
     def seed_gathering(self):
-        start = timezone.make_aware(datetime.datetime.combine(
-            self._next_friday(), datetime.time(18, 0)
-        ))
-        end = start + datetime.timedelta(hours=2)
-        Gathering.objects.update_or_create(
-            title="YTR Fellowship Gathering",
-            defaults=dict(
-                description="Worship, teaching, open prayer, and time to be known.",
-                location="Altar of Prayer — Kigali, Rwanda",
+        Gathering.objects.filter(title__in=("YTR Fellowship Gathering", "YTR Morning Devotion")).delete()
+        for day in (1, 3):
+            start = timezone.make_aware(datetime.datetime.combine(
+                self._next_weekday(day), datetime.time(5, 30)
+            ))
+            Gathering.objects.create(
+                title="YTR Morning Devotion",
+                description="Morning prayer, teaching, and fellowship on Google Meet.",
+                location="Google Meet",
                 start_datetime=start,
-                end_datetime=end,
+                end_datetime=start + datetime.timedelta(minutes=50),
                 recurring=True,
-            ),
-        )
+            )
         self.stdout.write("Gathering ready.")
 
     @staticmethod
-    def _next_friday():
+    def _next_weekday(weekday):
         today = timezone.localdate()
-        days_ahead = (4 - today.weekday()) % 7  # Monday=0 ... Friday=4
+        days_ahead = (weekday - today.weekday()) % 7
         days_ahead = days_ahead or 7
         return today + datetime.timedelta(days=days_ahead)
 

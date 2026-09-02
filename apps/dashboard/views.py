@@ -282,11 +282,35 @@ def author_content_submit(request, content_type, pk):
 # ------------------------------------------------------------------------ member
 @role_required(Profile.ROLE_MEMBER)
 def member_dashboard(request):
+    today_devotion = (
+        Devotion.objects.filter(status=Devotion.STATUS_PUBLISHED)
+        .order_by("-is_featured", "-date")
+        .first()
+    )
+    next_gathering = (
+        Gathering.objects.filter(start_datetime__gte=timezone.now())
+        .order_by("start_datetime")
+        .first()
+    )
+    featured_article = Article.objects.filter(status=Article.STATUS_PUBLISHED).order_by("-published_at").first()
+    latest_episode = Episode.objects.filter(status=Episode.STATUS_PUBLISHED).order_by("-published_at").first()
+    latest_video = Video.objects.filter(status=Video.STATUS_PUBLISHED).order_by("-published_at").first()
+    bookmarks = Bookmark.objects.filter(member=request.user).select_related("article")[:3]
+    rsvps = RSVP.objects.filter(member=request.user).select_related("gathering")[:3]
+    testimonies = Testimony.objects.filter(member=request.user)[:3]
+    prayer_requests = PrayerRequest.objects.filter(member=request.user)[:3]
+
     context = {
-        "bookmarks": Bookmark.objects.filter(member=request.user).select_related("article"),
-        "rsvps": RSVP.objects.filter(member=request.user).select_related("gathering"),
-        "testimonies": Testimony.objects.filter(member=request.user),
-        "prayer_requests": PrayerRequest.objects.filter(member=request.user),
+        "profile": getattr(request.user, "profile", None),
+        "today_devotion": today_devotion,
+        "next_gathering": next_gathering,
+        "featured_article": featured_article,
+        "latest_episode": latest_episode,
+        "latest_video": latest_video,
+        "bookmarks": bookmarks,
+        "rsvps": rsvps,
+        "testimonies": testimonies,
+        "prayer_requests": prayer_requests,
         "testimony_form": TestimonyForm(),
         "prayer_form": PrayerRequestForm(),
     }

@@ -16,7 +16,7 @@
            data-ref="{{ today.verse_ref }}"
            data-verse-en="{{ today.verse_text_en }}"
            data-reflection-en="{{ today.reflection_en }}">
-        <div class="kicker" style="display:flex;gap:8px;align-items:center;font-size:0.8rem;color:var(--dawn);font-weight:600;margin-bottom:16px">
+        <div class="kicker">
           <span class="i18n-en">TODAY</span><span class="i18n-rw">UYU MUNSI</span>
         </div>
         <div class="verse-ref">{{ today.verse_ref }}</div>
@@ -27,8 +27,8 @@
         <p class="prayer i18n-en">{{ today.prayer_en }}</p>
         <p class="prayer i18n-rw">{{ today.prayer_rw }}</p>
         <div class="devo-actions">
-          <button class="btn btn-ember" id="shareDevoBtn">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5 15.4 6.5M8.6 13.5l6.8 4"/></svg>
+          <button class="btn devo-download-btn" id="shareDevoBtn">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v10m0 0 4-4m-4 4-4-4M4 18.5h16"/></svg>
             <span class="i18n-en">Download to repost</span><span class="i18n-rw">Kuramo kugira ngo usubiremo</span>
           </button>
         </div>

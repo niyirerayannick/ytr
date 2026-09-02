@@ -1,76 +1,131 @@
 {% extends "dashboard/member/_base.html" %}
-{% block title %}My dashboard{% endblock %}
+{% block title %}My YTR{% endblock %}
 
 {% block content %}
-<h1>Welcome, {{ request.user.username }}</h1>
+<h1>Welcome back, {{ profile.display_name|default:request.user.username }}</h1>
 <p class="dash-lede">{{ request.user.email }} · Member since {{ request.user.date_joined|date:"M j, Y" }}</p>
 
-<div class="dash-card">
-  <h3>Saved articles</h3>
-  {% if bookmarks %}
-  <table class="dash-table hidden lg:table">
-    {% for b in bookmarks %}
-    <tr><td><a href="{{ b.article.get_absolute_url }}">{{ b.article.title_en }}</a></td><td style="text-align:right; color:var(--ink-soft); font-size:0.82rem">{{ b.created_at|date:"M j, Y" }}</td></tr>
-    {% endfor %}
-  </table>
-  <div class="dash-mobile-list lg:hidden">
-    {% for b in bookmarks %}
-    <article class="dash-mobile-row"><dl>
-      <div><dt>Article</dt><dd><a href="{{ b.article.get_absolute_url }}">{{ b.article.title_en }}</a></dd></div>
-      <div><dt>Saved</dt><dd>{{ b.created_at|date:"M j, Y" }}</dd></div>
-    </dl></article>
-    {% endfor %}
+<div class="ytr-member-grid">
+  <div class="dash-card ytr-hero-card">
+    <div class="ytr-card-kicker">Today</div>
+    <h3>
+      {% if today_devotion %}
+        {{ today_devotion.verse_ref }}
+      {% else %}
+        Your daily rhythm
+      {% endif %}
+    </h3>
+    <p>
+      {% if today_devotion %}
+        {{ today_devotion.reflection_en|striptags|truncatechars:180 }}
+      {% else %}
+        Discover the day’s scripture and a new reflection in the devotion library.
+      {% endif %}
+    </p>
+    {% if today_devotion %}
+      <div class="ytr-inline-actions">
+        <a class="btn-sm btn-sm-ember" href="{% url 'devotions:list' %}">Read today</a>
+      </div>
+    {% else %}
+      <div class="ytr-inline-actions">
+        <a class="btn-sm btn-sm-ember" href="{% url 'devotions:list' %}">Browse devotions</a>
+      </div>
+    {% endif %}
   </div>
+
+  <div class="dash-card">
+    <div class="dash-card-head">
+      <h3>Upcoming gathering</h3>
+      {% if next_gathering %}<span class="badge badge-published">{{ next_gathering.start_datetime|date:"D, M j" }}</span>{% endif %}
+    </div>
+    {% if next_gathering %}
+      <p class="ytr-card-title">{{ next_gathering.title }}</p>
+      <p class="ytr-muted">{{ next_gathering.start_datetime|date:"D, M j · g:i A" }} · {{ next_gathering.location }}</p>
+      <a class="btn-text" href="{% url 'core:home' %}">View schedule</a>
+    {% else %}
+      <p class="dash-empty">No gathering is scheduled yet. Stay tuned for the next community moment.</p>
+    {% endif %}
+  </div>
+</div>
+
+<div class="dash-card">
+  <h3>Explore your space</h3>
+  <div class="ytr-resource-grid">
+    <div class="ytr-resource-tile">
+      <div class="ytr-resource-icon">article</div>
+      <div>
+        <p class="ytr-resource-label">Read</p>
+        <h4>{% if featured_article %}{{ featured_article.title_en }}{% else %}Newest teaching{% endif %}</h4>
+      </div>
+      {% if featured_article %}<a href="{{ featured_article.get_absolute_url }}">Open</a>{% endif %}
+    </div>
+    <div class="ytr-resource-tile">
+      <div class="ytr-resource-icon">headphones</div>
+      <div>
+        <p class="ytr-resource-label">Listen</p>
+        <h4>{% if latest_episode %}{{ latest_episode.title }}{% else %}Podcast archive{% endif %}</h4>
+      </div>
+      {% if latest_episode %}<a href="{% url 'podcasts:list' %}">Open</a>{% endif %}
+    </div>
+    <div class="ytr-resource-tile">
+      <div class="ytr-resource-icon">play_arrow</div>
+      <div>
+        <p class="ytr-resource-label">Watch</p>
+        <h4>{% if latest_video %}{{ latest_video.title }}{% else %}Video teaching{% endif %}</h4>
+      </div>
+      {% if latest_video %}<a href="{% url 'videos:list' %}">Open</a>{% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="dash-card">
+  <div class="dash-card-head">
+    <h3>Saved resources</h3>
+    <a class="btn-text" href="{% url 'articles:list' %}">Browse</a>
+  </div>
+  {% if bookmarks %}
+    {% for b in bookmarks %}
+      <div class="ytr-list-item">
+        <div>
+          <p class="ytr-list-title"><a href="{{ b.article.get_absolute_url }}">{{ b.article.title_en }}</a></p>
+        </div>
+        <span class="ytr-muted">{{ b.created_at|date:"M j" }}</span>
+      </div>
+    {% endfor %}
   {% else %}
-  <p class="dash-empty">Bookmark an article from its page and it'll show up here.</p>
+    <p class="dash-empty">Bookmark an article to build your personal reading list.</p>
   {% endif %}
 </div>
 
 <div class="dash-card">
   <h3>My RSVPs</h3>
   {% if rsvps %}
-  <table class="dash-table hidden lg:table">
     {% for r in rsvps %}
-    <tr><td>{{ r.gathering.title }}</td><td>{{ r.gathering.start_datetime|date:"D, M j · g:i A" }}</td></tr>
+      <div class="ytr-list-item">
+        <div>
+          <p class="ytr-list-title">{{ r.gathering.title }}</p>
+          <span class="ytr-muted">{{ r.gathering.start_datetime|date:"D, M j · g:i A" }}</span>
+        </div>
+      </div>
     {% endfor %}
-  </table>
-  <div class="dash-mobile-list lg:hidden">
-    {% for r in rsvps %}
-    <article class="dash-mobile-row"><dl>
-      <div><dt>Gathering</dt><dd>{{ r.gathering.title }}</dd></div>
-      <div><dt>When</dt><dd>{{ r.gathering.start_datetime|date:"D, M j · g:i A" }}</dd></div>
-    </dl></article>
-    {% endfor %}
-  </div>
   {% else %}
-  <p class="dash-empty">Say "I'll be there" on the homepage's gathering card to RSVP.</p>
+    <p class="dash-empty">Your upcoming gatherings will appear here after you RSVP.</p>
   {% endif %}
 </div>
 
 <div class="dash-card">
   <h3>My testimonies</h3>
   {% if testimonies %}
-  <table class="dash-table hidden lg:table">
     {% for t in testimonies %}
-    <tr>
-      <td>
-        {{ t.title }}
-        {% if t.status == "rejected" and t.review_note %}<div class="review-note-box" style="margin-top:8px">{{ t.review_note }}</div>{% endif %}
-      </td>
-      <td><span class="badge badge-{% if t.status == 'pending' %}pending{% elif t.status == 'approved' %}published{% else %}rejected{% endif %}">{{ t.get_status_display }}</span></td>
-    </tr>
+      <div class="ytr-list-item">
+        <div>
+          <p class="ytr-list-title">{{ t.title }}</p>
+          <span class="ytr-muted">{{ t.get_status_display }}</span>
+        </div>
+      </div>
     {% endfor %}
-  </table>
-  <div class="dash-mobile-list lg:hidden">
-    {% for t in testimonies %}
-    <article class="dash-mobile-row"><dl>
-      <div><dt>Title</dt><dd>{{ t.title }}{% if t.status == "rejected" and t.review_note %}<div class="review-note-box">{{ t.review_note }}</div>{% endif %}</dd></div>
-      <div><dt>Status</dt><dd><span class="badge badge-{% if t.status == 'pending' %}pending{% elif t.status == 'approved' %}published{% else %}rejected{% endif %}">{{ t.get_status_display }}</span></dd></div>
-    </dl></article>
-    {% endfor %}
-  </div>
   {% else %}
-  <p class="dash-empty">Nothing submitted yet.</p>
+    <p class="dash-empty">Share your testimony when you are ready.</p>
   {% endif %}
   <details style="margin-top:16px">
     <summary style="cursor:pointer; font-weight:600; font-size:0.92rem">Submit a testimony</summary>
@@ -88,27 +143,18 @@
 </div>
 
 <div class="dash-card">
-  <h3>My prayer requests</h3>
-  <p style="color:var(--ink-soft); font-size:0.85rem; margin-bottom:14px">Private — only you and the admin team can see these.</p>
+  <h3>Prayer requests</h3>
   {% if prayer_requests %}
-  <table class="dash-table hidden lg:table">
     {% for p in prayer_requests %}
-    <tr>
-      <td>{{ p.body|truncatewords:20 }}</td>
-      <td><span class="badge {% if p.status == 'pending' %}badge-pending{% else %}badge-published{% endif %}">{{ p.get_status_display }}</span></td>
-    </tr>
+      <div class="ytr-list-item">
+        <div>
+          <p class="ytr-list-title">{{ p.body|truncatewords:18 }}</p>
+          <span class="ytr-muted">{{ p.get_status_display }}</span>
+        </div>
+      </div>
     {% endfor %}
-  </table>
-  <div class="dash-mobile-list lg:hidden">
-    {% for p in prayer_requests %}
-    <article class="dash-mobile-row"><dl>
-      <div><dt>Request</dt><dd>{{ p.body|truncatewords:20 }}</dd></div>
-      <div><dt>Status</dt><dd><span class="badge {% if p.status == 'pending' %}badge-pending{% else %}badge-published{% endif %}">{{ p.get_status_display }}</span></dd></div>
-    </dl></article>
-    {% endfor %}
-  </div>
   {% else %}
-  <p class="dash-empty">Nothing submitted yet.</p>
+    <p class="dash-empty">No prayer requests yet. Your private requests stay between you and the team.</p>
   {% endif %}
   <details style="margin-top:16px">
     <summary style="cursor:pointer; font-weight:600; font-size:0.92rem">Submit a prayer request</summary>

@@ -54,6 +54,12 @@
               <div>
                 <div class="ep-title"><span class="i18n-en">{{ ep.title_en }}</span><span class="i18n-rw">{{ ep.title_rw }}</span></div>
                 <div class="ep-desc"><span class="i18n-en">{{ ep.description_en }}</span><span class="i18n-rw">{{ ep.description_rw }}</span></div>
+                {% if ep.audio_file or ep.audio_url %}
+                <audio controls preload="metadata" class="ep-player">
+                  {% if ep.audio_file %}<source src="{{ ep.audio_file.url }}">{% else %}<source src="{{ ep.audio_url }}">{% endif %}
+                  <span class="i18n-en">Your browser does not support audio playback.</span><span class="i18n-rw">Mucukumbuzi yawe ntiyemera kumva amajwi.</span>
+                </audio>
+                {% endif %}
               </div>
               <span class="ep-dur">{{ ep.duration }}</span>
             </li>

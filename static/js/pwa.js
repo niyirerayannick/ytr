@@ -6,11 +6,17 @@
   }
 
   function isSecureContext() {
-    return location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
+    return location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1" || location.hostname === "10.0.2.2" || location.hostname === "::1";
+  }
+
+  function isLocalDevelopmentHost() {
+    return ["localhost", "127.0.0.1", "::1", "10.0.2.2"].indexOf(location.hostname) !== -1;
   }
 
   /* ---------- SERVICE WORKER REGISTRATION + UPDATES ---------- */
   var waitingWorker = null;
+  var updateRequested = false;
+  var reloadedForUpdate = false;
   var updateBanner = document.getElementById("pwaUpdate");
   var updateButton = document.getElementById("pwaUpdateButton");
 
@@ -19,7 +25,7 @@
     if (updateBanner) updateBanner.hidden = false;
   }
 
-  if ("serviceWorker" in navigator && isSecureContext()) {
+  if ("serviceWorker" in navigator && isSecureContext() && !isLocalDevelopmentHost()) {
     window.addEventListener("load", function () {
       navigator.serviceWorker.register("/service-worker.js").then(function (registration) {
         if (registration.waiting && navigator.serviceWorker.controller) {
@@ -38,9 +44,13 @@
         /* Offline support degrades to normal online browsing. */
       });
 
-      var reloadedForUpdate = false;
+      // clients.claim() in the worker's activate handler also fires
+      // controllerchange the very first time a page becomes controlled —
+      // not just on a genuine update. Reloading then would mean every first
+      // visit reloads itself once. Only reload when *we* requested the skip
+      // (see the Update button handler below).
       navigator.serviceWorker.addEventListener("controllerchange", function () {
-        if (reloadedForUpdate) return;
+        if (!updateRequested || reloadedForUpdate) return;
         reloadedForUpdate = true;
         window.location.reload();
       });
@@ -49,7 +59,10 @@
 
   if (updateButton) {
     updateButton.addEventListener("click", function () {
-      if (waitingWorker) waitingWorker.postMessage({ type: "SKIP_WAITING" });
+      if (waitingWorker) {
+        updateRequested = true;
+        waitingWorker.postMessage({ type: "SKIP_WAITING" });
+      }
       if (updateBanner) updateBanner.hidden = true;
     });
   }
@@ -125,6 +138,40 @@
       } catch (e) {}
     });
   }
+
+  /* ---------- MEMBER BOTTOM NAV "MORE" DRAWER ---------- */
+  var moreToggle = document.getElementById("pwaMoreToggle");
+  var moreSheet = document.getElementById("pwaMoreSheet");
+  var moreBackdrop = document.getElementById("pwaMoreBackdrop");
+
+  function closeMoreSheet() {
+    if (!moreSheet || moreSheet.hidden) return;
+    moreSheet.hidden = true;
+    if (moreBackdrop) moreBackdrop.hidden = true;
+    if (moreToggle) moreToggle.setAttribute("aria-expanded", "false");
+  }
+
+  function openMoreSheet() {
+    if (!moreSheet) return;
+    moreSheet.hidden = false;
+    if (moreBackdrop) moreBackdrop.hidden = false;
+    if (moreToggle) moreToggle.setAttribute("aria-expanded", "true");
+  }
+
+  if (moreToggle && moreSheet) {
+    moreToggle.addEventListener("click", function () {
+      if (moreSheet.hidden) openMoreSheet(); else closeMoreSheet();
+    });
+    moreSheet.querySelectorAll("a").forEach(function (link) {
+      link.addEventListener("click", closeMoreSheet);
+    });
+    var moreLogoutButton = moreSheet.querySelector("form button[type=submit]");
+    if (moreLogoutButton) moreLogoutButton.addEventListener("click", closeMoreSheet);
+  }
+  if (moreBackdrop) moreBackdrop.addEventListener("click", closeMoreSheet);
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") closeMoreSheet();
+  });
 
   /* ---------- ONLINE / OFFLINE INDICATOR ---------- */
   var networkStatus = document.getElementById("pwaNetworkStatus");

@@ -28,10 +28,10 @@ function canCachePublicPage(request, response) {
   return request.method === "GET" && response && response.ok && response.headers.get("X-YTR-Public-Cache") === "1";
 }
 
-async function cachePublicPage(request, response) {
+async function cachePublicPage(request, responseToCache) {
   const cache = await caches.open(PAGE_CACHE);
   await cache.delete(request);
-  await cache.put(request, response.clone());
+  await cache.put(request, responseToCache);
   const keys = await cache.keys();
   await Promise.all(keys.slice(0, Math.max(0, keys.length - MAX_PUBLIC_PAGES)).map((key) => cache.delete(key)));
 }
@@ -65,8 +65,17 @@ self.addEventListener("fetch", (event) => {
     event.respondWith((async () => {
       try {
         const response = await fetch(request);
+        const dbg = { pathname: url.pathname, isPublicTextPath: isPublicTextPath(url.pathname), header: response.headers.get("X-YTR-Public-Cache"), ok: response.ok, method: request.method };
         if (isPublicTextPath(url.pathname) && canCachePublicPage(request, response)) {
-          event.waitUntil(cachePublicPage(request, response));
+          event.waitUntil(cachePublicPage(request, response.clone()).then(() => {
+            dbg.cached = true;
+          }).catch((e) => {
+            dbg.error = String(e);
+          }).finally(() => {
+            self.clients.matchAll().then((cs) => cs.forEach((c) => c.postMessage({ type: "DEBUG", dbg })));
+          }));
+        } else {
+          self.clients.matchAll().then((cs) => cs.forEach((c) => c.postMessage({ type: "DEBUG", dbg })));
         }
         return response;
       } catch (error) {

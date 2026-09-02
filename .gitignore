@@ -14,5 +14,7 @@ db.sqlite3
 /uploads/
 .coverage
 .pytest_cache/
+/test-results/
+/playwright-report/
 .DS_Store
 Thumbs.db

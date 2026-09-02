@@ -94,3 +94,21 @@ class ArticleViewTests(TestCase):
         self.client.force_login(User.objects.get(username="reader"))
         response = self.client.get(self.article.get_absolute_url())
         self.assertNotIn("X-YTR-Public-Cache", response.headers)
+
+    def test_draft_article_404_is_never_marked_cacheable(self):
+        draft = Article.objects.create(
+            title_en="Draft Article", title_rw="Umushinga", hook_en="h", hook_rw="h",
+            body_en="b", body_rw="b", status=Article.STATUS_DRAFT,
+        )
+        response = self.client.get(draft.get_absolute_url())
+        self.assertEqual(response.status_code, 404)
+        self.assertNotIn("X-YTR-Public-Cache", response.headers)
+
+    def test_pending_article_404_is_never_marked_cacheable(self):
+        pending = Article.objects.create(
+            title_en="Pending Article", title_rw="Umushinga", hook_en="h", hook_rw="h",
+            body_en="b", body_rw="b", status=Article.STATUS_PENDING,
+        )
+        response = self.client.get(reverse("articles:detail", kwargs={"slug": pending.slug}))
+        self.assertEqual(response.status_code, 404)
+        self.assertNotIn("X-YTR-Public-Cache", response.headers)

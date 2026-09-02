@@ -9,6 +9,14 @@
         <h2>Log in</h2>
       </div>
 
+      {% if messages %}
+      <div style="margin-bottom:26px; display:flex; flex-direction:column; gap:10px">
+        {% for message in messages %}
+        <div style="border:1px solid var(--line); background:var(--paper-2); padding:14px 18px; font-size:0.92rem">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
       <form method="post" novalidate>
         {% csrf_token %}
         {% for field in form %}
@@ -26,6 +34,9 @@
       </form>
 
       <p style="margin-top:22px; font-size:0.92rem; color:var(--ink-soft)">
+        <a href="{% url 'accounts:password_reset' %}" style="color:var(--ember); font-weight:600">Forgot password?</a>
+      </p>
+      <p style="margin-top:12px; font-size:0.92rem; color:var(--ink-soft)">
         Need an account? <a href="{% url 'accounts:register' %}" style="color:var(--ember); font-weight:600">Sign up</a>
       </p>
     </div>

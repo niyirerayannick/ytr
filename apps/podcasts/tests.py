@@ -27,6 +27,24 @@ class PodcastListViewTests(TestCase):
         self.assertContains(response, "Kanguka")
         self.assertContains(response, "Wake Up First")
 
+    def test_podcast_list_includes_episode_audio_players(self):
+        series = PodcastSeries.objects.create(title_en="Series", title_rw="Urukurikirane")
+        Episode.objects.create(
+            series=series, title_en="Uploaded", title_rw="Byashyizweho",
+            audio_file=SimpleUploadedFile("episode.mp3", b"audio", content_type="audio/mpeg"),
+            status=Episode.STATUS_PUBLISHED,
+        )
+        Episode.objects.create(
+            series=series, title_en="External", title_rw="Hanze",
+            audio_url="https://example.com/episode.mp3", status=Episode.STATUS_PUBLISHED,
+        )
+
+        response = self.client.get(reverse("podcasts:list"))
+
+        self.assertContains(response, "<audio", count=2)
+        self.assertContains(response, "/media/episodes/episode.mp3")
+        self.assertContains(response, "https://example.com/episode.mp3")
+
 
 class EpisodeValidationTests(TestCase):
     def test_audio_upload_accepts_supported_file(self):

@@ -1,7 +1,31 @@
-<nav class="pwa-bottom-nav" aria-label="YTR app navigation">
-  <a href="{% url 'core:home' %}"><span aria-hidden="true">⌂</span><span>Home</span></a>
-  <a href="{% url 'devotions:list' %}"><span aria-hidden="true">✦</span><span>Word</span></a>
-  <a href="{% url 'podcasts:list' %}"><span aria-hidden="true">◖</span><span>Listen</span></a>
-  <a href="{% url 'videos:list' %}"><span aria-hidden="true">▷</span><span>Watch</span></a>
-  <a href="{% url 'library:list' %}"><span aria-hidden="true">☰</span><span>More</span></a>
+<nav class="pwa-bottom-nav" aria-label="YTR mobile navigation">
+  <a href="{% url 'core:home' %}" class="{% if request.resolver_match.view_name == 'core:home' %}active{% endif %}"><span class="material-symbols-outlined" aria-hidden="true">home</span><span>Home</span></a>
+  <a href="{% url 'articles:list' %}" class="{% if 'articles' in request.resolver_match.namespace %}active{% endif %}"><span class="material-symbols-outlined" aria-hidden="true">article</span><span>Articles</span></a>
+  <a href="{% url 'devotions:list' %}" class="{% if 'devotions' in request.resolver_match.namespace %}active{% endif %}"><span class="material-symbols-outlined" aria-hidden="true">auto_stories</span><span>Word</span></a>
+  <a href="{% url 'podcasts:list' %}" class="{% if 'podcasts' in request.resolver_match.namespace %}active{% endif %}"><span class="material-symbols-outlined" aria-hidden="true">podcasts</span><span>Listen</span></a>
+  <button type="button" class="pwa-more-btn" id="pwaMoreToggle" aria-haspopup="true" aria-expanded="false" aria-controls="pwaMoreSheet">
+    <span class="material-symbols-outlined" aria-hidden="true">menu</span><span>More</span>
+  </button>
 </nav>
+<button type="button" class="pwa-more-backdrop" id="pwaMoreBackdrop" aria-label="Close menu" hidden></button>
+<div class="pwa-more-sheet" id="pwaMoreSheet" role="menu" aria-label="More" hidden>
+  {% if request.user.is_authenticated %}
+    <a role="menuitem" href="{% url 'dashboard:home' %}"><span class="i18n-en">Dashboard</span><span class="i18n-rw">Dashboard</span></a>
+  {% else %}
+    <a role="menuitem" href="{% url 'about:about' %}"><span class="i18n-en">About</span><span class="i18n-rw">Abo Turibo</span></a>
+    <a role="menuitem" href="{% url 'videos:list' %}"><span class="i18n-en">Videos</span><span class="i18n-rw">Videwo</span></a>
+    <a role="menuitem" href="{% url 'library:list' %}"><span class="i18n-en">Library</span><span class="i18n-rw">Isomero</span></a>
+    <a role="menuitem" href="{% url 'faq:list' %}"><span class="i18n-en">FAQ</span><span class="i18n-rw">Ibibazo</span></a>
+    <a role="menuitem" href="{% url 'engagement:contact' %}"><span class="i18n-en">Contact</span><span class="i18n-rw">Twandikire</span></a>
+    <a role="menuitem" href="{% url 'accounts:login' %}"><span class="i18n-en">Log in</span><span class="i18n-rw">Injira</span></a>
+    <a role="menuitem" href="{% url 'accounts:register' %}"><span class="i18n-en">Create account</span><span class="i18n-rw">Fungua konti</span></a>
+  {% endif %}
+  <div class="pwa-more-lang" role="group" aria-label="Language">
+    <button type="button" data-language="en" class="active" aria-pressed="true">EN</button>
+    <button type="button" data-language="rw" aria-pressed="false">KN</button>
+  </div>
+  {% if request.user.is_authenticated %}
+    <a role="menuitem" href="{% url 'core:home' %}"><span class="i18n-en">View public site</span><span class="i18n-rw">Reba urubuga rusanzwe</span></a>
+    <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button type="submit" role="menuitem"><span class="i18n-en">Log out</span><span class="i18n-rw">Sohoka</span></button></form>
+  {% endif %}
+</div>

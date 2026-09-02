@@ -1,6 +1,8 @@
 # Digital Discipleship Platform: architecture and phased roadmap
 
-**Status:** pre-implementation design
+**Status:** Phase B implemented
+
+**Current phase:** Authentication, profile onboarding, verification, member dashboard, and password reset flows are in place. Phase C and later phases remain deferred.
 
 **Decision:** Extend the existing Django application in small, reversible phases. Do
 not replace the current content apps or introduce a new API/mobile stack for the
