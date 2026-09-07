@@ -3,6 +3,21 @@ from django.core.exceptions import ImproperlyConfigured
 from .base import *  # noqa: F401,F403
 
 DEBUG = False
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
+
+# Media can live outside the container on AWS S3, R2, or another S3 provider.
+if env("AWS_STORAGE_BUCKET_NAME", default=""):
+    STORAGES["default"] = {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "bucket_name": env("AWS_STORAGE_BUCKET_NAME"),
+            "endpoint_url": env("AWS_S3_ENDPOINT_URL", default=None) or None,
+            "region_name": env("AWS_S3_REGION_NAME", default=None) or None,
+            "default_acl": None,
+            "file_overwrite": False,
+            "querystring_auth": True,
+        },
+    }
 
 if not ALLOWED_HOSTS:
     raise ValueError("ALLOWED_HOSTS must be set via env in production")

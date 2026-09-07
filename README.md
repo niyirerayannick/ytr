@@ -49,6 +49,10 @@ static/
 
 ## Setup
 
+For production deployment, follow [the Coolify guide](docs/deployment-coolify.md).
+The Docker image builds Tailwind, collects production static assets, and runs
+Gunicorn with automatic database migrations and an HTTP readiness check.
+
 ```bash
 # 1. Create and activate a virtual environment
 python -m venv venv
