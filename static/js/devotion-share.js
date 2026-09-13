@@ -145,6 +145,8 @@
   });
 
   if (rwUnavailableNote) rwUnavailableNote.hidden = DATA.has_rw;
+  setRepostLang(currentLang, "#shareDialog");
+  setRepostLang(currentLang, "#repostDialog");
 
   function loadRepostImage() {
     if (repostLoading) repostLoading.hidden = false;

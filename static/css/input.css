@@ -853,4 +853,79 @@
   @media (display-mode: standalone) {
     .pwa-install-section, .pwa-ios-install { display: none !important; }
   }
+
+  /* ============ DEVOTION SHARE / REPOST ============ */
+  dialog.share-dialog, dialog.repost-dialog {
+    @apply bg-night text-cream-ink border-0;
+    padding: 0;
+    width: min(460px, calc(100% - 32px));
+    border-radius: 20px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+  }
+  dialog.share-dialog::backdrop, dialog.repost-dialog::backdrop {
+    background: rgba(26, 18, 48, 0.6);
+  }
+  .share-dialog-inner, .repost-dialog-inner { padding: 22px 22px 26px; }
+  .share-dialog-head { @apply flex items-center justify-between; margin-bottom: 18px; }
+  .share-dialog-head h2 { font-size: 1.15rem; }
+  .share-dialog-close { @apply text-cream-ink flex-none; }
+
+  .share-platform-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .share-platform-btn {
+    @apply flex flex-col items-center justify-center gap-1 no-underline text-cream-ink cursor-pointer;
+    border: 1px solid theme("colors.line-night");
+    border-radius: 14px;
+    min-height: 72px;
+    font-size: 0.8rem;
+    background: rgba(255, 255, 255, 0.03);
+  }
+  .share-platform-btn span:first-child { font-size: 1.4rem; line-height: 1; }
+  .share-platform-btn:hover, .share-platform-btn:focus-visible { background: rgba(255, 255, 255, 0.08); }
+  .share-platform-btn[hidden] { display: none; }
+
+  .share-repost-section {
+    margin-top: 24px; padding-top: 20px;
+    border-top: 1px solid theme("colors.line-night");
+  }
+  .share-repost-section h3 { font-size: 0.95rem; margin-bottom: 12px; }
+
+  .share-lang-group { @apply flex gap-2; margin-bottom: 14px; }
+  .share-lang-btn {
+    @apply flex-1 text-center bg-transparent text-cream-ink cursor-pointer;
+    border: 1px solid theme("colors.line-night");
+    border-radius: 8px;
+    min-height: 40px;
+    font-size: 0.85rem;
+  }
+  .share-lang-btn.active { @apply bg-ember text-white; border-color: theme("colors.ember"); }
+  .share-lang-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .share-lang-note { color: rgba(246, 239, 224, 0.65); font-size: 0.8rem; margin-bottom: 12px; }
+
+  .repost-preview {
+    position: relative; margin-bottom: 16px; border-radius: 14px; overflow: hidden;
+    background: rgba(255, 255, 255, 0.04); aspect-ratio: 1 / 1;
+  }
+  .repost-preview img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.2s; }
+  .repost-loading { @apply absolute inset-0 flex items-center justify-center text-cream-ink; font-size: 0.85rem; }
+  .repost-loading[hidden] { display: none; }
+  .repost-actions { @apply flex gap-3 flex-wrap; margin-top: 18px; }
+  .repost-actions .devo-share-btn { flex: 1; }
+
+  @media (max-width: 640px) {
+    dialog.share-dialog, dialog.repost-dialog {
+      position: fixed;
+      inset: auto 0 0 0;
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      border-radius: 20px 20px 0 0;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+  }
 }
