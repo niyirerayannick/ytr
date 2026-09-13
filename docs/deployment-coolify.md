@@ -114,15 +114,19 @@ repo's `.gitignore` deliberately excludes them, since committing user data
 a bad idea. Copy them onto the server directly instead:
 
 ```bash
-# From your local machine, copy both onto the Coolify host
-scp db.sqlite3 you@your-coolify-host:/tmp/db.sqlite3
-scp -r media you@your-coolify-host:/tmp/media
+# From PowerShell in this repo, create a local content bundle
+.\scripts\package-production-content.ps1
+
+# Upload the generated deploy-content/ytr-content-*.zip to the Coolify host,
+# then unzip it there.
+scp deploy-content/ytr-content-*.zip you@your-coolify-host:/tmp/
+ssh you@your-coolify-host
+cd /tmp
+unzip ytr-content-*.zip
 
 # On the Coolify host: find the running container, then copy the files in
 docker ps --filter "name=<your-app-name>"           # note the container ID
-docker cp /tmp/db.sqlite3 <container-id>:/app/data/db.sqlite3
-docker cp /tmp/media/. <container-id>:/app/media/
-docker exec <container-id> chown -R app:app /app/data /app/media
+./restore-production-content.sh <container-id>
 ```
 
 Then restart the application in Coolify so Gunicorn picks up the copied
