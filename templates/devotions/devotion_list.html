@@ -12,10 +12,7 @@
       </div>
 
       {% if today %}
-      <div class="devo-card" id="devoCard"
-           data-ref="{{ today.verse_ref }}"
-           data-verse-en="{{ today.verse_text_en }}"
-           data-reflection-en="{{ today.reflection_en }}">
+      <div class="devo-card" id="devoCard">
         <div class="kicker">
           <span class="i18n-en">TODAY</span><span class="i18n-rw">UYU MUNSI</span>
         </div>
@@ -27,10 +24,10 @@
         <p class="prayer i18n-en">{{ today.prayer_en }}</p>
         <p class="prayer i18n-rw">{{ today.prayer_rw }}</p>
         <div class="devo-actions">
-          <button class="btn devo-download-btn" id="shareDevoBtn">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v10m0 0 4-4m-4 4-4-4M4 18.5h16"/></svg>
-            <span class="i18n-en">Download to repost</span><span class="i18n-rw">Kuramo kugira ngo usubiremo</span>
-          </button>
+          <a class="btn devo-share-btn" href="{{ today.get_absolute_url }}">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.5 6.8-3.9M8.6 13.5l6.8 3.9"/></svg>
+            <span class="i18n-en">Read &amp; share</span><span class="i18n-rw">Soma unasangize</span>
+          </a>
         </div>
       </div>
       {% else %}
@@ -43,14 +40,14 @@
       <div class="devo-archive">
         <h3 style="font-size:1.1rem; margin-bottom:6px"><span class="i18n-en">Recent devotions</span><span class="i18n-rw">Ibitekerezo biheruka</span></h3>
         {% for d in page_obj %}
-        <div class="devo-archive-item">
+        <a class="devo-archive-item" href="{{ d.get_absolute_url }}">
           <div>
             <strong class="i18n-en">{{ d.verse_ref }}</strong><strong class="i18n-rw">{{ d.verse_ref }}</strong>
             <p style="color:var(--ink-soft); font-size:0.92rem; margin-top:4px" class="i18n-en">{{ d.verse_text_en }}</p>
             <p style="color:var(--ink-soft); font-size:0.92rem; margin-top:4px" class="i18n-rw">{{ d.verse_text_rw }}</p>
           </div>
           <span class="d-date">{{ d.date }}</span>
-        </div>
+        </a>
         {% empty %}
         <p class="i18n-en" style="color:var(--ink-soft); padding-top:18px">No past devotions yet.</p>
         <p class="i18n-rw" style="color:var(--ink-soft); padding-top:18px">Nta bitekerezo bishaje biraboneka.</p>

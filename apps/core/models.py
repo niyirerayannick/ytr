@@ -10,6 +10,10 @@ class SiteSettings(models.Model):
     contact_email = models.EmailField(default="hello@youthtimerevival.rw")
     phone = models.CharField(max_length=40, blank=True)
     address = models.CharField(max_length=255, blank=True)
+    website_url = models.URLField(
+        blank=True,
+        help_text="Shown in the footer of generated devotional share images, e.g. https://youthtimerevival.rw",
+    )
 
     instagram_url = models.URLField(blank=True)
     youtube_url = models.URLField(blank=True)

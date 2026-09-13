@@ -346,13 +346,13 @@
     margin-top: 18px; padding-top: 18px;
   }
   .devo-actions { @apply flex gap-[14px] flex-wrap; position: relative; z-index: 1; margin-top: 26px; }
-  .devo-download-btn {
+  .devo-download-btn, .devo-share-btn {
     @apply inline-flex items-center justify-center gap-2 border-0 rounded-[14px] font-semibold text-white;
     background: linear-gradient(135deg, theme("colors.ember") 0%, #F28D3A 100%);
     box-shadow: 0 14px 24px rgba(228, 87, 46, 0.28);
     min-height: 52px; padding: 0 22px;
   }
-  .devo-download-btn:hover { filter: brightness(1.04); }
+  .devo-download-btn:hover, .devo-share-btn:hover { filter: brightness(1.04); }
 
   @media (max-width: 640px) {
     .devo-card {
@@ -362,7 +362,7 @@
     .devo-card .verse-text { font-size: 1.02rem; }
     .devo-card .reflection { font-size: 0.98rem; }
     .devo-card .prayer { font-size: 0.88rem; }
-    .devo-download-btn {
+    .devo-download-btn, .devo-share-btn {
       width: 100%;
       justify-content: center;
       padding: 0 16px;
@@ -370,9 +370,11 @@
   }
   .devo-archive { display: grid; gap: 0; margin-top: 40px; }
   .devo-archive-item {
-    @apply border-t border-line flex justify-between gap-4 items-baseline flex-wrap;
+    @apply border-t border-line flex justify-between gap-4 items-baseline flex-wrap no-underline;
     padding: 18px 0;
   }
+  .devo-archive-item strong { transition: color 0.15s; }
+  .devo-archive-item:hover strong { color: theme("colors.ember"); }
   .devo-archive-item .d-date { @apply text-ink-soft whitespace-nowrap; font-size: 0.82rem; }
 
   /* ---- podcasts ---- */

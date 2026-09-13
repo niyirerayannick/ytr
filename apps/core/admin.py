@@ -5,7 +5,7 @@ from .models import Gathering, SiteSettings
 
 @admin.register(SiteSettings)
 class SiteSettingsAdmin(admin.ModelAdmin):
-    list_display = ("contact_email", "phone", "address", "morning_devotion_url", "updated_at")
+    list_display = ("contact_email", "phone", "website_url", "address", "morning_devotion_url", "updated_at")
 
     def has_add_permission(self, request):
         return not SiteSettings.objects.exists()
