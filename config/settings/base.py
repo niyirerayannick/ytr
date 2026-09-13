@@ -72,6 +72,16 @@ WSGI_APPLICATION = "config.wsgi.application"
 _database_url = env("DATABASE_URL", default="") or f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
 DATABASES = {"default": env.db_url_config(_database_url)}
 
+if DATABASES["default"]["ENGINE"] == "django.db.backends.sqlite3":
+    # WAL lets readers and the writer run concurrently; IMMEDIATE grabs the
+    # write lock at BEGIN instead of at first write, so two racing writers
+    # fail fast with "database is locked" rather than deadlocking later.
+    DATABASES["default"]["OPTIONS"] = {
+        "init_command": "PRAGMA journal_mode=WAL; PRAGMA synchronous=NORMAL;",
+        "transaction_mode": "IMMEDIATE",
+        "timeout": 20,
+    }
+
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},

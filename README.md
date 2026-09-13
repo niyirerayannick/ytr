@@ -13,7 +13,9 @@ and a submit → review → publish workflow for Authors and Admins.
 - Server-rendered Django templates (no separate SPA/DRF frontend)
 - Tailwind CSS, built via the standalone Tailwind CLI (`npm`), theme tokens lifted
   straight from the prototype (`tailwind.config.js`)
-- SQLite for local dev; set `DATABASE_URL` to point at Postgres in staging/prod
+- SQLite everywhere, including production, on a persistent volume in
+  deployment (WAL mode + a single Gunicorn worker); `DATABASE_URL` can point
+  at Postgres instead if traffic ever outgrows a single SQLite writer
 - Django's built-in auth (User + a one-to-one Profile with a `role`) for accounts —
   no custom user model, no django-allauth
 - Django admin as the CMS/power-user fallback for every content model
