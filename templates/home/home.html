@@ -66,51 +66,102 @@
           <div class="kicker">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4"/></svg>
             <span class="i18n-en">Morning Devotion</span><span class="i18n-rw">Isengesho ryo mu gitondo</span>
+            {% if morning_devotion.session_state == "live" %}
+              <span class="md-state md-state-live" style="margin-left:auto"><span class="md-live-dot"></span> <span class="i18n-en">LIVE NOW</span><span class="i18n-rw">BIRATANGIYE</span></span>
+            {% elif morning_devotion.session_state == "starting_soon" %}
+              <span class="md-state md-state-soon" style="margin-left:auto"><span class="i18n-en">Starting soon</span><span class="i18n-rw">Bigiye gutangira</span></span>
+            {% elif morning_devotion.session_state == "finished" %}
+              <span style="margin-left:auto; font-size:0.76rem; color:var(--ink-soft); font-weight:600; text-transform:uppercase; letter-spacing:0.06em"><span class="i18n-en">Latest devotion</span><span class="i18n-rw">Iheruka</span></span>
+            {% elif morning_devotion %}
+              <span style="margin-left:auto; font-size:0.76rem; color:var(--ink-soft); font-weight:600; text-transform:uppercase; letter-spacing:0.06em"><span class="i18n-en">Next session</span><span class="i18n-rw">Ikurikira</span></span>
+            {% endif %}
           </div>
-          {% if gathering %}
-          <div class="flyer">
-            <svg class="flyer-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#E4572E" opacity="0.12"/><path d="M12 4c.7 2-1.4 2.6-1.4 4.6a2.6 2.6 0 1 0 5.2 0c0-1-.6-1.3-1-2 1 .7 2 2 2 3.9a4.2 4.2 0 1 1-8.4 0c0-2.9 2.3-3.9 3.6-6.5z" fill="#E4572E"/></svg>
-            <div>
-              <div class="flyer-date">{{ gathering.start_datetime|date:"l · g:i A" }}</div>
-              <p style="color:var(--ink-soft); font-size:0.92rem; margin-top:2px">{{ gathering.location }}</p>
+          {% if morning_devotion %}
+            <h3>{{ morning_devotion.title_en }}</h3>
+            {% if morning_devotion.scripture_reference %}<p style="color:var(--ember); font-weight:600; margin-bottom:4px">{{ morning_devotion.scripture_reference }}</p>{% endif %}
+            <p style="font-size:0.92rem">
+              {% if morning_devotion.speaker %}{{ morning_devotion.speaker.name }} · {% endif %}{{ morning_devotion.start_datetime|date:"D, M j · g:i A" }}
+            </p>
+
+            <div class="row-actions">
+              {% if morning_devotion.can_join_live %}
+                <a class="btn btn-ember" href="{{ morning_devotion.meet_url }}" target="_blank" rel="noopener">
+                  <span class="i18n-en">Join Morning Devotion</span><span class="i18n-rw">Injira mu Isengesho</span>
+                </a>
+              {% endif %}
+              {% if morning_devotion.session_state == "finished" and morning_devotion.has_audio %}
+                <a class="btn btn-ember" href="{{ morning_devotion.get_absolute_url }}">
+                  <span class="i18n-en">▶ Listen to Morning Devotion</span><span class="i18n-rw">▶ Umva Isengesho</span>
+                </a>
+              {% endif %}
+              {% if morning_devotion.session_state == "upcoming" %}
+                <a class="btn-text" href="{{ morning_devotion.get_absolute_url }}">
+                  <span class="i18n-en">View details</span><span class="i18n-rw">Reba amakuru</span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </a>
+              {% endif %}
+              {% if morning_devotion.session_state == "finished" and morning_devotion.has_summary %}
+                <a class="btn-text" href="{{ morning_devotion.get_absolute_url }}"><span class="i18n-en">Read</span><span class="i18n-rw">Soma</span></a>
+              {% endif %}
+              {% if morning_devotion.session_state == "finished" and morning_devotion.has_video %}
+                <a class="btn-text" href="{{ morning_devotion.get_absolute_url }}"><span class="i18n-en">Watch</span><span class="i18n-rw">Reba</span></a>
+              {% endif %}
+              {% if morning_devotion.session_state == "live" and morning_devotion.has_any_content %}
+                <a class="btn-text" href="{{ morning_devotion.get_absolute_url }}"><span class="i18n-en">Read · Listen · Watch</span><span class="i18n-rw">Soma · Umva · Reba</span></a>
+              {% endif %}
             </div>
-          </div>
-          <div class="row-actions">
-            <a class="btn-text"
-               id="calLink"
-               href="#"
-               target="_blank" rel="noopener"
-               data-title="{{ gathering.title }}"
-               data-location="{{ gathering.location }}"
-               data-start="{{ gathering.start_datetime|date:'Ymd\THis' }}"
-               data-end="{{ gathering.end_datetime|date:'Ymd\THis' }}">
-              <span class="i18n-en">Add to calendar</span><span class="i18n-rw">Ongeraho kalendari</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </a>
-            {% if site_settings.morning_devotion_url %}
-            <a class="btn btn-ember" href="{{ site_settings.morning_devotion_url }}" target="_blank" rel="noopener">
-              <span class="i18n-en">Join on Google Meet</span><span class="i18n-rw">Injira kuri Google Meet</span>
-            </a>
-            {% endif %}
-            {% if request.user.is_authenticated %}
-            <form method="post" action="{% url 'dashboard:toggle_rsvp' gathering_id=gathering.pk %}">
-              {% csrf_token %}
-              <button class="btn {% if is_rsvped %}btn-outline-night{% else %}btn-ember{% endif %}" type="submit">
-                {% if is_rsvped %}<span class="i18n-en">I'll be there ✓</span><span class="i18n-rw">Ndaza ✓</span>{% else %}<span class="i18n-en">I'll be there</span><span class="i18n-rw">Ndaza</span>{% endif %}
-              </button>
-            </form>
-            {% else %}
-            <a class="btn btn-ember" href="{% url 'accounts:login' %}?next=/"><span class="i18n-en">Log in to RSVP</span><span class="i18n-rw">Injira kugira ngo wemeze</span></a>
-            {% endif %}
-          </div>
           {% else %}
-            <p class="i18n-en">No gathering scheduled yet — check back soon.</p>
-            <p class="i18n-rw">Nta materaniro ateganijwe kugeza ubu — garuka vuba.</p>
+            <p class="i18n-en">No Morning Devotion scheduled yet — check back soon.</p>
+            <p class="i18n-rw">Nta isengesho ryo mu gitondo riraboneka kugeza ubu — garuka vuba.</p>
           {% endif %}
         </div>
       </div>
     </div>
   </div>
+
+  {% if gathering %}
+  <div class="section section-alt">
+    <div class="wrap">
+      <div class="today-card" style="max-width:640px">
+        <div class="kicker">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 2v4M16 2v4M3 9h18M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg>
+          <span class="i18n-en">Upcoming Gathering</span><span class="i18n-rw">Iteraniro Rikurikira</span>
+        </div>
+        <h3>{{ gathering.title }}</h3>
+        <div class="flyer">
+          <svg class="flyer-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#E4572E" opacity="0.12"/><path d="M12 4c.7 2-1.4 2.6-1.4 4.6a2.6 2.6 0 1 0 5.2 0c0-1-.6-1.3-1-2 1 .7 2 2 2 3.9a4.2 4.2 0 1 1-8.4 0c0-2.9 2.3-3.9 3.6-6.5z" fill="#E4572E"/></svg>
+          <div>
+            <div class="flyer-date">{{ gathering.start_datetime|date:"l · g:i A" }}</div>
+            <p style="color:var(--ink-soft); font-size:0.92rem; margin-top:2px">{{ gathering.location }}</p>
+          </div>
+        </div>
+        <div class="row-actions">
+          <a class="btn-text"
+             id="calLink"
+             href="#"
+             target="_blank" rel="noopener"
+             data-title="{{ gathering.title }}"
+             data-location="{{ gathering.location }}"
+             data-start="{{ gathering.start_datetime|date:'Ymd\THis' }}"
+             data-end="{{ gathering.end_datetime|date:'Ymd\THis' }}">
+            <span class="i18n-en">Add to calendar</span><span class="i18n-rw">Ongeraho kalendari</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          {% if request.user.is_authenticated %}
+          <form method="post" action="{% url 'dashboard:toggle_rsvp' gathering_id=gathering.pk %}">
+            {% csrf_token %}
+            <button class="btn {% if is_rsvped %}btn-outline-night{% else %}btn-ember{% endif %}" type="submit">
+              {% if is_rsvped %}<span class="i18n-en">I'll be there ✓</span><span class="i18n-rw">Ndaza ✓</span>{% else %}<span class="i18n-en">I'll be there</span><span class="i18n-rw">Ndaza</span>{% endif %}
+            </button>
+          </form>
+          {% else %}
+          <a class="btn btn-ember" href="{% url 'accounts:login' %}?next=/"><span class="i18n-en">Log in to RSVP</span><span class="i18n-rw">Injira kugira ngo wemeze</span></a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
 
   <div class="section section-alt">
     <div class="wrap">

@@ -5,6 +5,8 @@ from django.urls import reverse
 from apps.accounts.models import Bookmark, Profile, RSVP
 from apps.articles.models import Article
 from apps.core.models import Gathering
+from apps.podcasts.models import Episode, PodcastSeries
+from apps.videos.models import Video, VideoSeries
 
 User = get_user_model()
 
@@ -171,3 +173,53 @@ class BookmarkToggleTests(TestCase):
         response = self.client.post(url, {"next": "//evil.example.com"})
         self.assertEqual(response.url, reverse("core:home"))
         self.assertTrue(RSVP.objects.filter(member=self.member, gathering=gathering).exists())
+
+
+class MemberDashboardBilingualMediaTilesTests(TestCase):
+    """Regression coverage for the "Explore your space" Read/Listen/Watch
+    tiles, which used to reference a nonexistent `.title` attribute on
+    Episode/Video (only `title_en`/`title_rw` exist) and rendered empty."""
+
+    def setUp(self):
+        pod_series = PodcastSeries.objects.create(title_en="Series", title_rw="Urukurikirane")
+        self.episode = Episode.objects.create(
+            series=pod_series, title_en="English Episode Title", title_rw="Umutwe wa Kinyarwanda",
+            status=Episode.STATUS_PUBLISHED,
+        )
+        vid_series = VideoSeries.objects.create(title_en="Series", title_rw="Urukurikirane")
+        self.video = Video.objects.create(
+            series=vid_series, title_en="English Video Title", title_rw="Umutwe wa Videwo",
+            status=Video.STATUS_PUBLISHED,
+        )
+        self.article = Article.objects.create(
+            title_en="English Article Title", title_rw="Umutwe wa Inyandiko",
+            hook_en="h", hook_rw="h", body_en="b", body_rw="b",
+            status=Article.STATUS_PUBLISHED,
+        )
+
+    def _member(self, preferred_language):
+        user = make_user("tileuser_" + preferred_language, Profile.ROLE_MEMBER)
+        user.profile.preferred_language = preferred_language
+        user.profile.save()
+        return user
+
+    def test_english_preference_shows_english_titles(self):
+        self.client.force_login(self._member("en"))
+        response = self.client.get(reverse("dashboard:member_home"))
+        self.assertContains(response, "English Episode Title")
+        self.assertContains(response, "English Video Title")
+        self.assertContains(response, "English Article Title")
+
+    def test_kinyarwanda_preference_shows_kinyarwanda_titles(self):
+        self.client.force_login(self._member("rw"))
+        response = self.client.get(reverse("dashboard:member_home"))
+        self.assertContains(response, "Umutwe wa Kinyarwanda")
+        self.assertContains(response, "Umutwe wa Videwo")
+        self.assertContains(response, "Umutwe wa Inyandiko")
+
+    def test_kinyarwanda_preference_falls_back_to_english_when_rw_blank(self):
+        self.episode.title_rw = ""
+        self.episode.save()
+        self.client.force_login(self._member("rw"))
+        response = self.client.get(reverse("dashboard:member_home"))
+        self.assertContains(response, "English Episode Title")

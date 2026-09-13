@@ -380,7 +380,7 @@
   /* ---- podcasts ---- */
   .tab-row { @apply flex border-b border-line overflow-x-auto; gap: 0; margin-bottom: 32px; }
   .tab-btn {
-    @apply bg-transparent border-0 font-semibold text-ink-soft cursor-pointer whitespace-nowrap;
+    @apply bg-transparent border-0 font-semibold text-ink-soft cursor-pointer whitespace-nowrap no-underline;
     padding: 14px 20px 14px 0; margin-right: 22px; border-bottom: 2px solid transparent;
   }
   .tab-btn.active { @apply text-ink; border-bottom-color: theme("colors.ember"); }
@@ -679,8 +679,19 @@
     padding: 14px 12px; min-height: 110px;
   }
   .ytr-resource-icon {
-    @apply inline-flex items-center justify-center rounded-[8px] font-semibold text-[0.68rem] uppercase tracking-[0.08em];
-    width: 54px; height: 54px; background: rgba(228, 87, 46, 0.12); color: theme("colors.ember");
+    @apply inline-flex items-center justify-center rounded-[8px];
+    width: 54px; height: 54px; flex: none; background: rgba(228, 87, 46, 0.12); color: theme("colors.ember");
+  }
+  /* Not scoped to the mobile-only media query like the bottom-nav's usage —
+     the dashboard's resource tiles show these icons at every width. */
+  .material-symbols-outlined {
+    font-family: "Material Symbols Outlined", sans-serif;
+    font-size: 1.25rem;
+    line-height: 1;
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
   .ytr-resource-label { @apply text-ink-soft; font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase; margin: 0 0 2px; }
   .ytr-resource-tile h4 { @apply text-[0.96rem]; margin: 0; }
@@ -815,15 +826,6 @@
     .pwa-bottom-nav a:hover, .pwa-bottom-nav a:focus-visible,
     .pwa-bottom-nav button:hover, .pwa-bottom-nav button:focus-visible,
     .pwa-bottom-nav button[aria-expanded="true"] { color: theme("colors.night"); }
-    .material-symbols-outlined {
-      font-family: "Material Symbols Outlined", sans-serif;
-      font-size: 1.25rem;
-      line-height: 1;
-      font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
     body:has(.pwa-bottom-nav) { padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px)); }
 
     .pwa-more-backdrop {
@@ -883,7 +885,8 @@
     font-size: 0.8rem;
     background: rgba(255, 255, 255, 0.03);
   }
-  .share-platform-btn span:first-child { font-size: 1.4rem; line-height: 1; }
+  .share-platform-icon { @apply flex items-center justify-center; color: theme("colors.dawn"); }
+  .share-platform-icon svg { display: block; }
   .share-platform-btn:hover, .share-platform-btn:focus-visible { background: rgba(255, 255, 255, 0.08); }
   .share-platform-btn[hidden] { display: none; }
 
@@ -927,5 +930,67 @@
       overflow-y: auto;
       padding-bottom: env(safe-area-inset-bottom, 0px);
     }
+  }
+
+  /* ============ MORNING DEVOTION ============ */
+  .md-grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); margin-top: 8px; }
+  .md-card {
+    @apply bg-night text-cream-ink no-underline relative overflow-hidden block;
+    padding: 22px; border-radius: 22px; border: 1px solid theme("colors.line-night");
+    transition: transform 0.15s;
+  }
+  .md-card:hover { transform: translateY(-2px); }
+  .md-card h3 { @apply font-serif; font-size: 1.25rem; margin: 10px 0 4px; }
+
+  .md-card-top { display: flex; }
+  .md-state {
+    @apply inline-flex items-center gap-1 font-semibold uppercase;
+    font-size: 0.7rem; letter-spacing: 0.06em; color: rgba(246, 239, 224, 0.75);
+  }
+  .md-state-live { color: theme("colors.ember"); }
+  .md-state-soon { color: theme("colors.dawn"); }
+  .md-live-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: theme("colors.ember");
+    animation: mdPulse 1.6s ease-in-out infinite;
+  }
+  @keyframes mdPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+  .md-scripture { color: theme("colors.dawn"); font-size: 0.92rem; margin-top: 2px; }
+  .md-speaker { color: rgba(246, 239, 224, 0.7); font-size: 0.86rem; margin-top: 2px; }
+  .md-card-formats { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .md-format-pill {
+    font-size: 0.74rem; font-weight: 600; padding: 5px 10px; border-radius: 20px;
+    border: 1px solid theme("colors.line-night"); color: rgba(246, 239, 224, 0.85);
+  }
+
+  .md-detail { @apply bg-night text-cream-ink relative overflow-hidden; padding: 32px 28px; border-radius: 26px; border: 1px solid theme("colors.line-night"); }
+  .md-detail h1 { @apply font-serif; font-size: clamp(1.7rem, 3.4vw, 2.4rem); margin: 14px 0 6px; }
+  .md-detail .md-scripture { font-size: 1.1rem; }
+  .md-detail .md-speaker { font-size: 0.95rem; margin-bottom: 10px; }
+  .md-description { color: rgba(246, 239, 224, 0.85); max-width: 62ch; margin-top: 18px; }
+  .md-summary { color: rgba(246, 239, 224, 0.9); max-width: 62ch; }
+
+  .md-format-tabs { @apply flex border-b; border-color: theme("colors.line-night"); gap: 0; margin: 28px 0 20px; }
+  .md-format-tabs .tab-btn { color: rgba(246, 239, 224, 0.7); }
+  .md-format-tabs .tab-btn.active { color: theme("colors.dawn"); border-color: theme("colors.dawn"); }
+  .md-format-panel { margin-bottom: 8px; }
+
+  .md-player { display: flex; flex-direction: column; gap: 12px; }
+  .md-audio { width: 100%; }
+  .md-speed-row { @apply flex gap-2; }
+  .md-speed-btn {
+    @apply bg-transparent cursor-pointer text-cream-ink;
+    border: 1px solid theme("colors.line-night"); border-radius: 20px;
+    padding: 5px 14px; font-size: 0.8rem; font-weight: 600;
+  }
+  .md-speed-btn.active { @apply bg-ember text-white; border-color: theme("colors.ember"); }
+
+  .md-video-embed { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 14px; overflow: hidden; }
+  .md-video-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+  @media (max-width: 640px) {
+    .md-detail { padding: 24px 20px; border-radius: 20px; }
   }
 }

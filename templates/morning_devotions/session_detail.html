@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% load static ytr_icons %}
+{% block title %}{{ session.title_en }} — Youth Time Revival{% endblock %}
+
+{% block extra_head %}
+<link rel="canonical" href="{{ canonical_url }}">
+<meta property="og:type" content="article">
+<meta property="og:title" content="{{ session.title_en }} — Youth Time Revival">
+<meta property="og:description" content="{{ og_description }}">
+<meta property="og:url" content="{{ canonical_url }}">
+<meta property="og:image" content="{{ og_image_url }}">
+<meta property="og:image:width" content="1080">
+<meta property="og:image:height" content="1080">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ session.title_en }} — Youth Time Revival">
+<meta name="twitter:description" content="{{ og_description }}">
+<meta name="twitter:image" content="{{ og_image_url }}">
+{% endblock %}
+
+{% block content %}
+<section id="view-morning-devotion-detail">
+  <div class="section">
+    <div class="wrap">
+      <a class="btn-text" href="{% url 'morning_devotions:list' %}" style="margin-bottom:34px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transform:rotate(180deg)"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <span class="i18n-en">Back to Morning Devotions</span><span class="i18n-rw">Subira ku Isengesho ryo mu Gitondo</span>
+      </a>
+
+      <div class="md-detail">
+        <div class="md-card-top">
+          {% if session.session_state == "live" %}
+            <span class="md-state md-state-live"><span class="md-live-dot"></span> <span class="i18n-en">LIVE NOW</span><span class="i18n-rw">BIRATANGIYE</span></span>
+          {% elif session.session_state == "starting_soon" %}
+            <span class="md-state md-state-soon"><span class="i18n-en">Starting soon</span><span class="i18n-rw">Bigiye gutangira</span></span>
+          {% elif session.session_state == "upcoming" %}
+            <span class="md-state md-state-upcoming">{{ session.start_datetime|date:"D, M j · g:i A" }}</span>
+          {% else %}
+            <span class="md-state md-state-finished"><span class="i18n-en">Finished</span><span class="i18n-rw">Byarangiye</span></span>
+          {% endif %}
+        </div>
+
+        <h1>{{ session.title_en }}</h1>
+        {% if session.scripture_reference %}<p class="md-scripture">{{ session.scripture_reference }}</p>{% endif %}
+        {% if session.speaker %}<p class="md-speaker">{{ session.speaker.name }}</p>{% endif %}
+
+        {% if session.can_join_live %}
+        <div class="md-actions">
+          <a class="btn devo-share-btn" href="{{ session.meet_url }}" target="_blank" rel="noopener">
+            <span class="i18n-en">Join Live</span><span class="i18n-rw">Injira mu Isengesho</span>
+          </a>
+        </div>
+        {% endif %}
+
+        {% if session.description_en or session.description_rw %}
+        <p class="md-description i18n-en">{{ session.description_en }}</p>
+        <p class="md-description i18n-rw">{{ session.description_rw }}</p>
+        {% endif %}
+
+        {% if session.has_summary or session.has_audio or session.has_video %}
+        <div class="md-format-tabs" id="mdFormatTabs">
+          {% if session.has_summary %}<button type="button" class="tab-btn active" data-md-tab="md-read"><span class="i18n-en">Read</span><span class="i18n-rw">Soma</span></button>{% endif %}
+          {% if session.has_audio %}<button type="button" class="tab-btn {% if not session.has_summary %}active{% endif %}" data-md-tab="md-listen"><span class="i18n-en">Listen</span><span class="i18n-rw">Umva</span></button>{% endif %}
+          {% if session.has_video %}<button type="button" class="tab-btn {% if not session.has_summary and not session.has_audio %}active{% endif %}" data-md-tab="md-watch"><span class="i18n-en">Watch</span><span class="i18n-rw">Reba</span></button>{% endif %}
+        </div>
+
+        {% if session.has_summary %}
+        <div class="md-format-panel" id="md-read">
+          <p class="md-summary i18n-en">{{ session.summary_en }}</p>
+          <p class="md-summary i18n-rw">{{ session.summary_rw }}</p>
+        </div>
+        {% endif %}
+
+        {% if session.has_audio %}
+        <div class="md-format-panel" id="md-listen" {% if session.has_summary %}style="display:none"{% endif %}>
+          <div class="md-player" data-speed="1">
+            <audio controls preload="metadata" class="md-audio">
+              {% if session.recording_episode.audio_file %}<source src="{{ session.recording_episode.audio_file.url }}">{% else %}<source src="{{ session.recording_episode.audio_url }}">{% endif %}
+              <span class="i18n-en">Your browser does not support audio playback.</span><span class="i18n-rw">Mucukumbuzi yawe ntiyemera kumva amajwi.</span>
+            </audio>
+            <div class="md-speed-row" role="group" aria-label="Playback speed">
+              <button type="button" class="md-speed-btn active" data-speed="1">1x</button>
+              <button type="button" class="md-speed-btn" data-speed="1.25">1.25x</button>
+              <button type="button" class="md-speed-btn" data-speed="1.5">1.5x</button>
+              <button type="button" class="md-speed-btn" data-speed="2">2x</button>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if session.has_video %}
+        <div class="md-format-panel" id="md-watch" {% if session.has_summary or session.has_audio %}style="display:none"{% endif %}>
+          {% if video_embed_id %}
+          <div class="md-video-embed">
+            <iframe src="https://www.youtube-nocookie.com/embed/{{ video_embed_id }}" title="{{ session.title_en }}" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>
+          </div>
+          {% elif session.recording_video.video_file %}
+          <video controls preload="metadata" style="width:100%; border-radius:14px">
+            <source src="{{ session.recording_video.video_file.url }}">
+          </video>
+          {% endif %}
+        </div>
+        {% endif %}
+        {% endif %}
+
+        {% if session.related_devotion %}
+        <div class="lang-note" style="margin-top:30px">
+          <span class="i18n-en">Related devotion: </span><span class="i18n-rw">Igitekerezo bijyanye: </span>
+          <a class="btn-text" href="{{ session.related_devotion.get_absolute_url }}">{{ session.related_devotion.verse_ref }}</a>
+        </div>
+        {% endif %}
+
+        <div class="devo-actions" style="margin-top:30px">
+          <button type="button" class="btn devo-share-btn" id="openShareBtn" aria-haspopup="dialog" aria-controls="shareDialog">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.5 6.8-3.9M8.6 13.5l6.8 3.9"/></svg>
+            <span class="i18n-en">Share</span><span class="i18n-rw">Sangiza</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<dialog id="shareDialog" class="share-dialog" aria-labelledby="shareDialogTitle">
+  <form method="dialog" class="share-dialog-inner">
+    <div class="share-dialog-head">
+      <h2 id="shareDialogTitle"><span class="i18n-en">Share this Morning Devotion</span><span class="i18n-rw">Sangiza iri Isengesho</span></h2>
+      <button type="submit" class="icon-btn share-dialog-close" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <div class="share-platform-grid">
+      <a class="share-platform-btn" id="shareWhatsapp" href="#" target="_blank" rel="noopener"><span class="share-platform-icon">{% icon 'whatsapp' 22 'false' %}</span><span>WhatsApp</span></a>
+      <a class="share-platform-btn" id="shareFacebook" href="#" target="_blank" rel="noopener"><span class="share-platform-icon">{% icon 'facebook' 22 'false' %}</span><span>Facebook</span></a>
+      <a class="share-platform-btn" id="shareX" href="#" target="_blank" rel="noopener"><span class="share-platform-icon">{% icon 'x-logo' 20 'false' %}</span><span>X</span></a>
+      <a class="share-platform-btn" id="shareTelegram" href="#" target="_blank" rel="noopener"><span class="share-platform-icon">{% icon 'telegram' 22 'false' %}</span><span>Telegram</span></a>
+      <a class="share-platform-btn" id="shareEmail" href="#"><span class="share-platform-icon">{% icon 'mail' 22 %}</span><span><span class="i18n-en">Email</span><span class="i18n-rw">Imeri</span></span></a>
+      <button type="button" class="share-platform-btn" id="shareCopyLink"><span class="share-platform-icon">{% icon 'link' 22 %}</span><span><span class="i18n-en">Copy Link</span><span class="i18n-rw">Koporora Ihuza</span></span></button>
+      <button type="button" class="share-platform-btn" id="shareMore" hidden><span class="share-platform-icon">{% icon 'more-horizontal' 22 'false' %}</span><span><span class="i18n-en">More…</span><span class="i18n-rw">Ibindi…</span></span></button>
+    </div>
+  </form>
+</dialog>
+
+{{ share_payload|json_script:"morningDevotionShareData" }}
+{% endblock %}
+
+{% block extra_body %}
+<script src="{% static 'js/morning-devotion.js' %}" defer></script>
+{% endblock %}

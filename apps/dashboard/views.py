@@ -8,9 +8,11 @@ from django.utils.http import url_has_allowed_host_and_scheme
 
 from apps.accounts.models import Bookmark, PrayerRequest, Profile, RSVP, Testimony
 from apps.articles.models import Article
+from apps.core.i18n import bilingual_field, viewer_language
 from apps.core.models import Gathering
 from apps.devotions.models import Devotion
 from apps.engagement.models import ContactMessage, NewsletterSubscriber
+from apps.morning_devotions.models import MorningDevotionSession
 from apps.podcasts.models import Episode
 from apps.videos.models import Video
 
@@ -292,6 +294,7 @@ def member_dashboard(request):
         .order_by("start_datetime")
         .first()
     )
+    morning_devotion = MorningDevotionSession.current_or_next()
     featured_article = Article.objects.filter(status=Article.STATUS_PUBLISHED).order_by("-published_at").first()
     latest_episode = Episode.objects.filter(status=Episode.STATUS_PUBLISHED).order_by("-published_at").first()
     latest_video = Video.objects.filter(status=Video.STATUS_PUBLISHED).order_by("-published_at").first()
@@ -300,13 +303,18 @@ def member_dashboard(request):
     testimonies = Testimony.objects.filter(member=request.user)[:3]
     prayer_requests = PrayerRequest.objects.filter(member=request.user)[:3]
 
+    lang = viewer_language(request.user)
     context = {
         "profile": getattr(request.user, "profile", None),
         "today_devotion": today_devotion,
         "next_gathering": next_gathering,
+        "morning_devotion": morning_devotion,
         "featured_article": featured_article,
+        "featured_article_title": bilingual_field(featured_article, "title", lang) if featured_article else "",
         "latest_episode": latest_episode,
+        "latest_episode_title": bilingual_field(latest_episode, "title", lang) if latest_episode else "",
         "latest_video": latest_video,
+        "latest_video_title": bilingual_field(latest_video, "title", lang) if latest_video else "",
         "bookmarks": bookmarks,
         "rsvps": rsvps,
         "testimonies": testimonies,

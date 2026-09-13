@@ -9,6 +9,7 @@ from django.utils import timezone
 from apps.articles.models import Article
 from apps.devotions.models import Devotion
 from apps.faq.models import FAQ
+from apps.morning_devotions.models import MorningDevotionSession
 
 from .models import Gathering
 
@@ -83,6 +84,7 @@ def home(request):
         "devotion": _todays_devotion(),
         "gathering": gathering,
         "is_rsvped": is_rsvped,
+        "morning_devotion": MorningDevotionSession.current_or_next(),
         "articles": Article.objects.filter(status=Article.STATUS_PUBLISHED).order_by("-is_featured", "-published_at")[:10],
     }
     return render(request, "home/home.html", context)

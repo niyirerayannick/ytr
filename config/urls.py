@@ -14,6 +14,7 @@ urlpatterns = [
     path("dashboard/", include("apps.dashboard.urls")),
     path("", include("apps.core.urls")),
     path("devotions/", include("apps.devotions.urls")),
+    path("morning-devotions/", include("apps.morning_devotions.urls")),
     path("articles/", include("apps.articles.urls")),
     path("podcasts/", include("apps.podcasts.urls")),
     path("videos/", include("apps.videos.urls")),

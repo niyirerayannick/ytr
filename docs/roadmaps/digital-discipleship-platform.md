@@ -1,8 +1,8 @@
 # Digital Discipleship Platform: architecture and phased roadmap
 
-**Status:** Phase B implemented
+**Status:** Phase C implemented
 
-**Current phase:** Authentication, profile onboarding, verification, member dashboard, and password reset flows are in place. Phase C and later phases remain deferred.
+**Current phase:** Authentication, profile onboarding, verification, member dashboard, and password reset flows are in place (Phase B). Morning Devotion — the `MorningDevotionSession` model, Google Meet join flow, audio/video/read archive, sharing, cover art, homepage and My YTR integration — is implemented and green across the full test suite (Phase C; see `docs/morning-devotion.md` for the full design and a closure note on what was fixed along the way). Phase D and later phases remain deferred.
 
 **Decision:** Extend the existing Django application in small, reversible phases. Do
 not replace the current content apps or introduce a new API/mobile stack for the
@@ -284,7 +284,7 @@ and a production-settings deploy check.
 | --- | --- |
 | A | App is installable, responsive as an app shell, useful offline for public text, and never exposes private cache data |
 | B | A member can create/manage an account, set language, reset password, and land on a meaningful My YTR dashboard |
-| C | Admin can safely schedule and publish a devotion; members see correct time state and reach only validated Meet links |
+| C | ✅ Done — Admin can safely schedule and publish a devotion; members see correct time state and reach only validated Meet links. Verified: `session_state`/`can_join_live` boundary tests (exact start/end, the 15-minute window), the Meet URL allowlist (rejects non-HTTPS, non-`meet.google.com`, and look-alike hosts), and full homepage/My YTR/detail regression coverage — see `docs/morning-devotion.md`. |
 | D | Editors can publish paired formats without duplicate content; readers can choose Read/Listen/Watch on supported resources |
 | E | Resume and saved library work across supported media with minimal, secure progress data |
 | F | Opted-in reminders deliver reliably and users can revoke permission/preferences |
@@ -294,14 +294,21 @@ and a production-settings deploy check.
 
 1. Account activation: manual approval versus email-verification activation.
 2. Legal copy and current policy version for the registration consent checkbox.
-3. Canonical Google Meet URL policy (usually `meet.google.com` only) and who is
-   allowed to create/edit sessions.
-4. Whether morning devotion links are public or require a signed-in member.
+3. ✅ Decided (Phase C): Meet URLs are restricted to HTTPS `meet.google.com`
+   links with a real meeting path (`apps/morning_devotions/validators.py`);
+   sessions are created/scheduled by Admins directly in Django admin, not a
+   self-service flow.
+4. ✅ Decided (Phase C): Morning Devotion pages are public, consistent with
+   every other content type on the site (articles, devotions, podcasts,
+   videos). Revisit by adding `@login_required` to the relevant views if the
+   ministry wants it members-only later.
 5. Source and licensing of the final YTR app icon, splash artwork, and any Bible
    translation text stored directly in the platform.
 6. Initial notification sender/operations owner and production hosting capable
    of scheduled work and persistent shared cache/database.
 
-The recommended next implementation is **Phase A only**, followed by a review
-of install and offline behaviour on Android, iOS, desktop Chrome, and the
-current responsive breakpoints before Phase B begins.
+Phases A, B, and C are implemented. The recommended next implementation is
+**Phase D** (Read/Listen/Watch architecture: paired-format metadata, a
+shared card display adapter, public episode/video detail pages) — deferred
+intentionally rather than started opportunistically alongside Morning
+Devotion, per this document's own phased-and-reversible approach.

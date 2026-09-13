@@ -15,6 +15,15 @@ if "test" in sys.argv:
     # Never used outside test runs, so it doesn't weaken real local accounts.
     PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
 
+    # Uploaded test files (e.g. episode audio fixtures) must never land in the
+    # real local media/ directory: FileSystemStorage silently appends a
+    # collision-avoiding suffix ("episode_XXXXXXX.mp3") whenever a same-named
+    # file already exists on disk, which made a test asserting the exact
+    # upload URL flaky/failing depending on what a previous run had left
+    # behind. A fresh temp dir per test run guarantees no collisions.
+    import tempfile
+    MEDIA_ROOT = Path(tempfile.mkdtemp(prefix="ytr-test-media-"))
+
 # Skip WhiteNoise's manifest requirement locally so `runserver`/`test` work
 # without needing `collectstatic` first.
 STORAGES = {

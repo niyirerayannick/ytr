@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "apps.articles",
     "apps.podcasts",
     "apps.videos",
+    "apps.morning_devotions",
     "apps.library",
     "apps.about",
     "apps.faq",

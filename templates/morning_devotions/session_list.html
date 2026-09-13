@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Morning Devotions — Youth Time Revival{% endblock %}
+
+{% block content %}
+<section id="view-morning-devotions">
+  <div class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2><span class="i18n-en">Morning Devotions</span><span class="i18n-rw">Isengesho ryo mu Gitondo</span></h2>
+        <p class="i18n-en">Join live on Google Meet, or catch up on a past session — read, listen, or watch.</p>
+        <p class="i18n-rw">Twifatanye kuri Google Meet, cyangwa usubire ku isengesho ryahise — soma, umve, cyangwa urebe.</p>
+      </div>
+
+      <div class="tab-row">
+        <a class="tab-btn {% if active_filter == 'all' %}active{% endif %}" href="?filter=all">
+          <span class="i18n-en">All</span><span class="i18n-rw">Byose</span>
+        </a>
+        <a class="tab-btn {% if active_filter == 'en' %}active{% endif %}" href="?filter=en">English</a>
+        <a class="tab-btn {% if active_filter == 'rw' %}active{% endif %}" href="?filter=rw">Kinyarwanda</a>
+      </div>
+
+      <div class="md-grid">
+        {% for session in page_obj %}
+        <a class="md-card" href="{{ session.get_absolute_url }}">
+          <div class="md-card-top">
+            {% if session.session_state == "live" %}
+              <span class="md-state md-state-live"><span class="md-live-dot"></span> <span class="i18n-en">LIVE NOW</span><span class="i18n-rw">BIRATANGIYE</span></span>
+            {% elif session.session_state == "starting_soon" %}
+              <span class="md-state md-state-soon"><span class="i18n-en">Starting soon</span><span class="i18n-rw">Bigiye gutangira</span></span>
+            {% elif session.session_state == "upcoming" %}
+              <span class="md-state md-state-upcoming">{{ session.start_datetime|date:"D, M j · g:i A" }}</span>
+            {% else %}
+              <span class="md-state md-state-finished"><span class="i18n-en">Finished</span><span class="i18n-rw">Byarangiye</span></span>
+            {% endif %}
+          </div>
+          <h3>{{ session.title_en }}</h3>
+          {% if session.scripture_reference %}<p class="md-scripture">{{ session.scripture_reference }}</p>{% endif %}
+          {% if session.speaker %}<p class="md-speaker">{{ session.speaker.name }}</p>{% endif %}
+          <div class="md-card-formats">
+            {% if session.has_summary %}<span class="md-format-pill"><span class="i18n-en">Read</span><span class="i18n-rw">Soma</span></span>{% endif %}
+            {% if session.has_audio %}<span class="md-format-pill"><span class="i18n-en">Listen</span><span class="i18n-rw">Umva</span>{% if session.audio_duration %} · {{ session.audio_duration }}{% endif %}</span>{% endif %}
+            {% if session.has_video %}<span class="md-format-pill"><span class="i18n-en">Watch</span><span class="i18n-rw">Reba</span></span>{% endif %}
+          </div>
+        </a>
+        {% empty %}
+        <p class="i18n-en" style="color:var(--ink-soft)">No Morning Devotion sessions yet — check back soon.</p>
+        <p class="i18n-rw" style="color:var(--ink-soft)">Nta isengesho ryo mu gitondo riraboneka — garuka vuba.</p>
+        {% endfor %}
+      </div>
+
+      {% if page_obj.paginator.num_pages > 1 %}
+      <div style="display:flex; gap:14px; margin-top:26px">
+        {% if page_obj.has_previous %}
+          <a class="btn-text" href="?filter={{ active_filter }}&page={{ page_obj.previous_page_number }}">&larr; Newer</a>
+        {% endif %}
+        {% if page_obj.has_next %}
+          <a class="btn-text" href="?filter={{ active_filter }}&page={{ page_obj.next_page_number }}">Older &rarr;</a>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

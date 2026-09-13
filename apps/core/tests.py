@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+from types import SimpleNamespace
 
 from django.contrib.auth import get_user_model
 from django.contrib.staticfiles import finders
@@ -15,6 +16,7 @@ from django.utils import timezone
 
 from apps.articles.models import Article
 from apps.core.models import Gathering, SiteSettings
+from apps.morning_devotions.models import MorningDevotionSession
 from . import views
 
 User = get_user_model()
@@ -37,20 +39,57 @@ class HomeViewTests(TestCase):
         response = self.client.get(reverse("core:home"))
         self.assertContains(response, "Test Article")
 
-    def test_home_shows_morning_devotion_meet_link(self):
-        settings = SiteSettings.load()
-        settings.morning_devotion_url = "https://meet.google.com/abc-defg-hij"
-        settings.save()
+    def test_home_shows_live_morning_devotion_join_link(self):
+        """The homepage's "Morning Devotion" card is powered by the real
+        MorningDevotionSession model, not the generic Gathering + a raw
+        SiteSettings URL — see docs/morning-devotion.md."""
+        now = timezone.now()
+        MorningDevotionSession.objects.create(
+            title_en="Walking by Faith", title_rw="Kugendera mu Kwizera",
+            start_datetime=now - timedelta(minutes=5), end_datetime=now + timedelta(minutes=55),
+            meet_url="https://meet.google.com/abc-defg-hij",
+            status=MorningDevotionSession.STATUS_PUBLISHED,
+        )
+        response = self.client.get(reverse("core:home"))
+        self.assertContains(response, "Join Morning Devotion")
+        self.assertContains(response, "https://meet.google.com/abc-defg-hij")
+        self.assertContains(response, "Walking by Faith")
+
+    def test_home_upcoming_morning_devotion_has_no_join_link_yet(self):
+        now = timezone.now()
+        MorningDevotionSession.objects.create(
+            title_en="Next Week Session", title_rw="Isengesho ry'Icyumweru Gitaha",
+            start_datetime=now + timedelta(days=3), end_datetime=now + timedelta(days=3, hours=1),
+            meet_url="https://meet.google.com/abc-defg-hij",
+            status=MorningDevotionSession.STATUS_PUBLISHED,
+        )
+        response = self.client.get(reverse("core:home"))
+        self.assertContains(response, "Next Week Session")
+        self.assertNotContains(response, "Join Morning Devotion")
+
+    def test_home_with_no_morning_devotion_shows_empty_state(self):
+        response = self.client.get(reverse("core:home"))
+        self.assertContains(response, "No Morning Devotion scheduled yet")
+
+    def test_home_gathering_renders_in_its_own_section_not_as_morning_devotion(self):
+        """A Gathering (fellowship/community event) must never masquerade as
+        the Morning Devotion card — they're separate concepts with separate
+        homepage sections now."""
         now = timezone.now() + timedelta(hours=1)
         Gathering.objects.create(
-            title="YTR Morning Devotion", location="Google Meet",
-            start_datetime=now, end_datetime=now + timedelta(minutes=50),
+            title="Friday Fellowship Night", location="Kigali",
+            start_datetime=now, end_datetime=now + timedelta(hours=2),
         )
-
         response = self.client.get(reverse("core:home"))
+        self.assertContains(response, "Upcoming Gathering")
+        self.assertContains(response, "Friday Fellowship Night")
+        # The empty-state copy for Morning Devotion still shows, since the
+        # Gathering above must not be presented as if it were one.
+        self.assertContains(response, "No Morning Devotion scheduled yet")
 
-        self.assertContains(response, "Join on Google Meet")
-        self.assertContains(response, "https://meet.google.com/abc-defg-hij")
+    def test_home_with_no_gathering_omits_the_gathering_section(self):
+        response = self.client.get(reverse("core:home"))
+        self.assertNotContains(response, "Upcoming Gathering")
 
 
 class SiteSettingsSingletonTests(TestCase):
@@ -310,3 +349,34 @@ class MemberBottomNavAuthBoundaryTests(TestCase):
         self.assertContains(response, 'id="pwaMoreSheet"')
         self.assertContains(response, reverse("library:list"))
         self.assertContains(response, reverse("accounts:logout"))
+
+
+class BilingualFieldHelperTests(TestCase):
+    def test_english_reads_en_field(self):
+        from apps.core.i18n import bilingual_field
+
+        obj = SimpleNamespace(title_en="English", title_rw="Kinyarwanda")
+        self.assertEqual(bilingual_field(obj, "title", "en"), "English")
+
+    def test_kinyarwanda_reads_rw_field(self):
+        from apps.core.i18n import bilingual_field
+
+        obj = SimpleNamespace(title_en="English", title_rw="Kinyarwanda")
+        self.assertEqual(bilingual_field(obj, "title", "rw"), "Kinyarwanda")
+
+    def test_kinyarwanda_falls_back_to_english_when_blank(self):
+        from apps.core.i18n import bilingual_field
+
+        obj = SimpleNamespace(title_en="English", title_rw="")
+        self.assertEqual(bilingual_field(obj, "title", "rw"), "English")
+
+    def test_viewer_language_defaults_to_english_without_profile(self):
+        from apps.core.i18n import viewer_language
+
+        self.assertEqual(viewer_language(SimpleNamespace()), "en")
+
+    def test_viewer_language_reads_profile_preference(self):
+        from apps.core.i18n import viewer_language
+
+        user = SimpleNamespace(profile=SimpleNamespace(preferred_language="rw"))
+        self.assertEqual(viewer_language(user), "rw")

@@ -49,29 +49,62 @@
 </div>
 
 <div class="dash-card">
+  <div class="dash-card-head">
+    <h3>{% if morning_devotion.session_state == "finished" %}Today's Morning Devotion{% else %}Morning Devotion{% endif %}</h3>
+    {% if morning_devotion.session_state == "live" %}
+      <span class="badge badge-published">Live now</span>
+    {% elif morning_devotion.session_state == "starting_soon" %}
+      <span class="badge badge-published">Starting soon</span>
+    {% elif morning_devotion.session_state == "upcoming" %}
+      <span class="badge badge-published">{{ morning_devotion.start_datetime|date:"D, M j · g:i A" }}</span>
+    {% endif %}
+  </div>
+  {% if morning_devotion %}
+    <p class="ytr-card-title">{{ morning_devotion.title_en }}</p>
+    {% if morning_devotion.scripture_reference %}<p class="ytr-muted">{{ morning_devotion.scripture_reference }}</p>{% endif %}
+    <div class="ytr-inline-actions">
+      {% if morning_devotion.can_join_live %}
+        <a class="btn-sm btn-sm-ember" href="{{ morning_devotion.meet_url }}" target="_blank" rel="noopener">Join Live</a>
+      {% endif %}
+      {% if morning_devotion.has_audio %}
+        <a class="btn-sm btn-sm-ember" href="{{ morning_devotion.get_absolute_url }}">Listen{% if morning_devotion.audio_duration %} — {{ morning_devotion.audio_duration }}{% endif %}</a>
+      {% endif %}
+      {% if morning_devotion.has_summary %}
+        <a class="btn-text" href="{{ morning_devotion.get_absolute_url }}">Read Summary</a>
+      {% endif %}
+      {% if not morning_devotion.can_join_live and not morning_devotion.has_audio and not morning_devotion.has_summary %}
+        <a class="btn-text" href="{{ morning_devotion.get_absolute_url }}">Open session</a>
+      {% endif %}
+    </div>
+  {% else %}
+    <p class="dash-empty">No Morning Devotion is scheduled yet.</p>
+  {% endif %}
+</div>
+
+<div class="dash-card">
   <h3>Explore your space</h3>
   <div class="ytr-resource-grid">
     <div class="ytr-resource-tile">
-      <div class="ytr-resource-icon">article</div>
+      <div class="ytr-resource-icon"><span class="material-symbols-outlined" aria-hidden="true">article</span></div>
       <div>
         <p class="ytr-resource-label">Read</p>
-        <h4>{% if featured_article %}{{ featured_article.title_en }}{% else %}Newest teaching{% endif %}</h4>
+        <h4>{% if featured_article %}{{ featured_article_title }}{% else %}Newest teaching{% endif %}</h4>
       </div>
       {% if featured_article %}<a href="{{ featured_article.get_absolute_url }}">Open</a>{% endif %}
     </div>
     <div class="ytr-resource-tile">
-      <div class="ytr-resource-icon">headphones</div>
+      <div class="ytr-resource-icon"><span class="material-symbols-outlined" aria-hidden="true">headphones</span></div>
       <div>
         <p class="ytr-resource-label">Listen</p>
-        <h4>{% if latest_episode %}{{ latest_episode.title }}{% else %}Podcast archive{% endif %}</h4>
+        <h4>{% if latest_episode %}{{ latest_episode_title }}{% else %}Podcast archive{% endif %}</h4>
       </div>
       {% if latest_episode %}<a href="{% url 'podcasts:list' %}">Open</a>{% endif %}
     </div>
     <div class="ytr-resource-tile">
-      <div class="ytr-resource-icon">play_arrow</div>
+      <div class="ytr-resource-icon"><span class="material-symbols-outlined" aria-hidden="true">play_arrow</span></div>
       <div>
         <p class="ytr-resource-label">Watch</p>
-        <h4>{% if latest_video %}{{ latest_video.title }}{% else %}Video teaching{% endif %}</h4>
+        <h4>{% if latest_video %}{{ latest_video_title }}{% else %}Video teaching{% endif %}</h4>
       </div>
       {% if latest_video %}<a href="{% url 'videos:list' %}">Open</a>{% endif %}
     </div>

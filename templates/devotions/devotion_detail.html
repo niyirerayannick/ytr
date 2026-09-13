@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static ytr_icons %}
 {% block title %}{{ devotion.verse_ref }} — Youth Time Revival{% endblock %}
 
 {% block extra_head %}
@@ -60,25 +60,25 @@
 
     <div class="share-platform-grid">
       <a class="share-platform-btn" id="shareWhatsapp" href="#" target="_blank" rel="noopener">
-        <span aria-hidden="true">💬</span><span>WhatsApp</span>
+        <span class="share-platform-icon">{% icon 'whatsapp' 22 'false' %}</span><span>WhatsApp</span>
       </a>
       <a class="share-platform-btn" id="shareFacebook" href="#" target="_blank" rel="noopener">
-        <span aria-hidden="true">📘</span><span>Facebook</span>
+        <span class="share-platform-icon">{% icon 'facebook' 22 'false' %}</span><span>Facebook</span>
       </a>
       <a class="share-platform-btn" id="shareX" href="#" target="_blank" rel="noopener">
-        <span aria-hidden="true">✕</span><span>X</span>
+        <span class="share-platform-icon">{% icon 'x-logo' 20 'false' %}</span><span>X</span>
       </a>
       <a class="share-platform-btn" id="shareTelegram" href="#" target="_blank" rel="noopener">
-        <span aria-hidden="true">✈️</span><span>Telegram</span>
+        <span class="share-platform-icon">{% icon 'telegram' 22 'false' %}</span><span>Telegram</span>
       </a>
       <a class="share-platform-btn" id="shareEmail" href="#">
-        <span aria-hidden="true">✉️</span><span><span class="i18n-en">Email</span><span class="i18n-rw">Imeri</span></span>
+        <span class="share-platform-icon">{% icon 'mail' 22 %}</span><span><span class="i18n-en">Email</span><span class="i18n-rw">Imeri</span></span>
       </a>
       <button type="button" class="share-platform-btn" id="shareCopyLink">
-        <span aria-hidden="true">🔗</span><span><span class="i18n-en">Copy Link</span><span class="i18n-rw">Koporora Ihuza</span></span>
+        <span class="share-platform-icon">{% icon 'link' 22 %}</span><span><span class="i18n-en">Copy Link</span><span class="i18n-rw">Koporora Ihuza</span></span>
       </button>
       <button type="button" class="share-platform-btn" id="shareMore" hidden>
-        <span aria-hidden="true">⋯</span><span><span class="i18n-en">More…</span><span class="i18n-rw">Ibindi…</span></span>
+        <span class="share-platform-icon">{% icon 'more-horizontal' 22 'false' %}</span><span><span class="i18n-en">More…</span><span class="i18n-rw">Ibindi…</span></span>
       </button>
     </div>
 
