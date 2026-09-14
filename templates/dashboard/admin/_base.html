@@ -1,14 +1,146 @@
 {% extends "dashboard/_shell.html" %}
+{% load static %}
+
+{% block shell_attrs %} x-data="{ sidebarCollapsed: localStorage.getItem('ytr-sidebar-collapsed') === '1' }" x-init="$watch('sidebarCollapsed', v => localStorage.setItem('ytr-sidebar-collapsed', v ? '1' : '0'))"{% endblock %}
+
+{% block sidebar_attrs %} :class="{ 'is-collapsed': sidebarCollapsed }"{% endblock %}
 
 {% block sidebar %}
-<div class="dash-section-label">Admin</div>
-<a href="{% url 'dashboard:admin' %}">Overview</a>
-<a href="{% url 'dashboard:signup_queue' %}">Pending sign-ups</a>
-<a href="{% url 'dashboard:content_queue' %}">Pending content</a>
-<a href="{% url 'dashboard:pending_testimonies' %}">Pending testimonies</a>
-<a href="{% url 'dashboard:prayer_requests' %}">Prayer requests</a>
-<a href="{% url 'dashboard:messages' %}">Contact messages</a>
-<a href="{% url 'dashboard:user_management' %}">User management</a>
-<div class="dash-section-label">More</div>
-<a href="/admin/">Django admin</a>
+<a class="dash-sidebar-brand" href="{% url 'dashboard:admin' %}">
+  <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2c1 3-2 4-2 7a4 4 0 1 0 8 0c0-1.5-1-2-1.5-3 1.5 1 3 3 3 6a6.5 6.5 0 1 1-13 0c0-4.5 3.5-6 5.5-10z"/></svg>
+  <span>Youth Time Revival</span>
+</a>
+
+<div class="dash-section-label">Main</div>
+<a href="{% url 'dashboard:admin' %}" class="{% if request.resolver_match.url_name == 'admin' %}active{% endif %}"><span>Overview</span></a>
+<a href="{% url 'dashboard:content_workspace' %}" class="{% if request.resolver_match.url_name == 'content_workspace' %}active{% endif %}"><span>Content workspace</span></a>
+
+<div class="dash-section-label">Content</div>
+<a href="{% url 'dashboard:content_workspace' %}?type=article"><span>Articles</span></a>
+<a href="{% url 'dashboard:content_workspace' %}?type=devotion"><span>Devotions</span></a>
+<a href="/admin/morning_devotions/morningdevotionsession/"><span>Morning Devotions</span></a>
+<a href="{% url 'dashboard:content_workspace' %}?type=episode"><span>Podcasts / Audio</span></a>
+<a href="{% url 'dashboard:content_workspace' %}?type=video"><span>Videos</span></a>
+<a href="/admin/library/book/"><span>Library</span></a>
+
+<div class="dash-section-label">Community</div>
+<a href="{% url 'dashboard:user_management' %}" class="{% if request.resolver_match.url_name == 'user_management' %}active{% endif %}"><span>Members</span></a>
+<a href="/admin/articles/author/"><span>Authors</span></a>
+<a href="{% url 'dashboard:pending_testimonies' %}" class="{% if request.resolver_match.url_name == 'pending_testimonies' %}active{% endif %}"><span>Testimonies</span></a>
+<a href="{% url 'dashboard:prayer_requests' %}" class="{% if request.resolver_match.url_name == 'prayer_requests' %}active{% endif %}"><span>Prayer requests</span></a>
+<a href="{% url 'dashboard:messages' %}" class="{% if request.resolver_match.url_name == 'messages' %}active{% endif %}"><span>Contact messages</span></a>
+<a href="/admin/engagement/newslettersubscriber/"><span>Subscribers</span></a>
+
+<div class="dash-section-label">Manage</div>
+<a href="/admin/core/gathering/"><span>Gatherings</span></a>
+<a href="/admin/core/sitesettings/1/change/"><span>Site settings</span></a>
+
+<div class="dash-section-label">System</div>
+<a href="{% url 'dashboard:signup_queue' %}" class="{% if request.resolver_match.url_name == 'signup_queue' %}active{% endif %}"><span>Pending sign-ups</span></a>
+<a href="/admin/"><span>Django admin</span></a>
+
+<button type="button" class="dash-sidebar-collapse-btn" @click="sidebarCollapsed = !sidebarCollapsed" aria-label="Toggle sidebar width">
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/></svg>
+</button>
+{% endblock %}
+
+{% block mobile_bar_actions %}
+<button type="button" class="dash-topbar-search-btn" @click="$dispatch('open-palette')" aria-label="Search">
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+</button>
+<div class="dash-dropdown" x-data="{ open: false }" @click.outside="open = false" @keydown.escape="open = false">
+  <button type="button" class="dash-topbar-search-btn" @click="open = !open" :aria-expanded="open.toString()" aria-label="Create">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
+  </button>
+  <div class="dash-dropdown-panel" x-show="open" x-transition x-cloak role="menu">
+    {% for action in quick_create_actions %}
+    <a href="{{ action.url }}" role="menuitem">{{ action.label }}</a>
+    {% endfor %}
+  </div>
+</div>
+<div class="dash-dropdown" x-data="{ open: false }" @click.outside="open = false" @keydown.escape="open = false">
+  <button type="button" class="dash-bell-btn" @click="open = !open" :aria-expanded="open.toString()" aria-label="Notifications">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    {% if admin_notifications_count %}<span class="dash-bell-dot">{{ admin_notifications_count }}</span>{% endif %}
+  </button>
+  <div class="dash-dropdown-panel" x-show="open" x-transition x-cloak role="menu">
+    {% if admin_notifications %}
+      {% for item in admin_notifications %}
+      <a href="{{ item.url }}" class="dash-notification-item" role="menuitem"><strong>{{ item.label }}</strong></a>
+      {% endfor %}
+    {% else %}
+    <span class="dash-notification-item"><span>You're all caught up.</span></span>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block topbar %}
+<div class="dash-topbar">
+  <div>
+    <div class="dash-topbar-crumb">Administration</div>
+    <div class="dash-topbar-title">{% block page_title %}Overview{% endblock %}</div>
+  </div>
+  <div class="dash-topbar-actions">
+    <button type="button" class="dash-topbar-search-btn" @click="$dispatch('open-palette')">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <span>Search…</span>
+      <kbd>Ctrl K</kbd>
+    </button>
+
+    <div class="dash-dropdown" x-data="{ open: false }" @click.outside="open = false" @keydown.escape="open = false">
+      <button type="button" class="dash-create-btn" @click="open = !open" :aria-expanded="open.toString()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
+        Create
+      </button>
+      <div class="dash-dropdown-panel" x-show="open" x-transition x-cloak role="menu">
+        {% for action in quick_create_actions %}
+        <a href="{{ action.url }}" role="menuitem">{{ action.label }}</a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="dash-dropdown" x-data="{ open: false }" @click.outside="open = false" @keydown.escape="open = false">
+      <button type="button" class="dash-bell-btn" @click="open = !open" :aria-expanded="open.toString()" aria-label="Notifications">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        {% if admin_notifications_count %}<span class="dash-bell-dot">{{ admin_notifications_count }}</span>{% endif %}
+      </button>
+      <div class="dash-dropdown-panel" x-show="open" x-transition x-cloak style="width:320px" role="menu">
+        {% if admin_notifications %}
+          {% for item in admin_notifications %}
+          <a href="{{ item.url }}" class="dash-notification-item" role="menuitem">
+            <strong>{{ item.label }}</strong>
+          </a>
+          {% endfor %}
+        {% else %}
+        <span class="dash-notification-item"><span>You're all caught up.</span></span>
+        {% endif %}
+      </div>
+    </div>
+
+    <details class="dash-user-menu">
+      <summary aria-label="Open account menu">{{ request.user.username|first|upper }}</summary>
+      <div class="dash-user-popover">
+        <span class="dash-role-badge">{{ request.user.profile.get_role_display }}</span>
+        <span class="dash-user-name">{{ request.user.username }}</span>
+        <a href="{% url 'core:home' %}">View site</a>
+        <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button type="submit">Log out</button></form>
+      </div>
+    </details>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script defer src="{% static 'js/vendor/htmx-2.0.10.min.js' %}"></script>
+{% comment %}
+admin-command-center.js registers Alpine.data() components via the
+"alpine:init" event — it must load and run before Alpine's own script,
+since Alpine dispatches that event and starts scanning the DOM as soon
+as its script executes (these are deferred, so parsing is already done
+by then; Alpine doesn't wait for DOMContentLoaded in that case).
+{% endcomment %}
+<script src="{% static 'js/admin-command-center.js' %}" defer></script>
+<script defer src="{% static 'js/vendor/alpinejs-3.17.2.min.js' %}"></script>
+{% include "dashboard/admin/_command_palette.html" %}
 {% endblock %}

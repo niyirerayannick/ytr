@@ -1,69 +1,171 @@
 {% extends "dashboard/admin/_base.html" %}
-{% block title %}Admin overview{% endblock %}
+{% load ytr_icons %}
+{% block title %}Overview{% endblock %}
+{% block page_title %}Overview{% endblock %}
+{% block content_class %}dash-content--wide{% endblock %}
 
 {% block content %}
-<h1>Admin overview</h1>
-<p class="dash-lede">Everything waiting on you, at a glance.</p>
+<h1>{{ greeting }}, {{ request.user.profile.display_name|default:request.user.username }}</h1>
+<p class="dash-lede">Here is what is happening across Youth Time Revival today.</p>
 
-<div class="stat-grid">
-  <div class="stat-tile"><div class="num">{{ counts.members }}</div><div class="label">Members</div></div>
-  <div class="stat-tile"><div class="num">{{ counts.authors }}</div><div class="label">Authors</div></div>
-  <div class="stat-tile"><div class="num">{{ counts.published_articles }}</div><div class="label">Published articles</div></div>
-  <div class="stat-tile"><div class="num">{{ counts.subscribers }}</div><div class="label">Newsletter subscribers</div></div>
+<div class="kpi-grid">
+  {% for kpi in kpis %}
+  <a class="kpi-card" href="{{ kpi.url }}">
+    <div>
+      <div class="num">{{ kpi.value }}</div>
+      <div class="label">{{ kpi.label }}</div>
+      {% if kpi.trend %}<div class="trend">{{ kpi.trend }}</div>{% endif %}
+    </div>
+    <div class="kpi-icon">{% icon kpi.icon 20 'false' %}</div>
+  </a>
+  {% endfor %}
+</div>
+
+<div class="ytr-member-grid">
+  <div class="dash-card">
+    <div class="dash-card-head">
+      <h3>Morning Devotion</h3>
+      {% if morning_devotion %}
+        {% if morning_devotion.session_state == "live" %}<span class="badge badge-live">Live now</span>
+        {% elif morning_devotion.session_state == "starting_soon" %}<span class="badge badge-pending">Starting soon</span>
+        {% elif morning_devotion.session_state == "upcoming" %}<span class="badge badge-neutral">Upcoming</span>
+        {% else %}<span class="badge badge-neutral">Finished</span>{% endif %}
+      {% endif %}
+    </div>
+    {% if morning_devotion %}
+      <p class="ytr-card-title">{{ morning_devotion.title_en }}</p>
+      {% if morning_devotion.scripture_reference %}<p class="ytr-muted">{{ morning_devotion.scripture_reference }}</p>{% endif %}
+      <p class="ytr-muted">
+        {{ morning_devotion.start_datetime|date:"D, M j · g:i A" }}{% if morning_devotion.speaker %} · {{ morning_devotion.speaker.name }}{% endif %}
+      </p>
+      <div class="dash-actions" style="margin-top:14px">
+        {% if morning_devotion.can_join_live %}
+          <a class="btn-sm btn-sm-ember" href="{{ morning_devotion.meet_url }}" target="_blank" rel="noopener">Join Meet</a>
+        {% endif %}
+        <a class="btn-sm btn-sm-outline" href="{{ morning_devotion.get_absolute_url }}">Open session</a>
+        <a class="btn-sm btn-sm-outline" href="/admin/morning_devotions/morningdevotionsession/{{ morning_devotion.pk }}/change/">Manage</a>
+      </div>
+      {% if morning_devotion.session_state == "finished" and not morning_devotion.has_any_content %}
+      <div class="review-note-box" style="margin-top:16px">
+        <strong>Complete today's devotion</strong>
+        <ul style="margin-top:8px; font-size:0.86rem; line-height:1.8; list-style:none; padding:0">
+          <li>{% if morning_devotion.has_summary %}✓{% else %}○{% endif %} Add written summary</li>
+          <li>{% if morning_devotion.has_audio %}✓{% else %}○{% endif %} Attach audio</li>
+          <li>{% if morning_devotion.has_video %}✓{% else %}○{% endif %} Attach video</li>
+        </ul>
+        <a class="btn-sm btn-sm-ember" style="margin-top:10px" href="/admin/morning_devotions/morningdevotionsession/{{ morning_devotion.pk }}/change/">Complete archive</a>
+      </div>
+      {% endif %}
+    {% else %}
+      <p class="dash-empty">No Morning Devotion scheduled yet.</p>
+      <a class="btn-sm btn-sm-ember" href="/admin/morning_devotions/morningdevotionsession/add/">+ Schedule Morning Devotion</a>
+    {% endif %}
+  </div>
+
+  <div class="dash-card">
+    <div class="dash-card-head"><h3>Needs your attention</h3></div>
+    {% if needs_attention %}
+    <div class="attention-list">
+      {% for item in needs_attention %}
+      <a class="attention-item" href="{{ item.url }}">
+        <span class="attention-label">{{ item.label }}</span>
+        <span class="attention-count">{{ item.count }}</span>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="dash-empty">Nothing waiting on you right now.</p>
+    {% endif %}
+  </div>
 </div>
 
 <div class="dash-card">
-  <div class="dash-card-head">
-    <h3>Pending sign-ups</h3>
-    <a class="btn-sm btn-sm-outline" href="{% url 'dashboard:signup_queue' %}">View all ({{ pending_signups_count }})</a>
-  </div>
-  {% if pending_signups %}
-  <table class="dash-table hidden lg:table">
-    <tr><th>Username</th><th>Email</th><th>Joined</th></tr>
-    {% for u in pending_signups %}
-    <tr><td>{{ u.username }}</td><td>{{ u.email }}</td><td>{{ u.date_joined|date:"M j, Y" }}</td></tr>
+  <div class="dash-card-head"><h3>Publishing pipeline</h3></div>
+  <div class="pipeline-strip">
+    {% for stage in pipeline %}
+    <a class="pipeline-stage" href="{{ stage.url }}">
+      <span class="num">{{ stage.count }}</span>
+      <span class="label">{{ stage.label }}</span>
+    </a>
+    {% if not forloop.last %}<span class="pipeline-arrow">&rarr;</span>{% endif %}
     {% endfor %}
-  </table>
-  <div class="dash-mobile-list lg:hidden">
-    {% for u in pending_signups %}
-    <article class="dash-mobile-row"><dl>
-      <div><dt>Username</dt><dd>{{ u.username }}</dd></div>
-      <div><dt>Email</dt><dd>{{ u.email }}</dd></div>
-      <div><dt>Joined</dt><dd>{{ u.date_joined|date:"M j, Y" }}</dd></div>
-    </dl></article>
-    {% endfor %}
-  </div>
-  {% else %}
-  <p class="dash-empty">No accounts waiting on approval.</p>
-  {% endif %}
-</div>
-
-<div class="dash-card">
-  <div class="dash-card-head">
-    <h3>Pending content</h3>
-    <a class="btn-sm btn-sm-outline" href="{% url 'dashboard:content_queue' %}">Review queue ({{ pending_content_count }})</a>
-  </div>
-  <p class="dash-empty" style="padding:0">Articles, devotions, episodes, and videos authors have submitted for review.</p>
-</div>
-
-<div class="dash-card">
-  <div class="dash-card-head">
-    <h3>Pending testimonies</h3>
-    <a class="btn-sm btn-sm-outline" href="{% url 'dashboard:pending_testimonies' %}">Review ({{ pending_testimonies_count }})</a>
   </div>
 </div>
 
-<div class="dash-card">
-  <div class="dash-card-head">
-    <h3>Prayer requests</h3>
-    <a class="btn-sm btn-sm-outline" href="{% url 'dashboard:prayer_requests' %}">Unreviewed ({{ unreviewed_prayers_count }})</a>
+<div class="ytr-member-grid">
+  <div class="dash-card">
+    <div class="dash-card-head">
+      <h3>Recently published</h3>
+      <a class="btn-sm btn-sm-outline" href="{% url 'dashboard:content_workspace' %}?status=published">View all</a>
+    </div>
+    {% if recent_content %}
+      {% for item in recent_content %}
+      <div class="content-row">
+        <div class="content-row-icon">{% icon 'flame' 18 'false' %}</div>
+        <div class="content-row-body">
+          <div class="content-row-title">{{ item.title }}</div>
+          <div class="content-row-meta">
+            {{ item.label }} ·
+            {% if item.has_en and item.has_rw %}EN + RW{% elif item.has_en %}EN only{% elif item.has_rw %}RW only{% else %}No content{% endif %}
+            · {{ item.published_at|timesince }} ago
+          </div>
+        </div>
+        <div class="content-row-actions">
+          {% if item.url %}<a class="btn-text" href="{{ item.url }}">View</a>{% endif %}
+          <a class="btn-text" href="{{ item.edit_url }}">Edit</a>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+    <p class="dash-empty">Nothing published yet.</p>
+    {% endif %}
+  </div>
+
+  <div class="dash-card">
+    <div class="dash-card-head"><h3>Community</h3></div>
+    <div class="ytr-list-item"><span class="ytr-list-title">Members</span><strong>{{ community.members }}</strong></div>
+    <div class="ytr-list-item"><span class="ytr-list-title">Authors</span><strong>{{ community.authors }}</strong></div>
+    <div class="ytr-list-item"><span class="ytr-list-title">Newsletter subscribers</span><strong>{{ community.subscribers }}</strong></div>
+    <div class="ytr-list-item"><span class="ytr-list-title">Testimonies pending</span><strong>{{ community.testimonies_pending }}</strong></div>
+    <div class="ytr-list-item"><span class="ytr-list-title">Prayer requests pending</span><strong>{{ community.prayers_pending }}</strong></div>
+    <div class="ytr-list-item"><span class="ytr-list-title">Unread messages</span><strong>{{ community.messages_unread }}</strong></div>
   </div>
 </div>
 
-<div class="dash-card">
-  <div class="dash-card-head">
-    <h3>Contact messages</h3>
-    <a class="btn-sm btn-sm-outline" href="{% url 'dashboard:messages' %}">View all ({{ unread_messages_count }} unread)</a>
+<div class="ytr-member-grid">
+  <div class="dash-card">
+    <div class="dash-card-head"><h3>Bilingual content health</h3></div>
+    {% if bilingual_health.total %}
+      <div class="lang-health-row"><span>Complete (EN + RW)</span><strong>{{ bilingual_health.complete }}</strong></div>
+      <div class="lang-health-row"><span>English only</span><strong>{{ bilingual_health.en_only }}</strong></div>
+      <div class="lang-health-row"><span>Kinyarwanda only</span><strong>{{ bilingual_health.rw_only }}</strong></div>
+      <div class="lang-health-row"><span>Missing both</span><strong>{{ bilingual_health.missing }}</strong></div>
+      <div class="lang-health-bar"><div class="lang-health-bar-fill" style="width:{% widthratio bilingual_health.complete bilingual_health.total 100 %}%"></div></div>
+      {% if bilingual_health.needs_translation %}
+      <a class="btn-sm btn-sm-outline" style="margin-top:14px" href="{% url 'dashboard:content_workspace' %}?language=missing">
+        Review missing translations ({{ bilingual_health.needs_translation }})
+      </a>
+      {% endif %}
+    {% else %}
+    <p class="dash-empty">No published content yet.</p>
+    {% endif %}
+  </div>
+
+  <div class="dash-card">
+    <div class="dash-card-head"><h3>Recent activity</h3></div>
+    {% if activity %}
+      {% for event in activity %}
+      <div class="activity-item">
+        <span class="activity-dot"></span>
+        <div>
+          <div>{{ event.actor }} {{ event.verb }} <strong>{{ event.target }}</strong></div>
+          <div class="activity-time">{{ event.at|timesince }} ago</div>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+    <p class="dash-empty">No recent activity yet.</p>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

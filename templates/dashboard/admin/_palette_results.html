@@ -1,0 +1,12 @@
+{% if not query %}
+<p class="dash-palette-empty">Start typing to search…</p>
+{% elif results %}
+{% for r in results %}
+<a class="dash-palette-item" href="{{ r.url }}">
+  <span>{{ r.title }}</span>
+  <span class="kind">{{ r.kind }}</span>
+</a>
+{% endfor %}
+{% else %}
+<p class="dash-palette-empty">No matches for &ldquo;{{ query }}&rdquo;.</p>
+{% endif %}

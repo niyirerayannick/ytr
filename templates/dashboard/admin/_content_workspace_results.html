@@ -1,0 +1,51 @@
+{% if page_obj %}
+<table class="dash-table hidden lg:table">
+  <tr><th>Title</th><th>Type</th><th>Status</th><th>Language</th><th>Updated</th><th></th></tr>
+  {% for item in page_obj %}
+  <tr>
+    <td>{{ item.title }}</td>
+    <td>{{ item.label }}</td>
+    <td><span class="badge badge-{{ item.status }}">{{ item.status|title }}</span></td>
+    <td>{% if item.has_en and item.has_rw %}EN + RW{% elif item.has_en %}EN only{% elif item.has_rw %}RW only{% else %}Missing{% endif %}</td>
+    <td>{{ item.updated_at|timesince }} ago</td>
+    <td>
+      {% if item.view_url %}<a class="btn-text" href="{{ item.view_url }}">View</a>{% endif %}
+      <a class="btn-text" href="{{ item.edit_url }}">Edit</a>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+<div class="dash-mobile-list lg:hidden">
+  {% for item in page_obj %}
+  <article class="dash-mobile-row"><dl>
+    <div><dt>Title</dt><dd>{{ item.title }}</dd></div>
+    <div><dt>Type</dt><dd>{{ item.label }}</dd></div>
+    <div><dt>Status</dt><dd><span class="badge badge-{{ item.status }}">{{ item.status|title }}</span></dd></div>
+    <div><dt>Language</dt><dd>{% if item.has_en and item.has_rw %}EN + RW{% elif item.has_en %}EN only{% elif item.has_rw %}RW only{% else %}Missing{% endif %}</dd></div>
+  </dl>
+  <div class="dash-actions">
+    {% if item.view_url %}<a class="btn-sm btn-sm-outline" href="{{ item.view_url }}">View</a>{% endif %}
+    <a class="btn-sm btn-sm-outline" href="{{ item.edit_url }}">Edit</a>
+  </div>
+  </article>
+  {% endfor %}
+</div>
+
+{% if page_obj.paginator.num_pages > 1 %}
+<div class="dash-actions" style="margin-top:20px">
+  {% if page_obj.has_previous %}
+  <a class="btn-sm btn-sm-outline" href="?type={{ active_type }}&status={{ active_status }}&language={{ active_language }}&q={{ query }}&page={{ page_obj.previous_page_number }}"
+     hx-get="{% url 'dashboard:content_workspace' %}?type={{ active_type }}&status={{ active_status }}&language={{ active_language }}&q={{ query }}&page={{ page_obj.previous_page_number }}"
+     hx-target="#workspace-results" hx-push-url="true">&larr; Newer</a>
+  {% endif %}
+  {% if page_obj.has_next %}
+  <a class="btn-sm btn-sm-outline" href="?type={{ active_type }}&status={{ active_status }}&language={{ active_language }}&q={{ query }}&page={{ page_obj.next_page_number }}"
+     hx-get="{% url 'dashboard:content_workspace' %}?type={{ active_type }}&status={{ active_status }}&language={{ active_language }}&q={{ query }}&page={{ page_obj.next_page_number }}"
+     hx-target="#workspace-results" hx-push-url="true">Older &rarr;</a>
+  {% endif %}
+</div>
+{% endif %}
+{% else %}
+<p class="dash-empty">No content matches these filters.</p>
+{% endif %}

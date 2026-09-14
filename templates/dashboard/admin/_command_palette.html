@@ -1,0 +1,21 @@
+{% load static %}
+<div x-data="commandPalette()" @open-palette.window="open()">
+  <div class="dash-palette-backdrop" x-show="show" x-cloak @click.self="close()" x-transition role="presentation">
+    <div class="dash-palette" role="dialog" aria-modal="true" aria-label="Command palette" @keydown.escape.window="close()">
+      <input
+        class="dash-palette-input"
+        type="text"
+        placeholder="Search articles, devotions, members…"
+        aria-label="Search"
+        x-ref="input"
+        x-model="query"
+        hx-get="{% url 'dashboard:command_search' %}"
+        hx-trigger="keyup changed delay:250ms"
+        hx-target="#palette-results"
+        name="q">
+      <div id="palette-results" class="dash-palette-results">
+        <p class="dash-palette-empty">Start typing to search…</p>
+      </div>
+    </div>
+  </div>
+</div>

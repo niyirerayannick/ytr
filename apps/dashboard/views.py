@@ -1,8 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.http import Http404
+from django.core.paginator import Paginator
+from django.db.models import Q
+from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
 
@@ -16,6 +19,7 @@ from apps.morning_devotions.models import MorningDevotionSession
 from apps.podcasts.models import Episode
 from apps.videos.models import Video
 
+from . import services
 from .access import role_required
 from .forms import (
     CONTENT_REGISTRY,
@@ -24,6 +28,7 @@ from .forms import (
     TestimonyForm,
     UserRoleForm,
 )
+from .services import _CONTENT_SHAPE
 
 User = get_user_model()
 
@@ -51,23 +56,89 @@ def dashboard_home(request):
 # ------------------------------------------------------------------------- admin
 @role_required(Profile.ROLE_ADMIN)
 def admin_dashboard(request):
+    needs_attention_items = services.needs_attention()
+    local_hour = timezone.localtime().hour
+    greeting = "Good morning" if local_hour < 12 else "Good afternoon" if local_hour < 18 else "Good evening"
     context = {
-        "pending_signups": User.objects.filter(is_active=False).order_by("-date_joined")[:5],
-        "pending_signups_count": User.objects.filter(is_active=False).count(),
-        "pending_content_count": sum(
-            entry["model"].objects.filter(status="pending").count() for entry in CONTENT_REGISTRY.values()
-        ),
-        "pending_testimonies_count": Testimony.objects.filter(status=Testimony.STATUS_PENDING).count(),
-        "unreviewed_prayers_count": PrayerRequest.objects.filter(status=PrayerRequest.STATUS_PENDING).count(),
-        "unread_messages_count": ContactMessage.objects.filter(is_read=False).count(),
-        "counts": {
-            "members": User.objects.filter(profile__role=Profile.ROLE_MEMBER, is_active=True).count(),
-            "authors": User.objects.filter(profile__role=Profile.ROLE_AUTHOR, is_active=True).count(),
-            "published_articles": Article.objects.filter(status="published").count(),
-            "subscribers": NewsletterSubscriber.objects.count(),
-        },
+        "greeting": greeting,
+        "kpis": services.overview_kpis(),
+        "morning_devotion": services.admin_morning_devotion_focus(),
+        "morning_devotions_missing_archive": services.morning_devotions_missing_archive(),
+        "needs_attention": needs_attention_items,
+        "needs_attention_count": sum(item["count"] for item in needs_attention_items),
+        "pipeline": services.publishing_pipeline(),
+        "recent_content": services.recent_content(),
+        "bilingual_health": services.bilingual_health(),
+        "community": services.community_summary(),
+        "activity": services.recent_activity(),
     }
     return render(request, "dashboard/admin/home.html", context)
+
+
+@role_required(Profile.ROLE_ADMIN)
+def command_search_view(request):
+    query = request.GET.get("q", "")
+    results = services.command_search(query)
+    if request.headers.get("HX-Request"):
+        return render(request, "dashboard/admin/_palette_results.html", {"results": results, "query": query})
+    return JsonResponse({"results": results})
+
+
+@role_required(Profile.ROLE_ADMIN)
+def content_workspace(request):
+    """Cross-type browsing/filtering over every ReviewableContent type
+    (Article/Devotion/Episode/Video) — complements, not replaces, the
+    existing pending-review action queue (`content_queue`/`review_content`).
+    Filter state lives in the query string so results are bookmarkable."""
+    content_type = request.GET.get("type", "all")
+    status = request.GET.get("status", "all")
+    language = request.GET.get("language", "all")
+    query = request.GET.get("q", "").strip()
+
+    types_to_query = [content_type] if content_type in CONTENT_REGISTRY else list(CONTENT_REGISTRY)
+
+    items = []
+    for ct in types_to_query:
+        entry = CONTENT_REGISTRY[ct]
+        shape = _CONTENT_SHAPE[ct]
+        qs = entry["model"].objects.all()
+        if status in ("draft", "pending", "published", "rejected"):
+            qs = qs.filter(status=status)
+        if query:
+            if ct == "devotion":
+                qs = qs.filter(verse_ref__icontains=query)
+            else:
+                qs = qs.filter(Q(title_en__icontains=query) | Q(title_rw__icontains=query))
+        for obj in qs.order_by("-updated_at")[:100]:
+            has_en, has_rw = shape["has_en"](obj), shape["has_rw"](obj)
+            if language == "en" and not has_en:
+                continue
+            if language == "rw" and not has_rw:
+                continue
+            if language == "missing" and (has_en and has_rw):
+                continue
+            items.append({
+                "type": ct, "label": entry["label"], "obj": obj,
+                "title": shape["title"](obj), "status": obj.status,
+                "has_en": has_en, "has_rw": has_rw, "updated_at": obj.updated_at,
+                "edit_url": reverse("dashboard:review_content", kwargs={"content_type": ct, "pk": obj.pk}),
+                "view_url": obj.get_absolute_url() if hasattr(obj, "get_absolute_url") and obj.status == "published" else None,
+            })
+    items.sort(key=lambda i: i["updated_at"], reverse=True)
+
+    paginator = Paginator(items, 20)
+    page_obj = paginator.get_page(request.GET.get("page"))
+
+    context = {
+        "page_obj": page_obj,
+        "active_type": content_type,
+        "active_status": status,
+        "active_language": language,
+        "query": query,
+        "content_types": [("all", "All types")] + [(ct, entry["label"]) for ct, entry in CONTENT_REGISTRY.items()],
+    }
+    template = "dashboard/admin/_content_workspace_results.html" if request.headers.get("HX-Request") else "dashboard/admin/content_workspace.html"
+    return render(request, template, context)
 
 
 @role_required(Profile.ROLE_ADMIN)
@@ -223,7 +294,7 @@ def author_dashboard(request):
     return render(request, "dashboard/author/home.html", {"items": items})
 
 
-@role_required(Profile.ROLE_AUTHOR)
+@role_required(Profile.ROLE_AUTHOR, Profile.ROLE_ADMIN)
 def author_content_create(request, content_type):
     entry = CONTENT_REGISTRY.get(content_type)
     if not entry:
@@ -243,7 +314,7 @@ def author_content_create(request, content_type):
     })
 
 
-@role_required(Profile.ROLE_AUTHOR)
+@role_required(Profile.ROLE_AUTHOR, Profile.ROLE_ADMIN)
 def author_content_edit(request, content_type, pk):
     entry = CONTENT_REGISTRY.get(content_type)
     if not entry:
@@ -251,7 +322,7 @@ def author_content_edit(request, content_type, pk):
     obj = get_object_or_404(entry["model"], pk=pk, submitted_by=request.user)
     if obj.status not in (obj.STATUS_DRAFT, obj.STATUS_REJECTED):
         messages.error(request, "This item is awaiting review or already published, so it can't be edited right now.")
-        return redirect("dashboard:author_home")
+        return redirect("dashboard:home")
 
     if request.method == "POST":
         form = entry["form"](request.POST, request.FILES, instance=obj)
@@ -267,7 +338,7 @@ def author_content_edit(request, content_type, pk):
     })
 
 
-@role_required(Profile.ROLE_AUTHOR)
+@role_required(Profile.ROLE_AUTHOR, Profile.ROLE_ADMIN)
 def author_content_submit(request, content_type, pk):
     entry = CONTENT_REGISTRY.get(content_type)
     if not entry:
@@ -277,7 +348,7 @@ def author_content_submit(request, content_type, pk):
         if obj.status in (obj.STATUS_DRAFT, obj.STATUS_REJECTED):
             obj.submit_for_review(request.user)
             messages.success(request, f"{entry['label']} submitted for review.")
-        return redirect("dashboard:author_home")
+        return redirect("dashboard:home")
     raise Http404
 
 

@@ -1,0 +1,45 @@
+{% extends "dashboard/admin/_base.html" %}
+{% block title %}Content workspace{% endblock %}
+{% block page_title %}Content workspace{% endblock %}
+{% block content_class %}dash-content--wide{% endblock %}
+
+{% block content %}
+<h1>Content workspace</h1>
+<p class="dash-lede">Browse and filter every Article, Devotion, Podcast episode, and Video by status, language, and search — bookmarkable, so a filtered view can be shared internally.</p>
+
+<form class="filter-bar" method="get" action="{% url 'dashboard:content_workspace' %}">
+  <input type="search" name="q" placeholder="Search titles…" value="{{ query }}"
+         hx-get="{% url 'dashboard:content_workspace' %}" hx-target="#workspace-results" hx-push-url="true" hx-include="closest form" hx-indicator="#workspace-loading"
+         hx-trigger="keyup changed delay:400ms">
+  <select name="type"
+          hx-get="{% url 'dashboard:content_workspace' %}" hx-target="#workspace-results" hx-push-url="true" hx-include="closest form" hx-indicator="#workspace-loading"
+          hx-trigger="change">
+    {% for value, label in content_types %}
+    <option value="{{ value }}" {% if value == active_type %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+  <select name="status"
+          hx-get="{% url 'dashboard:content_workspace' %}" hx-target="#workspace-results" hx-push-url="true" hx-include="closest form" hx-indicator="#workspace-loading"
+          hx-trigger="change">
+    <option value="all" {% if active_status == "all" %}selected{% endif %}>All statuses</option>
+    <option value="draft" {% if active_status == "draft" %}selected{% endif %}>Draft</option>
+    <option value="pending" {% if active_status == "pending" %}selected{% endif %}>Pending review</option>
+    <option value="published" {% if active_status == "published" %}selected{% endif %}>Published</option>
+    <option value="rejected" {% if active_status == "rejected" %}selected{% endif %}>Rejected</option>
+  </select>
+  <select name="language"
+          hx-get="{% url 'dashboard:content_workspace' %}" hx-target="#workspace-results" hx-push-url="true" hx-include="closest form" hx-indicator="#workspace-loading"
+          hx-trigger="change">
+    <option value="all" {% if active_language == "all" %}selected{% endif %}>Any language</option>
+    <option value="en" {% if active_language == "en" %}selected{% endif %}>Has English</option>
+    <option value="rw" {% if active_language == "rw" %}selected{% endif %}>Has Kinyarwanda</option>
+    <option value="missing" {% if active_language == "missing" %}selected{% endif %}>Missing a translation</option>
+  </select>
+  <button class="btn-sm btn-sm-outline" type="submit">Filter</button>
+  <span id="workspace-loading" class="htmx-indicator" style="font-size:0.8rem; color:var(--ink-soft)">Loading…</span>
+</form>
+
+<div id="workspace-results">
+  {% include "dashboard/admin/_content_workspace_results.html" %}
+</div>
+{% endblock %}

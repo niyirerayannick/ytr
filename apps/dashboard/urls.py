@@ -9,6 +9,8 @@ urlpatterns = [
 
     # --- admin ---
     path("admin/", views.admin_dashboard, name="admin"),
+    path("admin/search/", views.command_search_view, name="command_search"),
+    path("admin/content-workspace/", views.content_workspace, name="content_workspace"),
     path("admin/signups/", views.signup_queue, name="signup_queue"),
     path("admin/signups/<int:user_id>/approve/", views.approve_signup, name="approve_signup"),
     path("admin/signups/<int:user_id>/reject/", views.reject_signup, name="reject_signup"),
