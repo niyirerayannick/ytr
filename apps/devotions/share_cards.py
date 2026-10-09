@@ -23,6 +23,7 @@ import io
 from PIL import Image, ImageDraw
 
 from apps.core.card_rendering import (  # noqa: F401 — re-exported for callers/tests
+    BRAND, TEXT, MUTED_TEXT, ACCENT, CARD_BACKGROUND,
     DAWN,
     EMBER_DIM,
     FORMATS,
@@ -71,11 +72,11 @@ def render_devotion_card(devotion, language, site_settings, fmt=SQUARE):
     width, height = size
     margin = 84
 
-    img = vertical_gradient(size, [NIGHT, NIGHT_2, EMBER_DIM]).convert("RGBA")
+    img = vertical_gradient(size, CARD_BACKGROUND).convert("RGBA")
 
     copy = _COPY[language]
 
-    logo_size = 88
+    logo_size = 112
     paste_logo(img, margin, top=76, logo_size=logo_size)
 
     # Everything else is drawn on a transparent overlay and alpha-composited
@@ -89,8 +90,8 @@ def render_devotion_card(devotion, language, site_settings, fmt=SQUARE):
     brand_font = _font(REGULAR_FONT, 28, weight=700)
     kicker_font = _font(REGULAR_FONT, 20, weight=600)
     text_x = margin + logo_size + 24
-    draw.text((text_x, 88), copy["brand"], font=brand_font, fill=(*DAWN, 255))
-    draw.text((text_x, 126), copy["kicker"], font=kicker_font, fill=(255, 255, 255, 178))
+    draw.text((text_x, 88), copy["brand"], font=brand_font, fill=(*BRAND, 255))
+    draw.text((text_x, 126), copy["kicker"], font=kicker_font, fill=(*MUTED_TEXT, 255))
 
     content_width = width - 2 * margin
     header_bottom = 200
@@ -115,27 +116,29 @@ def render_devotion_card(devotion, language, site_settings, fmt=SQUARE):
     y = header_bottom + max(0, (available - block_height) // 2)
 
     for line in title_lines:
-        draw.text((margin, y), line, font=title_font, fill=(*PAPER, 255))
+        draw.text((margin, y), line, font=title_font, fill=(*BRAND, 255))
         y += title_line_height
     y += 28
 
     for line in quote_lines:
-        draw.text((margin, y), line, font=quote_font, fill=(251, 247, 240, 235))
+        draw.text((margin, y), line, font=quote_font, fill=(*TEXT, 255))
         y += quote_line_height
 
     # ---- footer ----
-    draw.line([(margin, footer_top), (width - margin, footer_top)], fill=(255, 255, 255, 46), width=1)
+    draw.line([(margin, footer_top), (width - margin, footer_top)], fill=(*ACCENT, 255), width=1)
 
     cta_font = _font(REGULAR_FONT, 24, weight=600)
-    draw.text((margin, footer_top + 22), copy["cta"], font=cta_font, fill=(*DAWN, 255))
+    draw.text((margin, footer_top + 22), copy["cta"], font=cta_font, fill=(*BRAND, 255))
 
     contact_font = _font(REGULAR_FONT, 22)
     contact_y = footer_top + 66
     for line in footer_lines(site_settings):
-        draw.text((margin, contact_y), line, font=contact_font, fill=(255, 255, 255, 191))
+        fitted_font, fitted_lines = fit_lines(draw, line, REGULAR_FONT, 22, content_width - 132, max_lines=1, min_size=14)
+        draw.text((margin, contact_y), fitted_lines[0], font=fitted_font, fill=(*MUTED_TEXT, 255))
         contact_y += 30
 
     flattened = Image.alpha_composite(img, overlay).convert("RGB")
+    paste_logo(flattened, width - margin - 104, top=footer_top + 20, logo_size=104)
     buffer = io.BytesIO()
     flattened.save(buffer, format="PNG", optimize=True)
     return buffer.getvalue()
@@ -143,7 +146,7 @@ def render_devotion_card(devotion, language, site_settings, fmt=SQUARE):
 
 def cache_key(devotion, language, fmt, site_settings):
     raw = "|".join([
-        "devotion-share-card",
+        "devotion-share-card-brand-v2",
         str(devotion.pk),
         language,
         fmt,

@@ -367,9 +367,18 @@ class MorningDevotionCoverViewTests(TestCase):
         image = Image.open(io.BytesIO(response.content))
         self.assertEqual(image.size, (1080, 1080))
 
+    def test_story_and_rw_cover_render(self):
+        session = _make_session()
+        for language in ("en", "rw"):
+            response = self.client.get(self._url(session, format="story", lang=language))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(Image.open(io.BytesIO(response.content)).size, (1080, 1920))
+        response = self.client.get(self._url(session, lang="invalid"))
+        self.assertEqual(response.status_code, 400)
+
     def test_invalid_format_is_rejected(self):
         session = _make_session()
-        response = self.client.get(self._url(session, format="story"))
+        response = self.client.get(self._url(session, format="invalid"))
         self.assertEqual(response.status_code, 400)
 
     def test_unpublished_session_cover_is_not_exposed(self):

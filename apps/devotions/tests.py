@@ -176,6 +176,20 @@ class DevotionShareImageViewTests(TestCase):
         response = self.client.get(self._url(devotion, lang="fr", format="square"))
         self.assertEqual(response.status_code, 400)
 
+    def test_brand_cards_render_in_both_languages_and_formats(self):
+        devotion = _make_devotion()
+        devotion.verse_text_rw = "Imana ikunda urubyiruko kandi iraduhamagara kugendera mu kwizera. " * 80
+        devotion.save()
+        for language in ("en", "rw"):
+            for fmt, size in (("square", (1080, 1080)), ("story", (1080, 1920))):
+                with self.subTest(language=language, format=fmt):
+                    response = self.client.get(self._url(devotion, lang=language, format=fmt))
+                    self.assertEqual(response.status_code, 200)
+                    image = Image.open(io.BytesIO(response.content))
+                    self.assertEqual(image.size, size)
+                    self.assertEqual(image.getpixel((0, 0)), (254, 254, 254))
+                    self.assertNotEqual(image.getpixel((140, 130)), (254, 254, 254))
+
     def test_invalid_format_is_rejected(self):
         devotion = _make_devotion()
         response = self.client.get(self._url(devotion, lang="en", format="banner"))

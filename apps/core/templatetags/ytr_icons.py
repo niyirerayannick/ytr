@@ -12,5 +12,5 @@ def icon(name, size=24, stroke="true"):
 
 
 @register.simple_tag
-def icon_tile(name, bg="#241A3D", size="100%"):
+def icon_tile(name, bg="var(--color-brand-dark)", size="100%"):
     return mark_safe(icon_tile_svg(name, bg=bg, size=size))

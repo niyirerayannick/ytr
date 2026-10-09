@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 {% block title %}Log in — Youth Time Revival{% endblock %}
 
+{% load static %}
 {% block content %}
 <section>
   <div class="section">
     <div class="wrap" style="max-width:420px">
+      <img class="auth-logo" src="{% static 'branding/ytr-logo-small.png' %}" width="256" height="256" alt="Youth Time Revival">
       <div class="section-head">
         <h2>Log in</h2>
       </div>
@@ -23,11 +25,11 @@
         <div class="form-field">
           <label for="{{ field.id_for_label }}">{{ field.label }}</label>
           {{ field }}
-          {% for error in field.errors %}<p style="color:var(--ember); font-size:0.85rem; margin-top:4px">{{ error }}</p>{% endfor %}
+          {% for error in field.errors %}<p style="color:var(--color-error); font-size:0.85rem; margin-top:4px">{{ error }}</p>{% endfor %}
         </div>
         {% endfor %}
         {% if form.non_field_errors %}
-        <p style="color:var(--ember); font-size:0.85rem; margin-bottom:14px">{{ form.non_field_errors }}</p>
+        <p style="color:var(--color-error); font-size:0.85rem; margin-bottom:14px">{{ form.non_field_errors }}</p>
         {% endif %}
         <input type="hidden" name="next" value="{{ next }}">
         <button class="btn btn-ember" type="submit">Log in</button>

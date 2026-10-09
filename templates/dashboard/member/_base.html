@@ -1,6 +1,8 @@
 {% extends "dashboard/_shell.html" %}
 
+{% load static %}
 {% block sidebar %}
+<a class="dash-sidebar-brand" href="{% url 'core:home' %}"><img class="brand-logo" src="{% static 'branding/ytr-logo-small.png' %}" width="256" height="256" alt=""><span>Youth Time Revival</span></a>
 <div class="dash-section-label">Member</div>
 <a href="{% url 'dashboard:member_home' %}">Overview</a>
 {% endblock %}

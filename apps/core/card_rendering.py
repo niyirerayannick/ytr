@@ -14,6 +14,7 @@ from PIL import Image, ImageDraw, ImageFont
 SQUARE = "square"
 FORMATS = {
     SQUARE: (1080, 1080),
+    "story": (1080, 1920),
 }
 LANGUAGES = ("en", "rw")
 
@@ -21,11 +22,18 @@ FONT_DIR = Path(settings.BASE_DIR) / "static" / "fonts"
 REGULAR_FONT = FONT_DIR / "WorkSans-Variable.ttf"
 ITALIC_FONT = FONT_DIR / "WorkSans-Italic-Variable.ttf"
 
-NIGHT = (26, 18, 48)
-NIGHT_2 = (36, 26, 61)
-EMBER_DIM = (194, 74, 36)
-DAWN = (246, 185, 59)
-PAPER = (251, 247, 240)
+BRAND_DARK = (74, 26, 5)
+BRAND = (124, 45, 7)
+ACCENT = (244, 160, 41)
+SECONDARY = (158, 225, 248)
+TEXT = (13, 13, 13)
+MUTED_TEXT = (98, 91, 87)
+SURFACE = (254, 254, 254)
+SURFACE_MUTED = (248, 245, 242)
+INFO_SURFACE = (232, 248, 253)
+CARD_BACKGROUND = [SURFACE, SURFACE_MUTED, INFO_SURFACE]
+# Compatibility exports for existing callers; card layouts use semantic names.
+NIGHT, NIGHT_2, EMBER_DIM, DAWN, PAPER = BRAND_DARK, BRAND, (153, 89, 52), BRAND, TEXT
 
 
 def font(path, size, weight=None):
@@ -87,14 +95,12 @@ def vertical_gradient(size, stops):
 
 
 def paste_logo(img, margin, top=76, logo_size=88):
-    """Paste the app icon (already a night-colored tile with the flame mark)
-    as the brand badge in the top-left. Silently skipped if missing."""
-    logo_path = Path(settings.BASE_DIR) / "static" / "icons" / "ytr-192.png"
-    try:
-        logo = Image.open(logo_path).convert("RGBA").resize((logo_size, logo_size))
+    """Place the complete official artwork without cropping or distortion."""
+    logo_path = Path(settings.BASE_DIR) / "static" / "branding" / "ytr-logo.png"
+    with Image.open(logo_path) as source:
+        logo = source.convert("RGBA")
+        logo.thumbnail((logo_size, logo_size), Image.Resampling.LANCZOS)
         img.paste(logo, (margin, top), logo)
-    except FileNotFoundError:
-        pass
 
 
 def footer_lines(site_settings):

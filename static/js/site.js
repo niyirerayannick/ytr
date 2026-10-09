@@ -45,43 +45,6 @@
     if (saved) setLang(saved);
   } catch (e) {}
 
-  /* ---------- HERO EMBERS ---------- */
-  (function emberField() {
-    var host = document.getElementById("emberField");
-    if (!host) return;
-    host.style.position = "absolute";
-    host.style.inset = "0";
-    host.style.overflow = "hidden";
-    host.style.pointerEvents = "none";
-    for (var i = 0; i < 10; i++) {
-      var p = document.createElement("span");
-      p.className = "ember-particle";
-      var size = 3 + Math.random() * 4;
-      p.style.width = size + "px";
-      p.style.height = size + "px";
-      p.style.left = 10 + Math.random() * 80 + "%";
-      p.style.animationDelay = Math.random() * 7 + "s";
-      p.style.animationDuration = 6 + Math.random() * 4 + "s";
-      host.appendChild(p);
-    }
-  })();
-
-  /* ---------- MOMENT PILLS ---------- */
-  (function momentCycle() {
-    var pills = document.querySelectorAll(".moment-pill");
-    if (!pills.length) return;
-    var i = 0;
-    function tick() {
-      pills.forEach(function (p) { p.classList.remove("on"); });
-      pills[i].classList.add("on");
-      i = (i + 1) % pills.length;
-    }
-    tick();
-    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setInterval(tick, 2600);
-    }
-  })();
-
   /* ---------- CALENDAR LINK ---------- */
   (function calLink() {
     var link = document.getElementById("calLink");

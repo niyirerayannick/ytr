@@ -3,6 +3,7 @@ import os
 
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
+from django.db.models import Q
 from django.utils import timezone
 
 from apps.about.models import BeliefPoint, CallTimelineEntry, SevenMountain
@@ -12,6 +13,7 @@ from apps.core.models import Gathering, SiteSettings
 from apps.devotions.models import Devotion
 from apps.faq.models import FAQ
 from apps.library.models import Book
+from apps.morning_devotions.models import MorningDevotionSession
 from apps.podcasts.models import Episode, PodcastSeries
 from apps.videos.models import Video, VideoSeries
 
@@ -19,7 +21,10 @@ User = get_user_model()
 
 
 class Command(BaseCommand):
-    help = "Loads the sample content from the ytr.html prototype into the database."
+    help = "Loads bilingual demonstration content, accounts, and Morning Devotion sessions."
+
+    def add_arguments(self, parser):
+        parser.add_argument("--with-admin", action="store_true", help="Create a local demo administrator (admin_demo).")
 
     def handle(self, *args, **options):
         self.seed_site_settings()
@@ -34,6 +39,9 @@ class Command(BaseCommand):
         self.seed_timeline()
         self.seed_faqs()
         self.seed_demo_accounts()
+        self.seed_morning_devotions()
+        if options["with_admin"]:
+            self.seed_demo_admin()
         self.stdout.write(self.style.SUCCESS("Demo content seeded successfully."))
 
     # ------------------------------------------------------------- accounts
@@ -109,11 +117,73 @@ class Command(BaseCommand):
         )
         self.stdout.write("Demo accounts ready (author_demo / member_demo / pending_demo, password demo-pass-123).")
 
+    def seed_demo_admin(self):
+        user, created = User.objects.get_or_create(
+            username="admin_demo",
+            defaults={"email": "admin_demo@example.test", "is_active": True,
+                      "is_staff": True, "is_superuser": True},
+        )
+        if created:
+            user.set_password("demo-pass-123")
+            user.save()
+            user.profile.role = Profile.ROLE_ADMIN
+            user.profile.save()
+        self.stdout.write("Demo administrator: admin_demo (password demo-pass-123 on initial creation).")
+
+    def seed_morning_devotions(self):
+        now = timezone.now()
+        tomorrow = timezone.localdate() + datetime.timedelta(days=1)
+        upcoming = timezone.make_aware(datetime.datetime.combine(tomorrow, datetime.time(6, 0)))
+        speaker, _ = Author.objects.get_or_create(
+            name="YTR Demo Ministry Team",
+            defaults={"bio_en": "Sample ministry team for platform demonstrations.",
+                      "bio_rw": "Itsinda ry'icyitegererezo ryo kwerekana urubuga."},
+        )
+        devotion = Devotion.objects.filter(status=Devotion.STATUS_PUBLISHED).order_by("-date").first()
+        # Only attach recordings with an actual media source; never advertise empty players.
+        episode = Episode.objects.filter(status=Episode.STATUS_PUBLISHED).filter(
+            (Q(audio_file__isnull=False) & ~Q(audio_file=""))
+            | (Q(audio_url__isnull=False) & ~Q(audio_url="")),
+        ).first()
+        video = Video.objects.filter(status=Video.STATUS_PUBLISHED).filter(
+            (Q(video_file__isnull=False) & ~Q(video_file=""))
+            | (Q(youtube_url__isnull=False) & ~Q(youtube_url="")),
+        ).first()
+        sessions = [
+            ("demo-morning-live", "Walking by Faith", "Kugendera mu kwizera", "Hebrews 11:1",
+             now - datetime.timedelta(minutes=10), now + datetime.timedelta(minutes=50),
+             MorningDevotionSession.STATUS_PUBLISHED, False),
+            ("demo-morning-upcoming", "Rooted in Prayer", "Gushinga imizi mu isengesho", "Colossians 4:2",
+             upcoming, upcoming + datetime.timedelta(hours=1),
+             MorningDevotionSession.STATUS_PUBLISHED, False),
+            ("demo-morning-completed", "Peace in Every Season", "Amahoro muri buri gihe", "Philippians 4:6-7",
+             now - datetime.timedelta(days=1, hours=1), now - datetime.timedelta(days=1),
+             MorningDevotionSession.STATUS_PUBLISHED, True),
+            ("demo-morning-draft", "A Generation on Fire", "Igisekuru cyaka umuriro", "Romans 12:11",
+             upcoming + datetime.timedelta(days=1), upcoming + datetime.timedelta(days=1, hours=1),
+             MorningDevotionSession.STATUS_DRAFT, False),
+        ]
+        for slug, title_en, title_rw, scripture, start, end, status, completed in sessions:
+            MorningDevotionSession.objects.update_or_create(slug=slug, defaults={
+                "title_en": title_en, "title_rw": title_rw, "scripture_reference": scripture,
+                "description_en": "Demonstration session: prayer, Scripture reading, and encouragement for young people.",
+                "description_rw": "Isomo ry'icyitegererezo: isengesho, gusoma Ijambo ry'Imana no gukomeza urubyiruko.",
+                "summary_en": "Bring your worries to God in prayer. Give thanks, listen to His Word, and choose one practical act of faith today." if completed else "",
+                "summary_rw": "Shyira ibikugora imbere y'Imana mu isengesho. Shimira Imana, wumve Ijambo ryayo, kandi uhitemo igikorwa kimwe cyo kwizera uyu munsi." if completed else "",
+                "start_datetime": start, "end_datetime": end, "status": status,
+                "language": MorningDevotionSession.LANGUAGE_BILINGUAL,
+                "speaker": speaker, "related_devotion": devotion,
+                "meet_url": SiteSettings.load().morning_devotion_url if not completed else "",
+                "recording_episode": episode if completed else None,
+                "recording_video": video if completed else None,
+            })
+        self.stdout.write("Morning Devotions ready: live, upcoming, completed, and draft (EN/RW).")
+
     # ---------------------------------------------------------------- core
     def seed_site_settings(self):
         settings = SiteSettings.load()
         settings.contact_email = "hello@youthtimerevival.rw"
-        settings.morning_devotion_url = os.environ.get("MORNING_DEVOTION_URL", "")
+        settings.morning_devotion_url = os.environ.get("MORNING_DEVOTION_URL", settings.morning_devotion_url)
         settings.mission_en = (
             "To build hearts on fire for God — raising a generation rooted in prayer, "
             "taught in truth, and sent into every sphere of society."

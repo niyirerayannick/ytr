@@ -58,7 +58,7 @@ def icon_svg(name, size=24, stroke=True):
     )
 
 
-def icon_tile_svg(name, bg="#241A3D", size="100%"):
+def icon_tile_svg(name, bg="var(--color-brand-dark)", size="100%"):
     """Reproduces the prototype's iconWrap(): a colored square tile with a centered icon.
 
     Positioned absolute+inset-0 so it fills a non-square `position:relative` parent

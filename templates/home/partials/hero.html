@@ -1,0 +1,33 @@
+<section class="hero hero-spiritual" aria-label="Youth Time Revival">
+  {% include "home/partials/hero_spiritual_background.html" %}
+    <div class="hero-inner">
+      <p class="hero-brand-label">Youth Time Revival</p>
+      <h1><span class="i18n-en">The altar comes before the platform.</span><span class="i18n-rw">Igicaniro kibanziriza urwuri.</span></h1>
+      <p class="lede i18n-en">Youth Time Revival is a youth movement built on prayer, teaching, and mentorship — sending a generation, formed in secret, into every corner of society.</p>
+      <p class="lede i18n-rw">Youth Time Revival ni umuvuko w'urubyiruko ushingiye ku isengesho, inyigisho, no kuyoborwa hafi — wohereza umuryango wabakiwe ahantu hihishwa, mu bice byose by'imibereho.</p>
+      {% if morning_devotion and morning_devotion.session_state != "finished" %}
+      <p class="hero-session-state">
+        {% if morning_devotion.session_state == "live" %}<span class="hero-live-indicator" aria-hidden="true"></span><span class="i18n-en">LIVE NOW</span><span class="i18n-rw">BIRATANGIYE</span>
+        {% else %}<span class="i18n-en">Next Morning Devotion</span><span class="i18n-rw">Isengesho rikurikira</span> &middot; {{ morning_devotion.start_datetime|date:"D, M j / g:i A" }}{% endif %}
+      </p>
+      {% endif %}
+      <div class="hero-ctas">
+        <a class="btn btn-ember" href="{% url 'devotions:list' %}"><span class="i18n-en">Read today's devotion</span><span class="i18n-rw">Soma iyubahiro ry'uyu munsi</span></a>
+        {% if morning_devotion and morning_devotion.session_state != "finished" %}
+          {% if morning_devotion.can_join_live %}
+          <a class="btn btn-live" href="{{ morning_devotion.meet_url }}" target="_blank" rel="noopener"><span class="i18n-en">Join Morning Devotion</span><span class="i18n-rw">Injira mu Isengesho</span></a>
+          {% else %}
+          <a class="btn btn-outline-cream" href="{{ morning_devotion.get_absolute_url }}"><span class="i18n-en">View Morning Devotion</span><span class="i18n-rw">Reba isengesho ryo mu gitondo</span></a>
+          {% endif %}
+        {% else %}
+          <a class="btn btn-outline-cream" href="{% url 'about:about' %}"><span class="i18n-en">Our story</span><span class="i18n-rw">Inkuru yacu</span></a>
+        {% endif %}
+      </div>
+      <div class="moments" id="momentPills">
+        <span class="moment-pill" data-i="0"><span class="i18n-en">Teaching &amp; Preaching</span><span class="i18n-rw">Kwigisha no Kubwiriza</span></span>
+        <span class="moment-pill" data-i="1"><span class="i18n-en">Prayer</span><span class="i18n-rw">Isengesho</span></span>
+        <span class="moment-pill" data-i="2"><span class="i18n-en">Wealth &amp; Stewardship</span><span class="i18n-rw">Ubutunzi n'Ubugenzuzi</span></span>
+        <span class="moment-pill" data-i="3"><span class="i18n-en">Mentorship &amp; Discipleship</span><span class="i18n-rw">Ubuyobozi n'Ubwigishwa</span></span>
+      </div>
+    </div>
+</section>

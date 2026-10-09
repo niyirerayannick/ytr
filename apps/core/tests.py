@@ -29,6 +29,32 @@ class HomeViewTests(TestCase):
         self.assertContains(response, "Youth Time Revival")
         self.assertContains(response, "Morning Devotion")
 
+    def test_hero_live_without_meeting_links_to_session(self):
+        now = timezone.now()
+        session = MorningDevotionSession.objects.create(
+            slug="live-no-meeting", title_en="Live prayer", title_rw="Isengesho",
+            start_datetime=now - timedelta(minutes=5), end_datetime=now + timedelta(minutes=55),
+            status=MorningDevotionSession.STATUS_PUBLISHED,
+        )
+        response = self.client.get(reverse("core:home"))
+        hero = response.content.decode().split('<section class="hero hero-spiritual"')[1].split('</section>')[0]
+        self.assertIn("LIVE NOW", hero)
+        self.assertIn(session.get_absolute_url(), hero)
+        self.assertIn("View Morning Devotion", hero)
+        self.assertNotIn("Join Morning Devotion", hero)
+
+    def test_hero_does_not_promote_a_draft_session(self):
+        now = timezone.now()
+        MorningDevotionSession.objects.create(
+            title_en="Draft prayer", title_rw="Isengesho",
+            start_datetime=now - timedelta(minutes=5), end_datetime=now + timedelta(minutes=55),
+            status=MorningDevotionSession.STATUS_DRAFT,
+        )
+        response = self.client.get(reverse("core:home"))
+        hero = response.content.decode().split('<section class="hero hero-spiritual"')[1].split('</section>')[0]
+        self.assertIn("Our story", hero)
+        self.assertNotIn("hero-session-state", hero)
+
     def test_home_shows_featured_articles(self):
         Article.objects.create(
             title_en="Test Article", title_rw="Ikizamini",
@@ -296,7 +322,7 @@ class BaseTemplatePwaMetadataTests(TestCase):
     def test_home_page_includes_manifest_link_and_theme_color(self):
         response = self.client.get(reverse("core:home"))
         self.assertContains(response, 'rel="manifest"')
-        self.assertContains(response, 'name="theme-color" content="#1a1230"')
+        self.assertContains(response, 'name="theme-color" content="#7c2d07"')
         self.assertContains(response, 'rel="apple-touch-icon"')
 
     def test_home_page_includes_install_and_update_partials(self):
@@ -380,3 +406,37 @@ class BilingualFieldHelperTests(TestCase):
 
         user = SimpleNamespace(profile=SimpleNamespace(preferred_language="rw"))
         self.assertEqual(viewer_language(user), "rw")
+
+
+class DemoSeedTests(TestCase):
+    def test_demo_sessions_are_bilingual_valid_and_repeatable(self):
+        import io
+        from django.core.management import call_command
+        call_command("seed_demo_content", stdout=io.StringIO())
+        sessions = MorningDevotionSession.objects.filter(slug__startswith="demo-morning-")
+        original_ids = set(sessions.values_list("pk", flat=True))
+        self.assertEqual(len(original_ids), 4)
+        self.assertEqual(sessions.get(slug="demo-morning-live").session_state, "live")
+        self.assertEqual(sessions.get(slug="demo-morning-completed").session_state, "finished")
+        self.assertTrue(sessions.get(slug="demo-morning-completed").has_summary)
+        self.assertFalse(User.objects.filter(username="admin_demo").exists())
+        for session in sessions:
+            session.full_clean()
+            self.assertTrue(session.title_en and session.title_rw)
+        self.assertEqual(self.client.get("/morning-devotions/demo-morning-draft/").status_code, 404)
+        call_command("seed_demo_content", stdout=io.StringIO())
+        self.assertEqual(set(sessions.values_list("pk", flat=True)), original_ids)
+
+    def test_optional_demo_admin_does_not_reset_existing_password(self):
+        import io
+        from django.core.management import call_command
+        call_command("seed_demo_content", with_admin=True, stdout=io.StringIO())
+        admin = User.objects.get(username="admin_demo")
+        self.assertTrue(admin.is_superuser and admin.is_staff)
+        self.assertEqual(admin.profile.role, "admin")
+        self.assertTrue(admin.check_password("demo-pass-123"))
+        admin.set_password("changed-demo-password")
+        admin.save()
+        call_command("seed_demo_content", with_admin=True, stdout=io.StringIO())
+        admin.refresh_from_db()
+        self.assertTrue(admin.check_password("changed-demo-password"))

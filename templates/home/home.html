@@ -1,45 +1,10 @@
 {% extends "base.html" %}
-{% load ytr_icons %}
+{% load ytr_icons static %}
 {% block title %}Youth Time Revival{% endblock %}
 
 {% block content %}
 <section id="view-home">
-  <div class="hero">
-    <svg class="hero-sky" width="100%" height="100%" viewBox="0 0 1200 620" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#1A1230"/>
-          <stop offset="55%" stop-color="#2B1D46"/>
-          <stop offset="80%" stop-color="#7A3A3A"/>
-          <stop offset="100%" stop-color="#F6B93B"/>
-        </linearGradient>
-        <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="#F6B93B"/>
-          <stop offset="100%" stop-color="#F6B93B" stop-opacity="0"/>
-        </radialGradient>
-      </defs>
-      <rect width="1200" height="620" fill="url(#skyGrad)"/>
-      <circle class="sun" cx="920" cy="470" r="160" fill="url(#sunGlow)" opacity="0.55"/>
-      <circle class="sun" cx="920" cy="470" r="70" fill="#F6B93B"/>
-      <path d="M0 560 Q300 500 600 545 T1200 520 V620 H0 Z" fill="#140D24" opacity="0.9"/>
-    </svg>
-    <div id="emberField"></div>
-    <div class="hero-inner">
-      <h1><span class="i18n-en">The altar comes before the platform.</span><span class="i18n-rw">Igicaniro kibanziriza urwuri.</span></h1>
-      <p class="lede i18n-en">Youth Time Revival is a youth movement built on prayer, teaching, and mentorship — sending a generation, formed in secret, into every corner of society.</p>
-      <p class="lede i18n-rw">Youth Time Revival ni umuvuko w'urubyiruko ushingiye ku isengesho, inyigisho, no kuyoborwa hafi — wohereza umuryango wabakiwe ahantu hihishwa, mu bice byose by'imibereho.</p>
-      <div class="hero-ctas">
-        <a class="btn btn-ember" href="{% url 'devotions:list' %}"><span class="i18n-en">Read today's devotion</span><span class="i18n-rw">Soma iyubahiro ry'uyu munsi</span></a>
-        <a class="btn btn-outline-cream" href="{% url 'about:about' %}"><span class="i18n-en">Our story</span><span class="i18n-rw">Inkuru yacu</span></a>
-      </div>
-      <div class="moments" id="momentPills">
-        <span class="moment-pill" data-i="0"><span class="i18n-en">Teaching &amp; Preaching</span><span class="i18n-rw">Kwigisha no Kubwiriza</span></span>
-        <span class="moment-pill" data-i="1"><span class="i18n-en">Prayer</span><span class="i18n-rw">Isengesho</span></span>
-        <span class="moment-pill" data-i="2"><span class="i18n-en">Wealth &amp; Stewardship</span><span class="i18n-rw">Ubutunzi n'Ubugenzuzi</span></span>
-        <span class="moment-pill" data-i="3"><span class="i18n-en">Mentorship &amp; Discipleship</span><span class="i18n-rw">Ubuyobozi n'Ubwigishwa</span></span>
-      </div>
-    </div>
-  </div>
+  {% include "home/partials/hero.html" %}
 
   <div class="section">
     <div class="wrap">
@@ -129,7 +94,7 @@
         </div>
         <h3>{{ gathering.title }}</h3>
         <div class="flyer">
-          <svg class="flyer-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#E4572E" opacity="0.12"/><path d="M12 4c.7 2-1.4 2.6-1.4 4.6a2.6 2.6 0 1 0 5.2 0c0-1-.6-1.3-1-2 1 .7 2 2 2 3.9a4.2 4.2 0 1 1-8.4 0c0-2.9 2.3-3.9 3.6-6.5z" fill="#E4572E"/></svg>
+          <svg class="flyer-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="var(--color-accent)" opacity="0.12"/><path d="M12 4c.7 2-1.4 2.6-1.4 4.6a2.6 2.6 0 1 0 5.2 0c0-1-.6-1.3-1-2 1 .7 2 2 2 3.9a4.2 4.2 0 1 1-8.4 0c0-2.9 2.3-3.9 3.6-6.5z" fill="var(--color-accent)"/></svg>
           <div>
             <div class="flyer-date">{{ gathering.start_datetime|date:"l · g:i A" }}</div>
             <p style="color:var(--ink-soft); font-size:0.92rem; margin-top:2px">{{ gathering.location }}</p>
@@ -196,3 +161,5 @@
   </div>
 </section>
 {% endblock %}
+
+{% block extra_body %}<script src="{% static 'js/hero-spiritual.js' %}" defer></script>{% endblock %}

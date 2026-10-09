@@ -1,6 +1,14 @@
 const { test, expect } = require("playwright/test");
 const { readAllCacheEntries } = require("./helpers");
 
+// Production intentionally skips registration on localhost. Register explicitly
+// here so this suite can exercise the unchanged worker on its local test origin.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js');
+  }));
+});
+
 test.describe("service worker registration (item 8)", () => {
   test("registers at scope / with no console errors, and the shell resources it references all return 200", async ({ page, baseURL }) => {
     const consoleErrors = [];
@@ -55,7 +63,7 @@ test.describe("cache storage contents (item 9)", () => {
       expect(entry.url, `cache entry ${entry.url} must not be a private path`).not.toMatch(forbidden);
     }
 
-    const shellEntries = entries.filter((e) => e.cache === "ytr-shell-v1").map((e) => new URL(e.url).pathname);
+    const shellEntries = entries.filter((e) => e.cache === "ytr-shell-v2").map((e) => new URL(e.url).pathname);
     for (const path of shellEntries) {
       expect(path).toMatch(/\/static\/|offline\.html/);
     }

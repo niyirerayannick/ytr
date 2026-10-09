@@ -2,6 +2,7 @@
 {% load ytr_icons %}
 {% block title %}{{ article.title_en }} — Youth Time Revival{% endblock %}
 
+{% block extra_head %}{% if article.cover_image %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ article.cover_image.url }}">{% endif %}{% endblock %}
 {% block content %}
 <section id="view-articles">
   <div class="section">
@@ -57,7 +58,7 @@
             {% if article.author.avatar %}
               <img src="{{ article.author.avatar.url }}" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover">
             {% else %}
-              {% icon_tile 'flame' '#241A3D' %}
+              {% icon_tile 'flame' %}
             {% endif %}
           </div>
           <div>
@@ -91,7 +92,7 @@
         </div>
         {% endif %}
         <div class="flyer" style="margin-top:36px; padding-top:28px; border-top:1px solid var(--line)">
-          <svg class="flyer-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#E4572E" opacity="0.12"/><path d="M12 4c.7 2-1.4 2.6-1.4 4.6a2.6 2.6 0 1 0 5.2 0c0-1-.6-1.3-1-2 1 .7 2 2 2 3.9a4.2 4.2 0 1 1-8.4 0c0-2.9 2.3-3.9 3.6-6.5z" fill="#E4572E"/></svg>
+          <svg class="flyer-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="var(--color-accent)" opacity="0.12"/><path d="M12 4c.7 2-1.4 2.6-1.4 4.6a2.6 2.6 0 1 0 5.2 0c0-1-.6-1.3-1-2 1 .7 2 2 2 3.9a4.2 4.2 0 1 1-8.4 0c0-2.9 2.3-3.9 3.6-6.5z" fill="var(--color-accent)"/></svg>
           <div>
             <div class="flyer-date"><span class="i18n-en">Join us this Friday</span><span class="i18n-rw">Twifatanye kuriyi wa gatanu</span></div>
             <a class="btn-text" href="{% url 'core:home' %}"><span class="i18n-en">See gathering details</span><span class="i18n-rw">Reba amakuru y'iteraniro</span></a>

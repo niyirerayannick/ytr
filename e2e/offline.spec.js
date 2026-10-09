@@ -1,6 +1,14 @@
 const { test, expect } = require("playwright/test");
 const { loginAsMember, readAllCacheEntries, SEEDED_ARTICLE_PATH, SEEDED_DEVOTION_PATH } = require("./helpers");
 
+// Production intentionally skips registration on localhost. Register explicitly
+// here so this suite can exercise the unchanged worker on its local test origin.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js');
+  }));
+});
+
 test.describe("public content offline (items 10-11)", () => {
   test("a published article is cached while online and readable offline", async ({ page, context }) => {
     await page.goto("/");
@@ -13,7 +21,7 @@ test.describe("public content offline (items 10-11)", () => {
     await page.waitForTimeout(300);
 
     const entries = await readAllCacheEntries(page);
-    const cachedArticle = entries.find((e) => e.cache === "ytr-public-pages-v1" && e.url.endsWith(SEEDED_ARTICLE_PATH));
+    const cachedArticle = entries.find((e) => e.cache === "ytr-public-pages-v2" && e.url.endsWith(SEEDED_ARTICLE_PATH));
     expect(cachedArticle, "article should be present in the bounded public-page cache").toBeTruthy();
 
     await context.setOffline(true);
@@ -29,7 +37,7 @@ test.describe("public content offline (items 10-11)", () => {
     await page.waitForTimeout(300);
 
     const entries = await readAllCacheEntries(page);
-    const cachedDevotions = entries.find((e) => e.cache === "ytr-public-pages-v1" && e.url.endsWith(SEEDED_DEVOTION_PATH));
+    const cachedDevotions = entries.find((e) => e.cache === "ytr-public-pages-v2" && e.url.endsWith(SEEDED_DEVOTION_PATH));
     expect(cachedDevotions, "devotions page should be present in the bounded public-page cache").toBeTruthy();
 
     const paginated = await request.get(`${SEEDED_DEVOTION_PATH}?page=2`);
@@ -101,7 +109,7 @@ test.describe("logout leaves no authenticated HTML behind (item 13)", () => {
       const form = document.querySelector('form[action*="logout"]');
       if (form) form.submit();
     });
-    await page.waitForURL(/\/$|\/accounts\/logout/);
+    await page.waitForURL((url) => url.pathname === "/");
 
     const entries = await readAllCacheEntries(page);
     const leaked = entries.filter((e) => /\/(dashboard|accounts)\//.test(e.url));

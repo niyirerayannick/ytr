@@ -1,8 +1,8 @@
-{% load ytr_icons %}
+{% load ytr_icons static %}
 <header class="site-nav">
   <div class="nav-row">
     <a class="brand" href="{% url 'core:home' %}" aria-label="Youth Time Revival, go to home">
-      {% icon 'flame' 26 'false' %}
+      <img class="brand-logo" src="{% static 'branding/ytr-logo-small.png' %}" width="256" height="256" alt="">
       <span class="brand-full">Youth Time Revival</span><span class="brand-short" aria-hidden="true">YTR</span>
     </a>
     <button class="menu-toggle icon-btn" id="menuToggle" aria-label="Open menu" aria-controls="navLinks" aria-expanded="false">

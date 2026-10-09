@@ -94,16 +94,19 @@ def morning_devotion_detail(request, slug):
 
 
 def morning_devotion_cover(request, slug):
+    language = request.GET.get("lang", "en")
+    if language not in ("en", "rw"):
+        return HttpResponseBadRequest("Unsupported language")
     fmt = request.GET.get("format", SQUARE)
     if fmt not in FORMATS:
         return HttpResponseBadRequest("Unsupported format")
 
     session = get_object_or_404(MorningDevotionSession, slug=slug, status=MorningDevotionSession.STATUS_PUBLISHED)
     site_settings = SiteSettings.load()
-    key = cover.cache_key(session, fmt, site_settings)
+    key = cover.cache_key(session, fmt, site_settings, language=language)
     png = cache.get(key)
     if png is None:
-        png = cover.render_session_cover(session, site_settings, fmt=fmt)
+        png = cover.render_session_cover(session, site_settings, fmt=fmt, language=language)
         cache.set(key, png, timeout=None)
 
     response = HttpResponse(png, content_type="image/png")

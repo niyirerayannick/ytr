@@ -148,10 +148,12 @@
   setRepostLang(currentLang, "#shareDialog");
   setRepostLang(currentLang, "#repostDialog");
 
+  document.getElementById("repostFormat")?.addEventListener("change", loadRepostImage);
+
   function loadRepostImage() {
     if (repostLoading) repostLoading.hidden = false;
     if (repostImage) repostImage.style.opacity = "0.35";
-    var url = DATA.share_image_base + "?lang=" + currentLang + "&format=square";
+    var url = DATA.share_image_base + "?lang=" + currentLang + "&format=" + (document.getElementById("repostFormat")?.value || "square");
     fetch(url)
       .then(function (r) {
         if (!r.ok) throw new Error("share image request failed");

@@ -3,10 +3,11 @@
    URLs stay correct after collectstatic, and so the file can be served from
    "/" with a scope covering the whole origin. Do not link to this file as a
    static asset — it is only reachable at /service-worker.js. */
-const SHELL_CACHE = "ytr-shell-v1";
-const PAGE_CACHE = "ytr-public-pages-v1";
+const SHELL_CACHE = "ytr-shell-v2";
+const PAGE_CACHE = "ytr-public-pages-v2";
 const MAX_PUBLIC_PAGES = 24;
 const SHELL_URLS = [
+  "{% static 'branding/ytr-logo-small.png' %}",
   "{% static 'css/dist.css' %}",
   "{% static 'js/site.js' %}",
   "{% static 'js/pwa.js' %}",
