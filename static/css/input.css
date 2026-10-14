@@ -1329,3 +1329,92 @@
     .hero-logo-watermark { animation: none !important; opacity: .16; }
   }
 }
+
+/* Official layered artwork: a reserved visual column keeps every symbol readable. */
+@layer components {
+  .hero-logo-stage { position: absolute; z-index: 6; width: min(40vw, 510px); aspect-ratio: 1; right: max(28px, calc((100vw - 1200px)/2)); top: 50%; transform: translateY(-50%); border-radius: 50%; background: radial-gradient(circle, #f9deb5 0%, #dfb57c 48%, rgba(223,181,124,.65) 64%, transparent 72%); }
+  .hero-logo-art, .hero-logo-light { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .hero-logo-art g { transform-box: fill-box; transform-origin: center; }
+  .hero-spiritual .hero-inner { padding-right: min(46vw, 590px); min-height: 610px; }
+  .hero-spiritual .moments { max-width: 550px; }
+  .logo-cross, .logo-bible { animation: logo-word-glow 12s ease-in-out infinite alternate; }
+  .logo-dove { animation: logo-dove-hover 16s ease-in-out infinite alternate; }
+  .logo-africa { animation: logo-africa-glow 18s ease-in-out infinite alternate; }
+  .logo-fire, .logo-fire-core { animation: logo-flame-glow 7s ease-in-out infinite alternate; }
+  .logo-fire-core { animation-delay: -3s; }
+  .logo-globe { animation: logo-grid-shimmer 22s ease-in-out infinite alternate; }
+  .logo-people, .logo-people-detail, .logo-details { animation: logo-response 14s ease-in-out infinite alternate; }
+  .logo-roots { animation: logo-root-glow 18s ease-in-out infinite alternate; }
+  .logo-revelation, .logo-source-light { animation: logo-revelation 12s ease-in-out infinite alternate; }
+  .logo-mission { stroke-dasharray: 80 1200; animation: logo-flow 30s linear infinite; opacity: .45; }
+  .logo-root-flow { stroke-dasharray: 18 220; animation: logo-flow 14s linear infinite; opacity: .6; }
+  .logo-seed { animation: logo-descent 15s linear var(--delay) infinite; opacity: 0; }
+  .logo-ash { animation: logo-ascent 19s linear infinite; opacity: 0; }
+  .hero-motion-paused .hero-logo-stage * { animation-play-state: paused; }
+  @keyframes logo-word-glow { to { filter: drop-shadow(0 0 5px #ffd993); } }
+  @keyframes logo-dove-hover { to { transform: translateY(-3px); filter: drop-shadow(0 0 3px #fff4df); } }
+  @keyframes logo-africa-glow { to { filter: drop-shadow(0 0 3px #ec9b40); } }
+  @keyframes logo-flame-glow { from { opacity: .8; } to { opacity: 1; filter: drop-shadow(0 0 3px #ff9b32); } }
+  @keyframes logo-grid-shimmer { from { opacity: .65; } to { opacity: 1; } }
+  @keyframes logo-response { to { transform: translateY(-1.5px); } }
+  @keyframes logo-root-glow { to { filter: drop-shadow(0 0 2px #ffc26e); } }
+  @keyframes logo-revelation { from { opacity: .2; } to { opacity: .65; } }
+  @keyframes logo-flow { to { stroke-dashoffset: -1300; } }
+  @keyframes logo-descent { 0%,100% { opacity: 0; transform: translateY(0); } 20%,65% { opacity: .8; } 95% { opacity: 0; transform: translate(8px, 350px); } }
+  @keyframes logo-ascent { 0%,100% { opacity: 0; } 25%,65% { opacity: .5; } 95% { transform: translate(12px,-160px); opacity: 0; } }
+  @media (max-width: 900px) {
+    .hero-spiritual .hero-inner { padding-right: 28px; min-height: 0; }
+    .hero-logo-stage { position: relative; top: auto; right: auto; transform: none; width: clamp(230px, 48vw, 360px); margin: 0 auto 36px; }
+    .hero-spiritual { display: flex; flex-direction: column; }
+    .hero-spiritual .hero-inner { order: 0; width: 100%; }
+    .hero-logo-stage { order: 1; }
+    .hero-spiritual-background { background: radial-gradient(ellipse at 70% 90%, #995526, #4a1a05 75%); }
+    .hero-spiritual .hero-inner { padding-bottom: 32px; }
+    .logo-seeds > :nth-child(n+4) { display: none; }
+    .logo-mission { animation: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-logo-stage * { animation: none !important; transition: none !important; }
+    .logo-seed, .logo-ash { opacity: .4; }
+    .logo-revelation { opacity: .35; }
+  }
+}
+
+/* A more visible revival sequence, with independently moving flame tips. */
+@layer components {
+  .logo-flame { transform-box: fill-box; transform-origin: center bottom; animation: logo-flame-dance var(--flame-duration) ease-in-out var(--flame-delay) infinite; }
+  .logo-dove { animation: logo-dove-presence 10s ease-in-out infinite; }
+  .logo-cross { animation: logo-cross-radiance 10s ease-in-out infinite; }
+  .logo-bible { animation: logo-word-glow 10s ease-in-out -2s infinite alternate; }
+  .logo-globe { animation: logo-grid-shimmer 14s ease-in-out infinite alternate; }
+  .logo-people, .logo-people-detail, .logo-details { animation: logo-response 9s ease-in-out infinite alternate; }
+  .logo-revelation { transform-box: fill-box; transform-origin: center; animation: logo-word-bloom 10s ease-in-out infinite; }
+  .logo-revival-wave { transform-box: view-box; transform-origin: 540px 380px; animation: logo-mission-wave 16s ease-out infinite; opacity: 0; }
+  .logo-word-rays { stroke-dasharray: 45 160; animation: logo-word-stream 10s ease-in-out infinite; opacity: .45; }
+  .logo-torch-halos circle { animation: logo-receive-light 10s ease-in-out -4s infinite; }
+  .logo-torch-halos circle:nth-child(even) { animation-delay: -5s; }
+  .logo-mission { stroke-width: 3; stroke-dasharray: 100 260; animation-duration: 22s; opacity: .65; }
+  .logo-root-flow { stroke-width: 4; stroke-dasharray: 35 150; animation: logo-root-stream 9s linear infinite; opacity: .8; }
+  .logo-seed { r: 4px; animation-duration: 10s; }
+  .logo-ash { animation-duration: 13s; }
+  @keyframes logo-flame-dance { 0%,100% { transform: scale(1) skewX(-2deg); } 35% { transform: scale(.93,1.13) skewX(4deg); } 70% { transform: scale(1.05,.94) skewX(-4deg); } }
+  @keyframes logo-dove-presence { 0%,100% { transform: translateY(0); filter: drop-shadow(0 0 2px #fff4df); } 50% { transform: translateY(-7px); filter: drop-shadow(0 0 7px #fff4df); } }
+  @keyframes logo-cross-radiance { 0%,100% { filter: drop-shadow(0 0 2px #ffd993); } 50% { filter: drop-shadow(0 0 10px #ffe6ae); } }
+  @keyframes logo-word-bloom { 0%,100% { opacity: .25; transform: scale(.9); } 50% { opacity: .85; transform: scale(1.2); } }
+  @keyframes logo-mission-wave { 0% { transform: scale(.5); opacity: 0; } 20% { opacity: .45; } 85%,100% { transform: scale(3); opacity: 0; } }
+  @keyframes logo-word-stream { 0%,100% { opacity: .1; stroke-dashoffset: 205; } 35%,65% { opacity: .6; } 90% { stroke-dashoffset: 0; opacity: .1; } }
+  @keyframes logo-receive-light { 0%,100% { opacity: .2; } 50% { opacity: .85; } }
+  @keyframes logo-root-stream { to { stroke-dashoffset: -370; } }
+  @media (max-width: 900px) {
+    .logo-mission { animation: none; }
+    .logo-revival-wave:nth-child(2), .logo-word-rays { display: none; }
+    .logo-flame { animation-duration: 7s; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-logo-stage * { animation: none !important; }
+    .logo-revival-wave { opacity: 0; }
+    .logo-word-rays { opacity: .2; }
+    .logo-revelation { opacity: .35; }
+    .logo-torch-halos circle { opacity: .35; }
+  }
+}

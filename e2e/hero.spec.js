@@ -28,15 +28,15 @@ for (const width of [320, 375, 390, 768, 1024, 1440]) {
         const hero = page.locator('.hero-spiritual');
         await expect(hero.locator('h1')).toContainText('The altar comes before the platform.');
         await expect(hero.locator('.hero-spiritual-background')).toHaveAttribute('aria-hidden', 'true');
-        const watermark = hero.locator('.hero-logo-watermark');
-        await expect(watermark).toHaveAttribute('alt', '');
-        await expect(watermark).toHaveAttribute('src', /branding\/ytr-logo-hero.webp/);
-        const logo = await watermark.evaluate(el => ({
-          loaded: el.complete && el.naturalWidth > 0,
-          ratio: el.getBoundingClientRect().width / el.getBoundingClientRect().height,
-        }));
-        expect(logo.loaded).toBe(true);
-        expect(logo.ratio).toBeCloseTo(1, 2);
+        const artwork = hero.locator('.hero-logo-art');
+        await expect(artwork).toHaveAttribute('viewBox', '0 0 1080 1080');
+        for (const layer of ['cross', 'bible', 'dove', 'africa', 'people', 'roots', 'fire', 'globe']) {
+          await expect(artwork.locator('.logo-' + layer + ' path').first()).toHaveAttribute('d', /^M/);
+        }
+        const stage = await hero.locator('.hero-logo-stage').boundingBox();
+        expect(stage.width / stage.height).toBeCloseTo(1, 2);
+        const heading = await hero.locator('h1').boundingBox();
+        expect(stage.x >= heading.x + heading.width || stage.y >= heading.y + heading.height).toBe(true);
 
         expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
         if (state === 'live') await expect(hero.getByRole('link', { name: 'Join Morning Devotion' })).toBeVisible();
